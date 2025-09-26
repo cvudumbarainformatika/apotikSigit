@@ -25,7 +25,7 @@
               <div class="font-medium">{{ store.item?.kode || '-' }}</div>
               <div class="text-gray-500">Kemasan:</div>
               <div class="text-right"> 1 {{ store.item?.satuan_b }} isi {{ store.item?.isi }} {{
-                store.item?.satuan_k}}
+                store.item?.satuan_k }}
               </div>
             </div>
           </div>
@@ -62,7 +62,7 @@
               </tr>
               <tr>
                 <td colspan="5" class="td p-1 text-right font-bold">SALDO AKHIR</td>
-                <td class="td p-1 text-right font-bold">{{formatRupiah(totalStokAkhir)}}</td>
+                <td class="td p-1 text-right font-bold">{{ formatRupiah(totalStokAkhir) }}</td>
               </tr>
             </tbody>
           </table>
@@ -188,7 +188,7 @@ const groupedItems = computed(() => {
     notrans: '-',
     tanggal: `${props.store.range.end_date}-${props.store.range.start_date}-01`,
     satuan: props.store?.item?.satuan_k,
-    debit: 0,
+    debit: totalAwal,
     kredit: 0,
     saldo: totalAwal,
   }
@@ -199,7 +199,7 @@ const groupedItems = computed(() => {
   // const formatted = useDateFormat(useNow(), 'MM-DD-YYYY 00:00:01')
   // --- PENERIMAAN (selalu langsung setelah saldo awal) ---
 
-  
+
   const penerimaan = props.store?.item?.penerimaan_rinci ?? []
   const penerimaanRows = penerimaan.map(item => {
     const [year, month, day] = item.tgl_penerimaan.split("-")
@@ -258,7 +258,7 @@ const groupedItems = computed(() => {
       tanggal: item.tglretur,
       satuan: props.store?.item?.satuan_k,
       debit: 0,
-      kredit: Number(item.jumlahretur_k ?? 0),
+      kredit: Number(item.jumlah_k ?? 0),
       saldo: 0,
     })
   })
@@ -323,7 +323,7 @@ const totalPenjualan = computed(() => {
 
 const totalReturPembelian = computed(() => {
   const items = props.store?.item?.retur_pembelian_rinci
-  const total = items.reduce((sum, s) => sum + Number(s.jumlahretur_k ?? 0), 0)
+  const total = items.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0)
   return total
 })
 

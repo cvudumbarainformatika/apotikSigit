@@ -8,17 +8,17 @@
         <u-row flex1 class="w-full">
           <u-row>
             <u-select label="Satuan Kecil" v-model="form.satuan_k" :options="optionSatuans" :error="isError('satuan_k')"
-              :error-message="errorMessage('satuan_k')" @update:modelValue="(val)=> {
-                  console.log('val',val);
-                  
-                }" />
+              :error-message="errorMessage('satuan_k')" @update:modelValue="(val) => {
+                console.log('val', val);
+
+              }" />
           </u-row>
           <u-row>
             <u-select label="Satuan Besar" v-model="form.satuan_b" :options="optionSatuans" :error="isError('satuan_b')"
-              :error-message="errorMessage('satuan_b')" @update:modelValue="(val)=> {
-                  console.log('val',val);
-                  
-                }" />
+              :error-message="errorMessage('satuan_b')" @update:modelValue="(val) => {
+                console.log('val', val);
+
+              }" />
           </u-row>
           <u-row class="w-36">
             <u-input v-model="form.isi" type="number" label="Isi sat Bsr" :error="isError('isi')"
@@ -30,27 +30,27 @@
             :error-message="errorMessage('kandungan')" />
         </u-row>
         <u-row flex1 class="w-full">
-          <!-- <u-row>
+          <u-row>
             <u-input type="number" v-model="form.harga_jual_resep_k" label="Harga jual Resep"
               :error="isError('harga_jual_resep_k')" :error-message="errorMessage('harga_jual_resep_k')" />
-          </u-row> -->
+          </u-row>
           <u-row>
+            <u-input type="number" v-model="form.harga_jual_biasa_k" label="Harga Jual Biasa"
+              :error="isError('harga_jual_biasa_k')" :error-message="errorMessage('harga_jual_biasa_k')" />
+          </u-row>
+          <!-- <u-row>
             <u-input type="number" v-model="form.persen_resep" label="Margin Resep (%)" :error="isError('persen_resep')"
               :error-message="errorMessage('persen_resep')" />
           </u-row>
           <u-row>
             <u-input type="number" v-model="form.persen_biasa" label="Margin Biasa (%)" :error="isError('persen_biasa')"
               :error-message="errorMessage('persen_biasa')" />
-          </u-row>
+          </u-row> -->
         </u-row>
         <!-- <u-row flex1 class="w-full">
           <u-row>
             <u-input type="number" v-model="form.harga_jual_biasa_k" label="Harga Jual Biasa"
               :error="isError('harga_jual_biasa_k')" :error-message="errorMessage('harga_jual_biasa_k')" />
-          </u-row>
-          <u-row>
-            <u-input type="number" v-model="form.persen_biasa" label="Margin Biasa (%)" :error="isError('persen_biasa')"
-              :error-message="errorMessage('persen_biasa')" />
           </u-row>
         </u-row> -->
       </u-col>
@@ -94,13 +94,13 @@ const form = ref({
   persen_biasa: ''
 })
 
-function isError(field){
+function isError(field) {
   return !!error.value?.[field]
 }
 
-function errorMessage(field){
+function errorMessage(field) {
   return error.value?.[field]?.[0] ?? null
-} 
+}
 
 
 
@@ -108,7 +108,7 @@ watch(
   () => ({ ...form.value }),
   (newForm, oldForm) => {
     // console.log('🔥 watch form', newForm, oldForm);
-    
+
     for (const key in newForm) {
       if (newForm[key] !== oldForm[key]) {
         props.store.clearFieldError(key)
@@ -122,10 +122,10 @@ watch(
 
 
 function handleSubmit() {
-  emit('save' , form.value, props.mode)
+  emit('save', form.value, props.mode)
 }
 
-function init(){
+function init() {
   const mode = props.mode
 
   const exclude = mode === 'add'
@@ -148,7 +148,7 @@ function init(){
   }
 
   console.log('init form', form.value);
-  
+
 }
 
 import { useSatuanStore } from '@/stores/template/register'

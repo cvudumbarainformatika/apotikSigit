@@ -117,8 +117,9 @@ export function createTemplateStore(storeId, config) {
         try {
           const res = await api.post(`${config.baseUrl}${config?.createUrl || '/simpan'}`, data)
           console.log(`resp ${storeId} create : `, res);
-          if (res.status === 200) {
-            const result = res.data.data
+          if (res.status === 200 || res.status === 201) {
+            const result = res.data.data ?? res.data.user ?? null
+            console.log('result save', result);
             if (mode === 'add') {
               this.items.unshift(result)
             }else {
@@ -129,7 +130,6 @@ export function createTemplateStore(storeId, config) {
                 return item
               })
             }
-
             this.error = null
             this.modalFormOpen = false
             notify({ message: res.data.message ?? 'Berhasil Menyimpan data', type: 'success' })

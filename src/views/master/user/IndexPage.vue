@@ -67,9 +67,9 @@ async function handleDelete(item) {
 
 <template>
   <base-master :title="title" :store="store" showOrder :onAdd="handleAdd" :onRefresh="handleRefresh">
-    <!-- <template #loading>
+    <template #loading>
       <LoaderItem />
-    </template> -->
+    </template>
     <template #item="{ item }">
       <Suspense>
         <template #default>

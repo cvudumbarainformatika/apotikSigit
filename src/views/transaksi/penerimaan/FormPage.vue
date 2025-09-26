@@ -401,7 +401,7 @@ const handleKunci = async (e) => {
       jumlah_k: parseInt(item.jumlah_k),
       harga: parseFloat(item.harga),
       pajak_rupiah: parseFloat(item.pajak_rupiah),
-      diskon_persen: parseInt(item.diskon_persen),
+      diskon_persen: parseFloat(item.diskon_persen),
       harga_total: parseFloat(item.harga_total),
       subtotal: parseFloat(item.subtotal),
       diskon_rupiah: parseFloat(item.diskon_rupiah),

@@ -554,10 +554,10 @@ const handleAdd = async(item) => {
 
 function getHargaJual() {
   const selected = props?.store?.barangSelected ?? null
-  const resep = parseFloat(selected?.hpp ?? 0) + (parseFloat(selected?.hpp ?? 0) * parseInt(selected?.persen_resep ?? 0) / 100)
-  const biasa = parseFloat(selected?.hpp ?? 0) + (parseFloat(selected?.hpp ?? 0) * parseInt(selected?.persen_biasa ?? 0) / 100)
-  // return form.value.kode_dokter ? parseInt(selected?.harga_jual_resep_k ?? 0) : parseInt(selected?.harga_jual_biasa_k ?? 0)
-  return form.value.kode_dokter ? Math.ceil(resep) : Math.ceil(biasa)
+  // const resep = parseFloat(selected?.hpp ?? 0) + (parseFloat(selected?.hpp ?? 0) * parseInt(selected?.persen_resep ?? 0) / 100)
+  // const biasa = parseFloat(selected?.hpp ?? 0) + (parseFloat(selected?.hpp ?? 0) * parseInt(selected?.persen_biasa ?? 0) / 100)
+  return form.value.kode_dokter ? parseInt(selected?.harga_jual_resep_k ?? 0) : parseInt(selected?.harga_jual_biasa_k ?? 0)
+  // return form.value.kode_dokter ? Math.ceil(resep) : Math.ceil(biasa)
 }
 
 const handleSelectedPelanggan = (item) => {
