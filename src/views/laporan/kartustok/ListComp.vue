@@ -115,7 +115,7 @@ const openDetail = async () => {
     if (response) {
 
       props.store.item = response.data.data
-      // console.log('items', props.store.item)
+      // console.log('items Rincian', props.store.item)
     }
   } catch (error) {
     console.error('Error fetching Kartu Stok:', error)

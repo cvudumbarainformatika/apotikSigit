@@ -268,7 +268,7 @@ const groupedItems = computed(() => {
   returPenjualan.forEach(item => {
     transaksiLain.push({
       jenis: 'RETUR PENJUALAN',
-      notrans: item.noretur_penjualan,
+      notrans: item.noretur,
       tanggal: item.tgl_retur,
       satuan: props.store?.item?.satuan_k,
       debit: Number(item.jumlah_k ?? 0),
