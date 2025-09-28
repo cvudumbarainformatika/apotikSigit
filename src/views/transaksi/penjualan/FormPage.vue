@@ -113,7 +113,7 @@
           <u-autocomplete v-model="searchDokter" placeholder="Cari Dokter" 
             :debounce="300" :min-search-length="2" 
             item-key="id" 
-            item-label="nama_dokter"
+            item-label="nama"
             not-found-text="Data Dokter tidak ditemukan" 
             not-found-subtext="Coba kata kunci lain" 
             :show-add-button="false"
@@ -128,7 +128,7 @@
               <u-row flex1 class="w-full">
                 <u-icon name="UserSearch" class="w-5 h-5 text-primary" />
                 <u-text>
-                  {{ store.dokterSelected?.nama_dokter }}
+                  {{ store.dokterSelected?.nama }}
                 </u-text>
               </u-row>
               <button @click="clearSelectedDokter"

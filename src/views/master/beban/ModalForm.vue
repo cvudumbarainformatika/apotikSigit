@@ -3,9 +3,9 @@
     <template #default>
       <u-col flex1 class="w-full p-4">
         <u-row flex1 class="w-full">
-          <u-input v-model="form.nama_beban" label="Nama" 
-            :error="isError('nama_beban')"
-            :error-message="errorMessage('nama_beban')" 
+          <u-input v-model="form.nama" label="Nama" 
+            :error="isError('nama')"
+            :error-message="errorMessage('nama')" 
           /></u-row>
         <!-- <u-row flex1 class="w-full">
           <u-input v-model="form.alamat" label="Alamat" 
@@ -43,7 +43,7 @@ const error = computed(() => {
 })
 
 const form = ref({
-  nama_beban: '',
+  nama: '',
   flag: ''
 })
 
@@ -71,7 +71,9 @@ watch(
   { deep: true }
 )
 
-
+watch(() => form.value.nama, (val) => {
+  if (val) form.value.nama = val.toUpperCase()
+})
 
 
 function handleSubmit() {
@@ -82,7 +84,7 @@ function init(){
   const mode = props.mode
   if (mode === 'add') {
     form.value = {
-      nama_beban: '',
+      nama: '',
       flag: ''
     }
   } else {
@@ -90,7 +92,7 @@ function init(){
     console.log('edit item', item);
     form.value = {
       id: item.id || '',
-      nama_beban: item.nama_beban || '',
+      nama: item.nama || '',
       flag: item.flag || ''
     }
   }

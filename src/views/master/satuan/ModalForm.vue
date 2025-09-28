@@ -49,7 +49,9 @@ function errorMessage(field){
   return error.value?.[field]?.[0] ?? null
 } 
 
-
+watch(() => form.value.nama, (val) => {
+  if (val) form.value.nama = val.toUpperCase()
+})
 
 watch(
   () => ({ ...form.value }),

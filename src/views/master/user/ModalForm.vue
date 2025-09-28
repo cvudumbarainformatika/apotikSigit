@@ -128,7 +128,9 @@ watch(
   },
   { deep: true }
 )
-
+watch(() => form.value.nama, (val) => {
+  if (val) form.value.nama = val.toUpperCase()
+})
 
 function handleSubmit() {
   emit('save', form.value, props.mode)

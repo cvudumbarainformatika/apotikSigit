@@ -3,7 +3,7 @@
     <u-view padding="0" flex1 class="w-full">
       <u-row flex1 class="w-full">
         <div>
-          <div class="font-bold">{{ item?.nama_beban }}</div>
+          <div class="font-bold">{{ item?.nama }}</div>
           <div class="text-xs text-gray-400">{{ useWaktuLaluReactive(item?.created_at) }}</div>
         </div>
       </u-row>

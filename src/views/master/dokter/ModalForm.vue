@@ -3,9 +3,9 @@
     <template #default>
       <u-col flex1 class="w-full p-4">
         <u-row flex1 class="w-full">
-          <u-input v-model="form.nama_dokter" label="Nama" 
-            :error="isError('nama_dokter')"
-            :error-message="errorMessage('nama_dokter')" 
+          <u-input v-model="form.nama" label="Nama" 
+            :error="isError('nama')"
+            :error-message="errorMessage('nama')" 
           /></u-row>
         <u-row flex1 class="w-full">
           <u-input v-model="form.alamat" label="Alamat" 
@@ -43,7 +43,7 @@ const error = computed(() => {
 })
 
 const form = ref({
-  nama_dokter: '',
+  nama: '',
   alamat: ''
 })
 
