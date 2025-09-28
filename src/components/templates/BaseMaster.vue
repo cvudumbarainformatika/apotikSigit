@@ -1,4 +1,3 @@
-
 <template>
   <u-page>
     <!-- Header Search & Action -->
@@ -31,6 +30,9 @@
         <u-row>
           <u-select v-if="showMonthButton" label="Pilih Tahun" v-model="store.range.end_date" :options="generateTahuns"
             @update:modelValue="onRange" />
+        </u-row>
+        <u-row>
+          <u-btn-icon v-if="showOpnameButton && auth.user?.username === 'sa'" icon="download" tooltip="Opname" @click="onTriger" />
         </u-row>
       </u-row>
       <u-row right justify-self-end class="gap-2">
@@ -71,6 +73,9 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useScroll } from '@vueuse/core'
 import OrderBy from './OrderBy.vue'
+import { useAuthStore } from '@/stores/auth'
+
+const auth = useAuthStore()
 
 const props = defineProps({
   store: { type: Object, required: true },
@@ -80,9 +85,11 @@ const props = defineProps({
   showDateButton: { type: Boolean, default: false },
   showMonthButton: { type: Boolean, default: false },
   showOrder: { type: Boolean, default: false },
+  showOpnameButton: { type: Boolean, default: false },
   onAdd: Function, // ✅ supaya tidak error saat dipanggil
   onRefresh: Function, // ✅ hanya dipanggil kalau diberikan
   onRange: Function, // ✅ hanya dipanggil kalau diberikan
+  onTriger: Function, // ✅ hanya dipanggil kalau diberikan
 })
 
 const emit = defineEmits(['close', 'save'])
@@ -97,7 +104,7 @@ watch(
     // console.log('on bottom', val);
     if (val && !props.store.loadingMore && props.store?.page < props.store?.meta?.last_page) {
       props.store?.fetchMore()
-      
+
     }
   }
 )
@@ -106,7 +113,7 @@ watch(
 const now = new Date()
 const bulanSekarang = String(now.getMonth() + 1).padStart(2, '0')
 const tahunSekarang = now.getFullYear()
-const bulans = computed (() => [
+const bulans = computed(() => [
   { label: 'Januari', value: '01' },
   { label: 'Februari', value: '02' },
   { label: 'Maret', value: '03' },
@@ -131,7 +138,8 @@ const generateTahuns = computed(() => {
 
 
 onMounted(() => {
-  if (props?.onRange){
+
+  if (props?.onRange) {
     if (!props.store.range.start_date) {
       props.store.range.start_date = bulanSekarang
     }
@@ -143,7 +151,7 @@ onMounted(() => {
 function onSortChange(qs) {
   // console.log('onSortChange', qs);
   props.store.setOrder(qs)
-  
+
 }
 
 </script>

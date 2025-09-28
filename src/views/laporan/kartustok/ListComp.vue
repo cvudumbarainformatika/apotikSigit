@@ -110,12 +110,12 @@ const openDetail = async () => {
       tahun: props.store.range.end_date,
       id: props.item.id
     }
-    console.log('params', params)
+    // console.log('params', params)
     const response = await api.get(`api/v1/transactions/stok/get-rinci-kartu-stok`, { params })
     if (response) {
 
       props.store.item = response.data.data
-      console.log('items cacac', props.store.item)
+      // console.log('items', props.store.item)
     }
   } catch (error) {
     console.error('Error fetching Kartu Stok:', error)
@@ -133,13 +133,13 @@ const handleCloseModalNota = () => {
 
 // saldo awal
 const saldoAwal = computed(() => {
-  console.log('props.item', props.item);
+  // console.log('props.item', props.item);
   return (props.item?.stok_awal ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
 })
 
 // stok masuk
 const totalMasuk = computed(() => {
-  return (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) +
+  return (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
     (props.item?.retur_pembelian_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
 })
 

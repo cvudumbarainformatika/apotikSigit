@@ -109,6 +109,7 @@ export const useReturPenjualanStore = createTemplateTransaksiStore('retur-penjua
 // LAPORAN STORE
 export const useKartuStokStore = createTemplateTransaksiStore('kartu-stok', {
   baseUrl: 'api/v1/transactions/stok',
+  createUrl: '/get-kartu-stok',
   persist: false
 })
 

@@ -292,7 +292,7 @@ const groupedItems = computed(() => {
     }
   })
 
-  console.log('groupedItems', result)
+  // console.log('groupedItems', result)
   return result
 })
 
@@ -327,9 +327,14 @@ const totalReturPembelian = computed(() => {
   return total
 })
 
+const totalSaldoAwal = computed(() => {
+  const items = props.store?.item?.stok_awal ?? []
+  const total = items.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0)
+  return total
+})
 
 const totalStokAkhir = computed(() => {
-  return (totalPenerimaan.value + totalReturPenjualan.value + totalPenyesuaian.value) - (totalPenjualan.value + totalReturPembelian.value)
+  return (totalSaldoAwal.value + totalPenerimaan.value + totalReturPenjualan.value + totalPenyesuaian.value) - (totalPenjualan.value + totalReturPembelian.value)
 })
 
 
