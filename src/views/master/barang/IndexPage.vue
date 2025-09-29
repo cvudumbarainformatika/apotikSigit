@@ -1,6 +1,6 @@
 <script setup>
 import { defineAsyncComponent, onMounted, computed, ref, onBeforeMount } from 'vue'
-import { useBarangStore, useSatuanStore } from '@/stores/template/register'
+import { useBarangStore, useKategoriStore, useMerkStore, useRakStore, useSatuanStore } from '@/stores/template/register'
 import { useRoute } from 'vue-router'
 import { inject } from 'vue'
 const $confirm = inject('confirm')
@@ -15,7 +15,9 @@ const ModalForm = defineAsyncComponent(() => import('./ModalForm.vue'))
 
 const store = useBarangStore()
 const masterSatuan = useSatuanStore()
-
+const masterMerk = useMerkStore()
+const masterKategori = useKategoriStore()
+const masterRak = useRakStore()
 
 const route = useRoute()
 const title = computed(() => route.meta.title)
@@ -26,7 +28,10 @@ onMounted(() => {
   store.per_page = 100
   Promise.all([
     store.fetchAll(),
-    masterSatuan.fetchAll()
+    masterSatuan.fetchAll(),
+    masterMerk.fetchAll(),
+    masterKategori.fetchAll(),
+    masterRak.fetchAll()
   ])
 })
 

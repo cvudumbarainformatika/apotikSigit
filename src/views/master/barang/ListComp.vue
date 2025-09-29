@@ -20,7 +20,7 @@
                 <div class="font-bold">{{ item?.satuan_k }}</div>
                 <div>Satuan Besar : </div>
                 <div class="font-bold">{{ item?.satuan_b }}</div>
-                
+
               </u-row>
               <u-row flex1 class="w-full text-xs">
                 <div>Isi Satuan Besar : </div>
@@ -28,13 +28,17 @@
               </u-row>
               <u-row flex1 class="w-full text-xs">
                 <div>Harga Rsp : </div>
-                <div class="font-bold">{{ formatRupiah(item?.harga_jual_resep_k) }}</div>
-                <div>Harga Biasa : </div>
-                <div class="font-bold">{{ formatRupiah(item?.harga_jual_biasa_k) }}</div>
+                <div class="font-bold">{{ formatRupiah(item?.harga_jual_resep) }}</div>
+                <div>|| Harga Umum : </div>
+                <div class="font-bold">{{ formatRupiah(item?.harga_jual_umum) }}</div>
+                <div>|| Harga Customer : </div>
+                <div class="font-bold">{{ formatRupiah(item?.harga_jual_cust) }}</div>
+                <div>|| Harga Premium : </div>
+                <div class="font-bold">{{ formatRupiah(item?.harga_jual_prem) }}</div>
               </u-row>
-             
+
             </div>
-            
+
           </u-row>
           <u-row right class="">
             <u-btndrop label="Aksi" :items="['Edit', 'Hapus']" @select="val => handleSelect(val, item)" />

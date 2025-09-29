@@ -6,6 +6,9 @@
           <u-input v-model="form.nama" label="Nama" :error="isError('nama')" :error-message="errorMessage('nama')" />
         </u-row>
         <u-row flex1 class="w-full">
+          <u-input v-model="form.barcode" label="Kode Barcode" :error="isError('barcode')" :error-message="errorMessage('barcode')" />
+        </u-row>
+        <u-row flex1 class="w-full">
           <u-row>
             <u-select label="Satuan Kecil" v-model="form.satuan_k" :options="optionSatuans" :error="isError('satuan_k')"
               :error-message="errorMessage('satuan_k')" @update:modelValue="(val) => {
@@ -26,31 +29,57 @@
           </u-row>
         </u-row>
         <u-row flex1 class="w-full">
+          <u-row>
+            <u-select label="Kategori" v-model="form.kategori" :options="optionKategori" :error="isError('kategori')"
+              :error-message="errorMessage('kategori')" @update:modelValue="(val) => {
+                console.log('val', val);
+
+              }" />
+          </u-row>
+          <u-row>
+            <u-select label="Rak" v-model="form.rak" :options="optionRak" :error="isError('rak')"
+              :error-message="errorMessage('rak')" @update:modelValue="(val) => {
+                console.log('val', val);
+
+              }" />
+          </u-row>
+          <u-row>
+            <u-select label="Merk" v-model="form.merk" :options="optionMerk" :error="isError('merk')"
+              :error-message="errorMessage('merk')" @update:modelValue="(val) => {
+                console.log('val', val);
+
+              }" />
+          </u-row>
+        </u-row>
+        <u-row flex1 class="w-full">
           <u-input v-model="form.kandungan" label="Kandungan" :error="isError('kandungan')"
             :error-message="errorMessage('kandungan')" />
         </u-row>
         <u-row flex1 class="w-full">
-          <u-row>
-            <u-input type="number" v-model="form.harga_jual_resep_k" label="Harga jual Resep"
-              :error="isError('harga_jual_resep_k')" :error-message="errorMessage('harga_jual_resep_k')" />
-          </u-row>
-          <u-row>
-            <u-input type="number" v-model="form.harga_jual_biasa_k" label="Harga Jual Biasa"
-              :error="isError('harga_jual_biasa_k')" :error-message="errorMessage('harga_jual_biasa_k')" />
-          </u-row>
-          <!-- <u-row>
-            <u-input type="number" v-model="form.persen_resep" label="Margin Resep (%)" :error="isError('persen_resep')"
-              :error-message="errorMessage('persen_resep')" />
-          </u-row>
-          <u-row>
-            <u-input type="number" v-model="form.persen_biasa" label="Margin Biasa (%)" :error="isError('persen_biasa')"
-              :error-message="errorMessage('persen_biasa')" />
-          </u-row> -->
+          <u-input type="number" v-model="form.harga_beli" label="Harga Beli" :error="isError('harga_beli')"
+            :error-message="errorMessage('harga_beli')" />
+          <u-input type="number" v-model="form.limit_stok" label="Limit St0" :error="isError('limit_stok')"
+            :error-message="errorMessage('limit_stok')" />
+        </u-row>
+        <div flex1 class="w-full row justify-center items-center mt-1 mb-1">
+          <div class="text-center text-xs text-gray-500">---- Harga Jual ----</div>
+        </div>
+        <u-row flex1 class="w-full">
+          <u-input type="number" v-model="form.harga_jual_resep" label="Harga jual Resep"
+            :error="isError('harga_jual_resep')" :error-message="errorMessage('harga_jual_resep')" />
+          <u-input type="number" v-model="form.harga_jual_umum" label="Harga Jual Biasa"
+            :error="isError('harga_jual_umum')" :error-message="errorMessage('harga_jual_umum')" />
+        </u-row>
+        <u-row flex1 class="w-full">
+          <u-input type="number" v-model="form.harga_jual_cust" label="Harga jual Customer"
+            :error="isError('harga_jual_cust')" :error-message="errorMessage('harga_jual_cust')" />
+          <u-input type="number" v-model="form.harga_jual_prem" label="Harga Jual Premium"
+            :error="isError('harga_jual_prem')" :error-message="errorMessage('harga_jual_prem')" />
         </u-row>
         <!-- <u-row flex1 class="w-full">
           <u-row>
-            <u-input type="number" v-model="form.harga_jual_biasa_k" label="Harga Jual Biasa"
-              :error="isError('harga_jual_biasa_k')" :error-message="errorMessage('harga_jual_biasa_k')" />
+            <u-input type="number" v-model="form.harga_jual_umum" label="Harga Jual Biasa"
+              :error="isError('harga_jual_umum')" :error-message="errorMessage('harga_jual_umum')" />
           </u-row>
         </u-row> -->
       </u-col>
@@ -84,14 +113,24 @@ const error = computed(() => {
 
 const form = ref({
   nama: '',
+  barcode: '',
   satuan_k: '',
   satuan_b: '',
   isi: '',
   kandungan: '',
-  harga_jual_resep_k: '',
-  harga_jual_biasa_k: '',
-  persen_resep: '',
-  persen_biasa: ''
+  merk: '',
+  rak: '',
+  kategori: '',
+  harga_beli: '',
+  harga_jual_resep: '',
+  harga_jual_umum: '',
+  harga_jual_cust: '',
+  harga_jual_prem: '',
+  limit_stok: 1,
+  margin_jual_umum: 0,
+  margin_jual_resep: 0,
+  margin_jual_cust: 0,
+  margin_jual_prem: 0,
 })
 
 function isError(field) {
@@ -114,6 +153,10 @@ watch(
         props.store.clearFieldError(key)
       }
     }
+    form.value.margin_jual_umum= 0
+    form.value.margin_jual_resep= 0
+    form.value.margin_jual_cust= 0
+    form.value.margin_jual_prem= 0
   },
   { deep: true }
 )
@@ -151,12 +194,22 @@ function init() {
 
 }
 
-import { useSatuanStore } from '@/stores/template/register'
+import { useKategoriStore, useMerkStore, useRakStore, useSatuanStore } from '@/stores/template/register'
 const masterSatuan = useSatuanStore()
 const optionSatuans = computed(() => masterSatuan?.items?.map(item => ({ label: item?.nama, value: item?.nama })) || [])
 
+
+const masterMerk = useMerkStore()
+const optionMerk = computed(() => masterMerk?.items?.map(item => ({ label: item?.nama, value: item?.nama })) || [])
+
+const masterKategori = useKategoriStore()
+const optionKategori = computed(() => masterKategori?.items?.map(item => ({ label: item?.nama, value: item?.nama })) || [])
+
+const masterRak = useRakStore()
+const optionRak = computed(() => masterRak?.items?.map(item => ({ label: item?.nama, value: item?.nama })) || [])
 onMounted(() => {
   console.log('Mounted Form', masterSatuan.items);
+  console.log('masterMerk', masterMerk.items);
   init()
 
   // ini tambahan
