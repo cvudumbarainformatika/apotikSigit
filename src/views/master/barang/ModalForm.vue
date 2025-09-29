@@ -67,7 +67,7 @@
         <u-row flex1 class="w-full">
           <u-input type="number" v-model="form.harga_jual_resep" label="Harga jual Resep"
             :error="isError('harga_jual_resep')" :error-message="errorMessage('harga_jual_resep')" />
-          <u-input type="number" v-model="form.harga_jual_umum" label="Harga Jual Biasa"
+          <u-input type="number" v-model="form.harga_jual_umum" label="Harga Jual Umum"
             :error="isError('harga_jual_umum')" :error-message="errorMessage('harga_jual_umum')" />
         </u-row>
         <u-row flex1 class="w-full">
