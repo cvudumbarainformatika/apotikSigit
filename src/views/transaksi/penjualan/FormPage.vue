@@ -222,7 +222,7 @@
                 </div> -->
               </u-grid>
               <u-col flex1 class="w-full" gap="gap-0">
-                <template v-for="(item, index) in store.barangSelected?.stok" :key="item?.id">
+                <template v-for="(item ) in store.barangSelected?.stok" :key="item?.id">
                   <u-row flex1 class="w-full bg-secondary" gap="gap-2" padding="px-2 py-3">
                     <u-row flex1 class="w-full items-start">
                       <u-text class="italic" label="Expired di : " />
@@ -269,7 +269,7 @@
           <u-row>
             <u-empty v-if="!store.form?.rinci?.length" title="Belum Ada Items" icon="baggage-claim" />
             <u-list v-else :spaced="true" anim :items="groupedItems">
-              <template #item="{ item, index, isHovered }">
+              <template #item="{ item, isHovered }">
                 <ListRincian :item="item" :store="store" :is-hovered="isHovered" />
               </template>
             </u-list>
