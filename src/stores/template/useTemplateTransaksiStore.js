@@ -64,7 +64,7 @@ export function createTemplateTransaksiStore(storeId, config) {
             to: this.range.end_date,
             ...extraParams
           }
-          const res = await api.get(config.baseUrl + '/get-list', { params })
+          const res = await api.get(`${config.baseUrl}${config?.createUrl  || '/get-list'}`, { params })
           console.log(`resp ${storeId} header getList : `, res);
           // this.items = []
           this.items = res.data.data ?? res.data ?? []
@@ -96,7 +96,7 @@ export function createTemplateTransaksiStore(storeId, config) {
             ...extraParams
           }
 
-          const res = await api.get(config.baseUrl + '/get-list', { params })
+          const res = await api.get(`${config.baseUrl}${config?.createUrl  || '/get-list'}`, { params })
           const newItems = res.data.data ?? []
           this.items.push(...newItems)
           this.meta = res.data.meta

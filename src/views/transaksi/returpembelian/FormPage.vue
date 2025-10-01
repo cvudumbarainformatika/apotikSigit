@@ -114,8 +114,8 @@
                   <u-separator spacing="-mt-1 mb-1"></u-separator>
                   <u-col flex1 class="w-full" gap="gap-0">
                     <template v-if="store.penerimaanSelected?.rincian?.length">
-                      <template v-for="(item, index) in store.penerimaanSelected?.rincian" :key="item.id">
-                        <u-row flex1 class="w-full bg-secondary"gap="gap-2" padding="px-2 py-3">
+                      <template v-for="(item) in store.penerimaanSelected?.rincian" :key="item.id">
+                        <u-row flex1 class="w-full bg-secondary" gap="gap-2" padding="px-2 py-3">
                           <u-col flex1 class="w-full" gap="gap-1">
                             <u-row flex1 class="w-full items-start">
                               <u-text class="font-bold" :label="item.barang?.nama || '-'" />
@@ -170,7 +170,7 @@
           <u-row>
             <u-empty v-if="!store.form?.rincian?.length" title="Belum Ada Items" icon="baggage-claim" />
             <u-list v-else :spaced="true" anim :items="store.form?.rincian">
-              <template #item="{ item, index, isHovered }">
+              <template #item="{ item, isHovered }">
                 <ListRincian :item="item" :store="store" :is-hovered="isHovered" />
               </template>
             </u-list>
@@ -467,31 +467,23 @@ const handleKunci = async (e) => {
     //   resp = await api.post(`api/v1/transactions/returpembelian/unlock-order`, payload)
     // }
     resp = await api.post(`api/v1/transactions/returpembelian/lock-retur-lock_retur_pembelian`, payload)
-    console.log('resp', resp);
+    // console.log('resp', resp);
+    notify({ message: resp?.data?.message, type: 'success' })
   } catch (error) {
     console.log('error', error);
     notify({
       type: 'error',
-      message: error?.response?.data?.message
+      message: error?.message
     })
     
   } finally {
     loadingLock.value = false
   }
-  
-
   const data = resp?.data?.data
   props.store.form.flag = data?.flag
   props.store.initModeEdit(data)
 
-  
-
-  
 }
-
-
-
-
 
 onMounted(() => {
   // document.addEventListener('click', handleClickOutside)

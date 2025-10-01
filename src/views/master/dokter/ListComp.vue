@@ -16,7 +16,7 @@
               <span>Nama</span>
             </u-row>
             <u-row class="col-span-11">
-              <span>: {{ item?.nama_dokter }}</span>
+              <span>: {{ item?.nama }}</span>
             </u-row>
           </u-grid>
           <u-grid cols=12>

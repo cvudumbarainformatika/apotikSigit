@@ -65,7 +65,9 @@ watch(
   { deep: true }
 )
 
-
+watch(() => form.value.nama, (val) => {
+  if (val) form.value.nama = val.toUpperCase()
+})
 
 
 function handleSubmit() {

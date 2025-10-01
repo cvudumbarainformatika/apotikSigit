@@ -1,27 +1,30 @@
 <script setup>
 import { defineAsyncComponent, onMounted, computed, ref } from 'vue'
-import { useUserStore } from '@/stores/template/register'
+import { useKategoriStore } from '@/stores/template/register'
 import { useRoute } from 'vue-router'
+
 import { inject } from 'vue'
 const $confirm = inject('confirm')
 
 import LoaderItem from './LoaderItem.vue'
+import BaseMaster from '@/components/templates/BaseMaster.vue'
+
 // import BaseMaster from '@/components/templates/BaseMaster.vue'
-const BaseMaster = defineAsyncComponent(() => import('@/components/templates/BaseMaster.vue'))
+// const BaseMaster = defineAsyncComponent(() => import('@/components/templates/BaseMaster.vue'))
 const ListComp = defineAsyncComponent(() => import('./ListComp.vue'))
 const ModalForm = defineAsyncComponent(() => import('./ModalForm.vue'))
 
 
-const store = useUserStore()
+const store = useKategoriStore()
 
 
 const route = useRoute()
 const title = computed(() => route.meta.title)
 
 onMounted(() => {
-  // console.log('Mounted ', title.value);
+  console.log('Mounted ', title.value);
   
-  store.per_page = 10
+  store.per_page = 100
   Promise.all([
     store.fetchAll()
   ])
@@ -37,12 +40,7 @@ function handleRefresh() {
 
 function handleSave(form, mode) {
   console.log('handleSave', form, mode);
-  if (mode === 'add') {
-    store.create(form, mode)
-  } else {
-    store.update(form, mode)
-  }
-  
+  store.create(form, mode)
 }
 
 function handleEdit(item) {
@@ -66,11 +64,12 @@ async function handleDelete(item) {
 </script>
 
 <template>
+
   <base-master :title="title" :store="store" showOrder :onAdd="handleAdd" :onRefresh="handleRefresh">
     <template #loading>
       <LoaderItem />
     </template>
-    <template #item="{ item }">
+    <template  #item="{ item }">
       <Suspense>
         <template #default>
           <list-comp :item="item" @edit="handleEdit" @delete="handleDelete" />
@@ -80,13 +79,18 @@ async function handleDelete(item) {
         </template>
       </Suspense>
     </template>
+    
     <template #modal-form>
-      <modal-form v-if="store.modalFormOpen" v-model="store.modalFormOpen" :mode="store.item ? 'edit' : 'add'"
-        :title="title" :store="store" @close="store.modalFormOpen = false" @save="handleSave" />
+      <modal-form 
+        v-if="store.modalFormOpen"
+        v-model="store.modalFormOpen"
+        :mode="store.item ? 'edit' : 'add'"
+        :title="title"
+        :store="store"
+        @close="store.modalFormOpen = false"
+        @save="handleSave"
+      />
     </template>
-
-
-
-
   </base-master>
+
 </template>

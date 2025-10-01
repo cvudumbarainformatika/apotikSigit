@@ -5,7 +5,8 @@
         <u-row flex1 class="w-full pt-1">
           <u-row flex1 class="w-full">
             <div class="font-bold">{{ item?.nama }}</div>
-            <div class="italic text-light-primary/60 text-xs">Stok Saat ini:  {{ stokSekarang }} {{ item?.satuan_k }}</div>
+            <div class="italic text-light-primary/60 text-xs">Stok Saat ini: {{ stokSekarang }} {{ item?.satuan_k }}
+            </div>
           </u-row>
           <u-row class="">
             <div class="italic text-light-primary text-xs">{{ item?.kode }}</div>
@@ -62,7 +63,7 @@
       </u-col>
     </u-view>
   </u-col>
-  <modal-detail v-if="openModalDetail" v-model="openModalDetail" title="Detail Kartu Stok" :store="store" 
+  <modal-detail v-if="openModalDetail" v-model="openModalDetail" title="Detail Kartu Stok" :store="store"
     @close="handleCloseModalNota" />
 </template>
 
@@ -84,7 +85,7 @@ onMounted(() => {
   // if (props.range) {
   //   fetchDetail()
   // }
-})  
+})
 // watch(() => props.range, (val) => {
 //   if (val) {
 //     console.log('range siap dipakai', val)
@@ -109,12 +110,12 @@ const openDetail = async () => {
       tahun: props.store.range.end_date,
       id: props.item.id
     }
-    console.log('params', params)
+    // console.log('params', params)
     const response = await api.get(`api/v1/transactions/stok/get-rinci-kartu-stok`, { params })
     if (response) {
-      
-      props.store.item= response.data.data
-      console.log('items cacac', props.store.item)
+
+      props.store.item = response.data.data
+      // console.log('items Rincian', props.store.item)
     }
   } catch (error) {
     console.error('Error fetching Kartu Stok:', error)
@@ -132,20 +133,22 @@ const handleCloseModalNota = () => {
 
 // saldo awal
 const saldoAwal = computed(() => {
+  // console.log('props.item', props.item);
   return (props.item?.stok_awal ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
 })
 
 // stok masuk
 const totalMasuk = computed(() => {
-  return (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) + 
-    (props.item?.retur_penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
+  return (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
+    (props.item?.retur_pembelian_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
 })
 
 // stok keluar
 const totalKeluar = computed(() => {
-  return (props.item?.penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) +
-    (props.item?.retur_pembelian_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
-  
+  return (props.item?.penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
+    (props.item?.retur_penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
+
+
 })
 
 // retur penjualan (masuk)
@@ -168,7 +171,7 @@ const stokAkhir = computed(() => {
 })
 // stok akhir
 const stokSekarang = computed(() => {
-  return (props.item?.stok ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) 
+  return (props.item?.stok ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
 })
 
 </script>

@@ -17,19 +17,17 @@
             <div class="w-full">
               <u-row flex1 class="text-xs">
                 <div>Contact : </div>
-                <div class="font-bold">{{ item?.tlp }}</div>
-                <div>Rek : </div>
-                <div class="font-bold">{{ item?.rekening }}</div>
-                
+                <div class="font-semibold">{{ formatTeleponID(item?.hp) }}</div>
+
               </u-row>
               <u-row flex1 class="w-full text-xs">
                 <div>Alamat : </div>
                 <div class="font-light">{{ item?.alamat }}</div>
               </u-row>
-              
-             
+
+
             </div>
-            
+
           </u-row>
           <u-row right class="">
             <u-btndrop label="Aksi" :items="['Edit', 'Hapus']" @select="val => handleSelect(val, item)" />
@@ -42,7 +40,7 @@
 
 <script setup>
 import { useWaktuLaluReactive } from '@/utils/dateHelper'
-import { formatRupiah } from '@/utils/numberHelper'
+import { formatRupiah, formatTeleponID } from '@/utils/numberHelper'
 defineProps({
   item: { type: Object, default: null },
 })
@@ -52,7 +50,7 @@ const emit = defineEmits(['edit', 'delete'])
 function handleSelect(x, item) {
   const val = x?.toLowerCase()
   // console.log(val, item);
-  
+
   if (val === 'edit') {
     emit('edit', item)
   } else if (val === 'hapus') {

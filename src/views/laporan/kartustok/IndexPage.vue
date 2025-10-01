@@ -1,12 +1,13 @@
 <template>
-  <base-master :title="title" :store="store" :showMonthButton="true" :showAddButton="false" :onRange="handleRange" :onRefresh="handleRefresh">
-    <template #loading>
+  <base-master :title="title" :store="store" :showOpnameButton="true" :showMonthButton="true" :showAddButton="false"
+    :onRange="handleRange" :onRefresh="handleRefresh" :onTriger="handleOpname">
+    <!-- <template #loading>
       <LoaderItem />
-    </template>
+    </template> -->
     <template #item="{ item }">
       <Suspense>
         <template #default>
-          <list-comp :item="item" :store="store" :range="dateRange"  />
+          <list-comp :item="item" :store="store" :range="dateRange" />
         </template>
         <template #fallback>
           <LoaderItem />
@@ -29,9 +30,10 @@ import { inject } from 'vue'
 import BaseMaster from '@/components/templates/BaseMaster.vue'
 import LoaderItem from './LoaderItem.vue'
 import { api } from '@/services/api'
+import { useNotificationStore } from '@/stores/notification'
 const $confirm = inject('confirm')
 
-
+const notify = useNotificationStore().notify
 const ListComp = defineAsyncComponent(() => import('./ListComp.vue'))
 const ModalForm = defineAsyncComponent(() => import('./ModalDetail.vue'))
 const store = useKartuStokStore()
@@ -39,7 +41,6 @@ const route = useRoute()
 const title = computed(() => route.meta.title)
 const dateRange = ref({})
 onMounted(async () => {
- 
   store.per_page = 100
   Promise.all([
     handleRange(),
@@ -65,23 +66,26 @@ const getCurrentDate = () => {
     start_date: bulan,
     end_date: tahun,
   }
-  console.log('dateRange', store.range)
 }
 const handleRange = async () => {
   // console.log('handleRange', store.range);
   const params = {
     bulan: store.range?.start_date,
     tahun: store.range?.end_date,
+    q: store.q,
+    page: store.page,
+    per_page: store.per_page,
   }
-  console.log('handleRange', params);
+  console.log('params', params);
   store.loading = true
   store.items = []
   try {
-    const response = await api.get(`api/v1/transactions/stok/get-kartu-stok`, {params})
-    if (response) {
-      store.items = response.data.data
-      console.log('items params', store.items)
-    }
+    store.fetchAll(params)
+    // const response = await api.get(`api/v1/transactions/stok/get-kartu-stok`, { params })
+    // if (response) {
+    //   store.items = response.data.data
+    //   console.log('items params', store.items)
+    // }
   } catch (error) {
     console.error('Error fetching Kartu Stok:', error)
   } finally {
@@ -94,5 +98,30 @@ function handleRefresh() {
   handleRange()
 }
 
-</script>
+async function handleOpname() {
+  const ok = await $confirm({
+    message: 'Yakin ingin membuat data opname stok?',
+  })
+  if (ok) {
+    // console.log('Confirmed delete')
+    try {
+      store.loading = true
+      const response = await api.post(`api/v1/transactions/opname/simpan`, {
+        bulan: store.range?.start_date,
+        tahun: store.range?.end_date,
+      })
+      if (response) {
+        console.log('Opname berhasil', response.data)
+        handleRange()
+        notify({ message: response.data.message ?? 'Berhasil Opname', type: 'success' })
+      }
+    } catch (error) {
+      console.error('Error membuat opname stok:', error)
+      notify({ message: error.message ?? 'Gagal Opname', type: 'error' })
+    } finally {
+      store.loading = false
+    }
+  }
 
+}
+</script>

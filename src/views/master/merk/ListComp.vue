@@ -1,19 +1,14 @@
 <template>
   <u-col gap="gap-1" class="w-full px-4 py-1">
     <u-view padding="0" flex1 class="w-full">
-      <u-row flex1 class="w-full">
+      <u-row class="">
         <div>
           <div class="font-bold">{{ item?.nama }}</div>
           <div class="text-xs text-gray-400">{{ useWaktuLaluReactive(item?.created_at) }}</div>
         </div>
       </u-row>
-      <u-row right class="">
-        <div>
-          <div class="flex flex-col items-end gap-1 pt-2">
-            <u-btndrop label="Aksi" :items="['Edit', 'Hapus']" @select="val => handleSelect(val, item)" />
-            <span class="text-xs text-gray-400">{{ useWaktuLaluReactive(item?.created_at) }}</span>
-          </div>
-        </div>
+      <u-row flex1 right class=" w-full">
+        <u-btndrop label="Aksi" :items="['Edit', 'Hapus']" @select="val => handleSelect(val, item)" />
       </u-row>
     </u-view>
   </u-col>
@@ -29,7 +24,8 @@ const emit = defineEmits(['edit', 'delete'])
 
 function handleSelect(x, item) {
   const val = x?.toLowerCase()
-
+  // console.log(val, item);
+  
   if (val === 'edit') {
     emit('edit', item)
   } else if (val === 'hapus') {

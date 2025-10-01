@@ -103,7 +103,7 @@ const dropdownStyle = ref({})
 watch(() => props.modelValue, () => {
   const match = props.options.find(o => o.value === props.modelValue)
   query.value = match?.label || ''
-})
+}, { immediate: true })
 
 function splitLabel(label) {
   const match = query.value.trim().toLowerCase()

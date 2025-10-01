@@ -18,6 +18,27 @@ export const useSatuanStore = createTemplateStore('satuan', {
   order: 'Nama',
   persist: true
 })
+export const useMerkStore = createTemplateStore('merk', {
+  baseUrl: 'api/v1/master/merk',
+  order_by: 'nama',
+  sort: 'asc',
+  order: 'Nama',
+  persist: false
+})
+export const useRakStore = createTemplateStore('rak', {
+  baseUrl: 'api/v1/master/rak',
+  order_by: 'nama',
+  sort: 'asc',
+  order: 'Nama',
+  persist: false
+})
+export const useKategoriStore = createTemplateStore('kategori', {
+  baseUrl: 'api/v1/master/kategori',
+  order_by: 'nama',
+  sort: 'asc',
+  order: 'Nama',
+  persist: false
+})
 export const useJabatanStore = createTemplateStore('jabatan', {
   baseUrl: 'api/v1/master/jabatan',
   order_by: 'nama',
@@ -47,14 +68,14 @@ export const useUserStore = createTemplateStore('user', {
 })
 export const useDokterStore = createTemplateStore('dokter', {
   baseUrl: 'api/v1/master/dokter',
-  order_by: 'nama_dokter',
+  order_by: 'nama',
   sort: 'asc',
-  order: 'Nama Dokter',
-  orders: [
-          { key: 'nama_dokter', sort: 'asc', label: 'Nama Dokter' },
-          { key: 'created_at', sort: 'desc', label: 'Terbaru' },
-          { key: 'created_at', sort: 'asc', label: 'Terlama' },
-        ],
+  order: 'Nama',
+  // orders: [
+  //         { key: 'nama_dokter', sort: 'asc', label: 'Nama Dokter' },
+  //         { key: 'created_at', sort: 'desc', label: 'Terbaru' },
+  //         { key: 'created_at', sort: 'asc', label: 'Terlama' },
+  //       ],
   persist: false
 })
 export const useBebanStore = createTemplateStore('beban', {
@@ -109,6 +130,7 @@ export const useReturPenjualanStore = createTemplateTransaksiStore('retur-penjua
 // LAPORAN STORE
 export const useKartuStokStore = createTemplateTransaksiStore('kartu-stok', {
   baseUrl: 'api/v1/transactions/stok',
+  createUrl: '/get-kartu-stok',
   persist: false
 })
 
