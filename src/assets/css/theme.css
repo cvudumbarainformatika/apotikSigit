@@ -7,14 +7,14 @@
 
 @theme {
   --font-poppins: "Poppins", sans-serif;
-  --color-primary: #001F54;
-  --color-light-primary: #0044B8;
-  --color-secondary: #E2E1EF;
-  --color-background: #FFFDF2;
+  --color-primary: #002D30;
+  --color-light-primary: #017A7A;
+  --color-secondary: #e1efedff;
+  --color-background: #F2F2F2;
   --color-dark: #181818;
   --color-danger: #E9053E;
   --color-success: #00CA79;
-  --color-text: #1f2937;
+  --color-text: #A1D303;
 }
 
 /* 🌐 Terapkan secara global */
@@ -25,7 +25,7 @@ body {
 
 @layer utilities {
   .bg-gradient-primary {
-    background-color: linear-gradient(to right, #001F54, #0044B8);
+    background-color: linear-gradient(to right, #002D30, #017A7A);
   }
 }
 
@@ -38,11 +38,11 @@ body {
   }
   @keyframes pulseGlow {
     0%, 100% {
-      filter: drop-shadow(0 0 0px #6366f1);
+      filter: drop-shadow(0 0 0px #017A7A);
       transform: scale(1);
     }
     50% {
-      filter: drop-shadow(0 0 6px #6366f1);
+      filter: drop-shadow(0 0 6px #017A7A);
       transform: scale(1.1);
     }
   }
@@ -97,14 +97,14 @@ body {
 
 :root {
   --font-poppins: "Poppins", sans-serif;
-  --color-primary: #001F54;
-  --color-light-primary: #0044B8;
-  --color-secondary: #E2E1EF;
-  --color-background: #FFFDF2;
+  --color-primary: #002D30;
+  --color-light-primary: #017A7A;
+  --color-secondary: #e1efedff;
+  --color-background: #F2F2F2;
   --color-dark: #181818;
   --color-danger: #E9053E;
   --color-success: #00CA79;
-  --color-text: #1f2937;
+  --color-text: #A1D303;
 }
 
 /* .theme-dark {

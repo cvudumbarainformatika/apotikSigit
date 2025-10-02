@@ -2,14 +2,14 @@
 
 
 const colors = {
-  primary: '#001F54',
-  lightPrimary: '#0044B8',
-  secondary: '#E2E1EF',
-  background: '#FFFDF2',
+  primary: '#002D30',
+  lightPrimary: '#017A7A',
+  secondary: '#e1efedff',
+  background: '#F2F2F2',
   dark: '#181818',
   danger: '#E9053E',
   success: '#00CA79',
-  text: '#1f2937',
+  text: '#A1D303',
 }
 
 
