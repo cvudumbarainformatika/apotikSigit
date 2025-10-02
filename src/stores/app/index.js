@@ -40,7 +40,7 @@ export const useAppStore = defineStore('app-store', {
           
 
           this.updateForm(res.data?.data)
-          // this.item = res.data
+          this.item = res.data?.data
         } catch (err) {
           this.error = err
         } finally {
