@@ -32,9 +32,12 @@ const store = useOrderStore()
 const route = useRoute()
 const title = computed(() => route?.meta?.title)
 
+const today = new Date().toISOString().split('T')[0]
+
 onMounted(() => {
   // console.log('Mounted ', title.value);
-  
+  store.range.start_date = today
+  store.range.end_date = today
   store.per_page = 20
   Promise.all([
     store.fetchAll()

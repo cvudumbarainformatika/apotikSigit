@@ -79,7 +79,7 @@
     <u-grid cols="12">
 
       <!-- List Items -->
-        <u-card class="col-span-8 h-full space-y-4">
+        <u-card class="col-span-8 h-full space-y-4 ">
           <u-row>
             <u-icon name="baggage-claim" class="w-4 h-4" />
             <u-text class="font-bold">Informasi Item</u-text>
@@ -109,7 +109,7 @@
             </u-autocomplete>
           </u-row>
 
-          <u-row class="relative -mt-4">
+          <!-- <u-row class="relative -mt-4">
             <div v-if="store?.barangSelected"
               ref="menuBarangRef"
               class="bg-background border-1 border-primary rounded-xl shadow-sm p-4 transition-all duration-300 hover:shadow-md w-full absolute z-10 -top-4">
@@ -143,12 +143,16 @@
                 </u-row>
               </u-grid>
             </div>
-          </u-row>
+          </u-row> -->
+          <FormBarangSelected v-if="store?.barangSelected && !editBarang" ref="childRef" :is-edited="editBarang !== null" :form="form" :store="store" :is-error="isError" :error-message="errorMessage" @handleSubmit="handleSubmit" @handleBatal="handleBatal" />
+          
           <u-row>
             <u-empty v-if="!store.form?.order_records?.length" title="Belum Ada Items" icon="baggage-claim" />
             <u-list v-else :spaced="true" anim :items="store.form?.order_records">
               <template #item="{ item, isHovered }">
-                <ListRincian :item="item" :store="store" :is-hovered="isHovered" />
+                <ListRincian :item="item" :store="store" :is-hovered="isHovered && !editBarang" @handleEdit="handleEditBarang" 
+                  :form="form" :is-error="isError" :error-message="errorMessage" @handleSubmit="handleSubmit" @handleBatal="handleBatal"
+                />
               </template>
             </u-list>
           </u-row>
@@ -193,9 +197,15 @@ import { ref, computed, nextTick, onMounted, onUnmounted, watch, defineAsyncComp
 
 import { api } from '@/services/api'
 import { useNotificationStore } from '@/stores/notification'
-import ModalCetak from './ModalCetak.vue'
 
 const notify = useNotificationStore().notify
+
+
+
+import ModalCetak from './ModalCetak.vue'
+import FormBarangSelected from './FormBarangSelected.vue'
+
+
 const ListRincian = defineAsyncComponent(() => import('./ListRincian.vue'))
 
 const props = defineProps({
@@ -208,7 +218,9 @@ const searchSupplier = ref('')
 const searchBarang = ref('')
 const menuBarangRef = ref(null)
 const inpJumlahRef = ref(null)
+const childRef = ref(null)
 const loadingLock = ref(false)
+const editBarang = ref(null)
 
 const modalCetak = ref(false)
 
@@ -247,37 +259,46 @@ const handleSelected = (item) => {
   searchSupplier.value = ''
   
 }
-const handleSelectedBarang = (item) => {
-  
+const handleSelectedBarang = async(item) => {
+   console.log('handleSelectBarang', item);
   props.store.barangSelected = item
   form.value.kode_barang = item?.kode ?? null
   form.value.satuan_k = item?.satuan_k ?? null
   form.value.satuan_b = item?.satuan_b ?? null
   form.value.isi = item?.isi ?? null
   searchBarang.value = ''
-  // console.log('handleSelectedBarang', form.value);
+  await nextTick()
+  // handleFocus(childRef.value?.inpJumlahRef)
+  // console.log('handleFocus', childRef.value?.inpJumlahRef);
 
-  // await nextTick()
-  // console.log('ref', inpJumlahRef.value);
-  // const el 
-  // inpJumlahRef.value?.inputRef?.focus()
-  handleFocus(inpJumlahRef)
+  setTimeout(() => childRef.value?.focusInput(), 80)
   
 }
+const handleEditBarang = async(item) => {
+  
+  console.log('handleEditBarang', item);
+  editBarang.value = item?.id
+  props.store.barangSelected = item?.master
+  form.value.kode_barang = item?.kode_barang ?? null
+  form.value.satuan_k = item?.satuan_k ?? null
+  form.value.satuan_b = item?.satuan_b ?? null
+  form.value.isi = parseInt(item?.isi) ?? null
+  form.value.jumlah_pesan = parseInt(item?.jumlah_pesan) ?? 0
+
+  searchBarang.value = ''
+  await nextTick()
+  // handleFocus(childRef.value?.inpJumlahRef)
+  // console.log('handleFocus', childRef.value?.inpJumlahRef);
+
+  setTimeout(() => childRef.value?.focusInput(), 80)
+  
+}
+
 
 const handlePrint = () => {
   modalCetak.value = true
 }
 
-const handleFocus = async (e) => {
-  
-  await nextTick()
-  const el = e?.value
-  // console.log('handleFocus', el);
-  el?.inputRef?.focus()
-  el?.inputRef?.select()
-  
-}
 
 function handleClickOutside(event) {
   if (menuBarangRef.value && !menuBarangRef.value.contains(event.target)) {
@@ -311,6 +332,9 @@ const handleSubmit = (e) => {
   e.preventDefault()
   e.stopPropagation()
   // console.log('form', form.value);
+
+  editBarang.value = null
+
   props.store.create(form.value)
   .then(() => {
     clearSelectedBarang()
@@ -318,6 +342,7 @@ const handleSubmit = (e) => {
 }
 
 const handleBatal = () => {
+  editBarang.value = null
   clearSelectedBarang()
 }
 

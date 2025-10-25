@@ -159,11 +159,7 @@
                         <u-btn  @click="handleOk">Tutup</u-btn>
                       </u-row>
                   </u-col>
-
-
                 </div>
-                
-                
               </u-grid>
             </div>
           </u-row>
@@ -177,11 +173,6 @@
           </u-row>
 
         </u-card>
-
-
-
-        
-
 
         <u-col align="items-end" class="col-span-4">
 
@@ -479,11 +470,13 @@ const handleKunci = async (e) => {
   } finally {
     loadingLock.value = false
   }
+  
+
   const data = resp?.data?.data
   props.store.form.flag = data?.flag
   props.store.initModeEdit(data)
-
 }
+
 
 onMounted(() => {
   // document.addEventListener('click', handleClickOutside)

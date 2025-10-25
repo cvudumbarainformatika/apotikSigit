@@ -116,7 +116,7 @@
                       <span class="font-medium">Harga Resep</span>
                     </u-row>
                     <u-row class="col-span-2">
-                      <span>: {{ item?.barang?.harga_jual_resep_k }}</span>
+                      <span>: {{ item?.barang?.harga_jual_resep }}</span>
                     </u-row>
                   </u-grid>
                   <u-grid cols="4">
@@ -124,7 +124,7 @@
                       <span class="font-medium">Harga Biasa</span>
                     </u-row>
                     <u-row class="col-span-2">
-                      <span>: {{ item?.barang?.harga_jual_biasa_k }}</span>
+                      <span>: {{ item?.barang?.harga_jual_umum }}</span>
                     </u-row>
                   </u-grid>
                 </u-row>
@@ -147,7 +147,7 @@
                   <span class="font-medium">Tgl Expired</span>
                 </u-row>
                 <u-row class="col-span-7">
-                  <span>: {{ item?.tgl_exprd }}</span>
+                  <span>: {{ formatDateIndo(item?.tgl_exprd) }}</span>
                 </u-row>
               </u-grid>
             </div>
@@ -169,7 +169,7 @@
 
 <script setup>
 import { useStockStore } from '@/stores/template/register'
-import { useWaktuLaluReactive } from '@/utils/dateHelper'
+import { formatDateIndo, useWaktuLaluReactive } from '@/utils/dateHelper'
 import { computed, defineAsyncComponent, ref } from 'vue'
 
 const props = defineProps({
@@ -186,14 +186,17 @@ const isModalTambah = ref(false)
 const isModalMinus = ref(false)
 const modalOpendata = ref(false)
 const viewKartustock = ref(false)
-
+const app = useAppStore()
+const company = computed(() => {
+  return app?.form || null
+})
 const form = ref({
   id_stok: null,
   kode_barang: '',
   jumlah: 0,
   satuan_k: '',
-  keterangan: ''
-
+  keterangan: '',
+  kode_depo: company.value?.kode_toko,
 })
 function showDetail() {
   emit('show-detail', props.item)
@@ -234,6 +237,7 @@ const openModalTambah = () => {
   form.value.satuan_k = props.item?.satuan_k
   form.value.id_stok = props.item?.id
   form.value.kode_barang = props.item?.kode_barang
+  form.value.kode_depo = company.value?.kode_toko
   clearSelectedBarang()
 }
 
@@ -245,6 +249,7 @@ const openModalMinus = () => {
   form.value.satuan_k = props.item?.satuan_k
   form.value.id_stok = props.item?.id
   form.value.kode_barang = props.item?.kode_barang
+  form.value.kode_depo = company.value?.kode_toko
   clearSelectedBarang()
 }
 

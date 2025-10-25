@@ -170,7 +170,7 @@ export function createTemplateTransaksiStore(storeId, config) {
         if (index !== -1) {
           this.items[index] = result
         }
-        this.supplierSelected = result?.supplier ?? result?.suplier ?? null
+        this.supplierSelected = result?.supplier ?? result?.suplier ?? result?.tujuan ?? null
         this.maxRight = false
         this.mode = 'edit'
       },

@@ -2,6 +2,20 @@ export function formatRupiah(value) {
   return new Intl.NumberFormat('id-ID').format(value)
 }
 
+export function formatRpkoma(value) {
+  if (value !== null && value !== '') {
+    const numValue = Number(value);
+    const formattedValue = Math.abs(numValue)
+      .toFixed(2)
+      .replace(/(\d)(?=(\d{3})+(?:\.\d+)?$)/g, '$1,');
+
+    if (numValue < 0) {
+      return `(${formattedValue})`;
+    }
+    return `${formattedValue}`;
+  }
+  return '';
+}
 
 export function formatTeleponID(value) {
     if (!value) return null

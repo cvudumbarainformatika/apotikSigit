@@ -260,6 +260,7 @@ import { formatRupiah } from '@/utils/numberHelper'
 import { useNotificationStore } from '@/stores/notification'
 import { api } from '@/services/api'
 import ModalCetak from './ModalNota.vue'
+import { useAppStore } from '@/stores/app'
 
 const ModalData = defineAsyncComponent(() => import('./ModalGetdata.vue'))
 const props = defineProps({
@@ -375,6 +376,7 @@ const listItems = computed(() => {
   }))
   
 })
+const profil = useAppStore()
 
 const handleKunci = async (e) => {
   e.preventDefault()
@@ -384,9 +386,10 @@ const handleKunci = async (e) => {
   // console.log('handleKunci', flag)
   const nopenerimaan = props.store.form?.nopenerimaan
   const rincians = props.store.form?.rincian
-  
+  const kode_toko = profil.item?.kode_toko
   const payload = {
     nopenerimaan,
+    kode_toko,
     payload: rincians.map(item => ({
       nopenerimaan: item.nopenerimaan,
       noorder: item.noorder,
@@ -417,24 +420,29 @@ const handleKunci = async (e) => {
   try {
     if (!flag) {
       resp = await api.post(`api/v1/transactions/penerimaan/lock_penerimaan`, payload)
-      props.store.initModeEdit(data)
-    } 
-
-    console.log('resp', resp);
+    }
+    if (resp.data.success === true) {
+      notify({ message: resp?.data?.message, type: 'success' })
+    }
+    // console.log('resp', resp);
+    // return
   } catch (error) {
     console.log('error', error);
-
+    notify({ message: error?.message ?? 'Kunci tidak bisa dibuka', type: 'error' })
+    return
   } finally {
     loadingLock.value = false
   }
 
   const data = resp?.data?.data
   props.store.form.flag = data?.flag
+  props.store.initModeEdit(data)
   
 
 }
 
 onMounted(() => {
+  console.log('profilx', profil.item)
   initForm()
   props.store.dataorder = []
   storeorder.per_page = 20

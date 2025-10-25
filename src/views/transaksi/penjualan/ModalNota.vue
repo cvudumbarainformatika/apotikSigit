@@ -24,11 +24,11 @@
             <div class="flex justify-between">
               <span class="pr-2">{{ it?.nama || '-' }}<span class="opacity-70"></span></span>
               <!-- <span>{{ f.rupiah(it.qty * it.price - (it.discount||0)) }}</span> -->
-              <span>{{ formatRupiah(it?.subtotal) }}</span>
+              <span>{{ formatRupiah(it?.subtotal + (it?.diskon || 0)) }}</span>
             </div>
             <div class="flex justify-between text-[10px] opacity-70">
               <span>{{ it?.jumlah_k }} {{ it?.satuan_k }} x {{ formatRupiah(it?.harga_jual) }}</span>
-              <!-- <span>Disc: -</span> -->
+              <span >Disc: - {{ formatRupiah(it?.diskon) }}</span>
             </div>
           </div>
         </div>
@@ -106,12 +106,14 @@ const groupedItems = computed(() => {
         jumlah_k: Number(item?.jumlah_k),
         harga_jual: Number(item?.harga_jual),
         subtotal: Number(item?.subtotal),
+        diskon: Number(item?.diskon),
         created_at: item?.created_at
       })
     } else {
       const existing = map.get(key)
       existing.jumlah_k += Number(item.jumlah_k)
       existing.subtotal += Number(item.subtotal)
+      existing.diskon += Number(item.diskon)
       // update created_at jika lebih baru
       if (new Date(item.created_at) > new Date(existing.created_at)) {
         existing.created_at = item.created_at

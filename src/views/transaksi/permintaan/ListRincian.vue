@@ -14,8 +14,8 @@
         </u-row>
           
         <u-row>
-          <u-text size="xl" class="font-bold" color="text-gray-500">{{ item?.jumlah_pesan || 0 }} </u-text>
-          <u-text size="xs">{{ item?.satuan_b }}</u-text>
+          <u-text size="xl" class="font-bold" color="text-gray-500">{{ item?.jumlah || 0 }} </u-text>
+          <u-text size="xs">{{ item?.satuan_k }}</u-text>
         </u-row>
       </u-col>
     </u-grid>

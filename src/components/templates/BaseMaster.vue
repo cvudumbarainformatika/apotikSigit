@@ -24,6 +24,9 @@
           </slot>
         </u-row>
         <u-row>
+          <u-btn-icon icon="print" tooltip="Print" v-print="printObj" />
+        </u-row>
+        <u-row>
           <u-select v-if="showMonthButton" label="Pilih Bulan" v-model="store.range.start_date" :options="bulans"
             @update:modelValue="onRange" />
         </u-row>
@@ -32,7 +35,8 @@
             @update:modelValue="onRange" />
         </u-row>
         <u-row>
-          <u-btn-icon v-if="showOpnameButton && auth.user?.username === 'sa'" icon="download" tooltip="Opname" @click="onTriger" />
+          <u-btn-icon v-if="showOpnameButton && auth.user?.username === 'sa'" icon="download" tooltip="Opname"
+            @click="onTriger" />
         </u-row>
       </u-row>
       <u-row right justify-self-end class="gap-2">
@@ -45,10 +49,11 @@
     <!-- Content -->
 
     <u-view ref="uViewRef" class="w-full relative" flex1 scrollY>
+
       <!-- <div class="absolute inset-0 top-12">
         <u-load-spinner></u-load-spinner>
       </div> -->
-      <div v-if="store.loading && !store.items.length" class="w-full">
+      <div v-if="store.loading" class="w-full">
         <slot name="loading">
           <u-load-spinner></u-load-spinner>
         </slot>
@@ -62,8 +67,12 @@
         v-else-if="!store.loading && !store.items.length" />
       <!-- ⬇️ Loading indicator ketika fetchMore aktif dan ketika mode loadMore -->
       <u-load-spinner v-if="store.loadingMore && isLoadMore" />
-    </u-view>
 
+    </u-view>
+    <div id="printArea" class="print-only">
+      <slot name="print" />
+    </div>
+    <div id="printAreax" v-if="printContent" v-html="printContent" class="print-only"></div>
     <!-- modal form -->
     <slot name="modal-form" />
   </u-page>
@@ -74,9 +83,10 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useScroll } from '@vueuse/core'
 import OrderBy from './OrderBy.vue'
 import { useAuthStore } from '@/stores/auth'
+import { useAppStore } from '@/stores/app'
 
 const auth = useAuthStore()
-
+const printContent = ref('')
 const props = defineProps({
   store: { type: Object, required: true },
   title: { type: String, default: 'Data' },
@@ -86,6 +96,7 @@ const props = defineProps({
   showMonthButton: { type: Boolean, default: false },
   showOrder: { type: Boolean, default: false },
   showOpnameButton: { type: Boolean, default: false },
+  showPrint: { type: Boolean, default: false },
   onAdd: Function, // ✅ supaya tidak error saat dipanggil
   onRefresh: Function, // ✅ hanya dipanggil kalau diberikan
   onRange: Function, // ✅ hanya dipanggil kalau diberikan
@@ -154,4 +165,62 @@ function onSortChange(qs) {
 
 }
 
+const app = useAppStore()
+const company = computed(() => {
+  return app?.form || null
+})
+
+const printObj = {
+  id: '#printArea', // ref elemen yang mau diprint
+  popTitle: `${props.title} ${company.value?.nama}`,
+  preview: false,
+  extraCss: '',
+  extraHead: '',
+  beforeOpenCallback(vue) {
+    console.log('wait...')
+  },
+  openCallback(vue) {
+    console.log('opened')
+  },
+  closeCallback(vue) {
+    console.log('closePrint')
+  }
+}
+
 </script>
+<style>
+/* ✅ Sembunyikan area print saat tampilan biasa */
+.print-only {
+  display: none;
+}
+
+/* ✅ Tampilkan area print hanya saat print */
+@media print {
+
+  .print-only,
+  #printAreax {
+    display: block !important;
+  }
+
+  /* ✅ Sembunyikan semua elemen lain kecuali area print utama DAN area print modal */
+  body *:not(.print-only):not(.print-only *):not(#printAreax):not(#printAreax *) {
+    display: none !important;
+  }
+
+  /* ✅ Pastikan area cetak tampil normal */
+  #printAreax {
+    position: relative !important;
+    visibility: visible !important;
+    background: white !important;
+    color: black !important;
+    z-index: 999999 !important;
+  }
+
+  /* ✅ Biar hasil print bersih */
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+</style>

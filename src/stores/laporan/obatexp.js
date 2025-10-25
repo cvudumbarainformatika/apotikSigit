@@ -3,7 +3,7 @@ import { api } from '@/services/api'
 import { getToday } from '@/utils/dateHelper'
 import { set } from '@vueuse/core';
 
-export const useLaporanPenjualanStore = defineStore('laporan-penjualan-store', {
+export const useLaporanObatexpStore = defineStore('laporan-obatexp-store', {
   state: () => ({
     items: [],
     grand: null,
@@ -62,11 +62,11 @@ export const useLaporanPenjualanStore = defineStore('laporan-penjualan-store', {
           ...this.params,
           ...extraParams
         }
-        const res = await api.get('/api/v1/laporan/penjualan/get-transaction', { params })
+        const res = await api.get('/api/v1/laporan/kategori-expired/get-list', { params })
         console.log(`resp getList : `, res);
         this.items = res.data.data ?? res.data ?? []
         this.meta = res.data.meta ?? res.meta ?? null
-        this.grand = res.data.grand_total ?? null
+        // this.grand = res.data.grand_total ?? null
         // this.hasMore = this.page < (this.meta?.last_page ?? 1)
       } catch (err) {
         console.log(`error getList : `, err);
@@ -85,6 +85,6 @@ export const useLaporanPenjualanStore = defineStore('laporan-penjualan-store', {
 })
 
 if (import.meta.hot) {
-  import.meta.hot.accept(acceptHMRUpdate(useLaporanPenjualanStore, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useLaporanObatexpStore, import.meta.hot))
 
 }

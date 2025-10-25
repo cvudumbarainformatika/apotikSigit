@@ -113,7 +113,7 @@
           <u-autocomplete v-model="searchDokter" placeholder="Cari Dokter" 
             :debounce="300" :min-search-length="2" 
             item-key="id" 
-            item-label="nama"
+            item-label="nama_dokter"
             not-found-text="Data Dokter tidak ditemukan" 
             not-found-subtext="Coba kata kunci lain" 
             :show-add-button="false"
@@ -128,7 +128,7 @@
               <u-row flex1 class="w-full">
                 <u-icon name="UserSearch" class="w-5 h-5 text-primary" />
                 <u-text>
-                  {{ store.dokterSelected?.nama }}
+                  {{ store.dokterSelected?.nama_dokter }}
                 </u-text>
               </u-row>
               <button @click="clearSelectedDokter"
@@ -175,7 +175,7 @@
               not-found-text="Data Barang tidak ditemukan" 
               not-found-subtext="Coba kata kunci lain" 
               :show-add-button="false"
-              api-url="/api/v1/transactions/penjualan/get-list-obat" api-response-path="data.data" :api-params="{ per_page: 5 }"
+              api-url="/api/v1/transactions/penjualan/get-list-obat" api-response-path="data.data" :api-params="{ per_page: 30 }"
               :use-api="true" @select="handleSelectedBarang" 
             >
               <template #item="{ item }">
@@ -222,13 +222,13 @@
                 </div> -->
               </u-grid>
               <u-col flex1 class="w-full" gap="gap-0">
-                <template v-for="(item ) in store.barangSelected?.stok" :key="item?.id">
+                <template v-for="(item,) in store.barangSelected?.stok" :key="item?.id">
                   <u-row flex1 class="w-full bg-secondary" gap="gap-2" padding="px-2 py-3">
                     <u-row flex1 class="w-full items-start">
-                      <u-text class="italic" label="Expired di : " />
+                      <u-text class="italic" label="Expired : " />
                       <div>
                         <u-text class="font-medium italic">
-                          {{ item?.tgl_exprd }}
+                          {{ formatDateIndo(item?.tgl_exprd) }}
                         </u-text>
                         <u-text color="text-gray-500 italic">
                           {{ formatWaktuSisa(item?.tgl_exprd) }}
@@ -251,10 +251,18 @@
                           :error="parseInt(item?.jumlah) > parseInt(item?.jumlah_k)"
                         />
                       </div>
+                      <div class="w-24" >
+                        <u-input type="number" v-model.number="item.diskon" label="Disc" 
+                          
+                        />
+                      </div>
 
-                      <u-btn :disabled="(parseInt(item?.jumlah) > parseInt(item?.jumlah_k)) || parseInt(item?.jumlah) === 0" 
+                      <!-- <u-btn :disabled="(parseInt(item?.jumlah) > parseInt(item?.jumlah_k)) || parseInt(item?.jumlah) === 0" 
                         :loading="store.loadingSave"
-                        variant="secondary" size="sm" @click.stop="handleAdd(item)">Add</u-btn>
+                        variant="secondary" size="sm" @click.stop="handleAdd(item)">Ad</u-btn> -->
+                      <u-btn-icon :disabled="(parseInt(item?.jumlah) > parseInt(item?.jumlah_k)) || parseInt(item?.jumlah) === 0" 
+                        :loading="store.loadingSave"
+                        icon="check" variant="secondary" size="sm" @click.stop="handleAdd(item)" />
                     </u-row>
                   </u-row>
                   <u-separator spacing=""></u-separator>
@@ -281,10 +289,18 @@
           <u-text class="font-bold" size="sm">Ringkasan Penjualan</u-text>
           <u-separator spacing="my-1"></u-separator>
           <u-row>
-            <u-text>Total Penjualan : </u-text>
+            <u-text>Penjualan : </u-text>
+            <u-text class="font-bold" size="lg" color="text-light-primary">{{ formatRupiah(totalAmount) || 0 }}</u-text>
+          </u-row>
+          <u-row>
+            <u-text>Total Discount : </u-text>
+            <u-text class="font-bold" size="lg" color="text-light-primary">{{ formatRupiah(totalDiscount) || 0 }}</u-text>
+          </u-row>
+          <u-row>
+            <u-text>Total Pembayaran : </u-text>
             <u-text class="font-bold" size="lg" color="text-light-primary">{{ formatRupiah(totalPenjualan) || 0 }}</u-text>
           </u-row>
-          <u-row class="-mt-2">
+          <u-row class="-mt-1">
             <u-text>Total Item : </u-text>
             <u-text class="font-bold" size="lg">{{ groupedItems?.length || 0 }}</u-text>
           </u-row>
@@ -319,7 +335,7 @@
           <u-separator spacing="my-2"></u-separator>
           <u-row class="z-9">
             <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Baru</u-btn>
-            <u-btn v-if="store.form && !errorPembayaran && !store.form?.flag" variant="primary" @click="simpanPenjualan">Simpan</u-btn>
+            <u-btn v-if="store.form && !errorPembayaran && !store.form?.flag" variant="primary" :loading="loadingLock" @click="simpanPenjualan">Simpan</u-btn>
           </u-row>
           <u-row class="z-9">
             <u-btn v-if="store.form?.flag" variant="secondary" @click="modalNota = true">Cetak</u-btn>
@@ -338,12 +354,14 @@
 import { ref, computed, nextTick, onMounted, onUnmounted, watch, defineAsyncComponent } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { api } from '@/services/api'
-import { formatWaktuSisa } from '@/utils/dateHelper'
+import { formatWaktuSisa, formatDateIndo } from '@/utils/dateHelper'
 import { formatRupiah } from '@/utils/numberHelper'
+import { useNotificationStore } from '@/stores/notification'
 import ModalNota from './ModalNota.vue'
 
 
 const ListRincian = defineAsyncComponent(() => import('./ListRincian.vue'))
+const notify = useNotificationStore().notify
 
 const props = defineProps({
   store: { type: Object, required: true },
@@ -413,9 +431,12 @@ const form = ref({
   nobatch: null,
   tgl_exprd: null,
   id_stok: null,
-  hpp: ''
+  hpp: '',
+  diskon: 0,
 
 })
+
+const loadingSimpan = ref(false)
 
 const formBayar = ref({
     diskon: 0,
@@ -472,11 +493,22 @@ function errorMessage(field){
   return error.value?.[field]?.[0] ?? null
 } 
 
+const totalDiscount = computed(() => {
+  const items = props?.store?.form?.rinci ?? []
+  return items.reduce((a, b) => a + Number(b?.diskon), 0)
+})
+const totalAmount = computed(() => {
+  const items = props?.store?.form?.rinci ?? []
+  const sub = items.reduce((a, b) => a + Number(b?.subtotal), 0)
+  const disc = totalDiscount.value || 0
 
+  return sub + disc
+})
 const totalPenjualan = computed(() => {
   const items = props?.store?.form?.rinci ?? []
   return items.reduce((a, b) => a + Number(b?.subtotal), 0)
 })
+
 
 const kembali = computed(() => {
   if (formBayar.value.jumlah_bayar < totalPenjualan.value) {
@@ -503,13 +535,17 @@ const groupedItems = computed(() => {
         satuan_k: item?.satuan_k,
         jumlah_k: Number(item?.jumlah_k),
         harga_jual: Number(item?.harga_jual),
+        diskon: Number(item?.diskon),
         subtotal: Number(item?.subtotal),
         created_at: item?.created_at
       })
     } else {
       const existing = map.get(key)
+      
       existing.jumlah_k += Number(item.jumlah_k)
-      existing.subtotal += Number(item.subtotal)
+      existing.diskon += Number(item.diskon)
+      existing.subtotal += (Number(item.subtotal) )
+
       // update created_at jika lebih baru
       if (new Date(item.created_at) > new Date(existing.created_at)) {
         existing.created_at = item.created_at
@@ -534,6 +570,7 @@ const handleAdd = async(item) => {
   console.log('handleAdd', selected);
   form.value.kode_barang = item?.kode_barang ?? null
   form.value.jumlah_k = item?.jumlah ?? 0
+  form.value.diskon = item?.diskon ?? 0
   form.value.satuan_k = item?.satuan_k ?? null
   form.value.satuan_b = item?.satuan_b ?? null
   form.value.isi = parseInt(item?.isi ?? 1)
@@ -585,7 +622,7 @@ const handleSelectedBarang = (item) => {
     for (let i = 0; i < stok?.length; i++) {
       const el = stok[i];
       el.jumlah = 0 // ini menambah elemen jumlah
-
+      el.diskon = 0
       const idStok = el?.id ?? null
       if (idStok) {
         const keeping = item?.penjualan_rinci.filter(el => el.id_stok === idStok)
@@ -684,6 +721,7 @@ const simpanPenjualan = async (e) => {
   } catch (error) {
     console.log('error', error);
     modalNota.value = false
+    notify({ message: error?.response?.data?.message ?? 'Data Penjualan gagal disimpan', type: 'error' })
   } finally {
     loadingLock.value = false
   }

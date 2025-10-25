@@ -439,7 +439,6 @@ const handleKunci = async (e) => {
     return 
   }
 
-
   const noretur = props.store.form?.noretur
   const payload = {
     noretur
@@ -472,6 +471,7 @@ const handleKunci = async (e) => {
   const data = resp?.data?.data
   props.store.form.flag = data?.flag
   props.store.initModeEdit(data)
+
 }
 
 const totalRetur = computed(() => {

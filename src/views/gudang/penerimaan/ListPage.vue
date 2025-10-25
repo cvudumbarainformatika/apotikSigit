@@ -19,26 +19,42 @@
                     <u-text color="text-primary">Rp. {{ formatRupiah(item?.totals) }}</u-text>
                   </u-row>
                 </u-row>
-
                 <u-row>
-                  <u-icon size="14" name="file-check-2"></u-icon>
-                  <u-text class="" color="text-gray-500">{{ item?.suplier?.nama }} ||</u-text>
+                  <u-text class="" color="text-gray-500">{{ item?.suplier?.nama }}</u-text>
+                </u-row>
+                <u-row>
                   <u-text class="" color="text-gray-500">Order: {{ item?.noorder }}</u-text>
                 </u-row>
-
                 <u-row>
                   <u-text class="" color="text-gray-500">No Faktur :{{ item?.nofaktur }}</u-text>
                 </u-row>
+                <u-row flex1>
+                  <u-text v-if="item.hutang === 'HUTANG'" class="font-bold text-xs"
+                    :class="item.flag_hutang ? 'text-gray-500' : 'text-red-500'">
+                    {{ item?.flag_hutang ? 'LUNAS' : 'HUTANG BELUM LUNAS' }}
+                  </u-text>
+                  <u-text v-else class="font-bold text-xs" color="text-black">
+                    LUNAS
+                  </u-text>
+                </u-row>
               </u-col>
+              <div class="absolute bottom-2 right-3 justify-end">
+                <u-row flex1 right>
+                  <u-icon :name="item?.flag ? 'lock' : 'lock-open'" size="18" class="mb-1"
+                  :class="!item?.flag ? 'text-success' : 'text-danger'" />
+                </u-row>
+                <u-text color="text-gray-500" style="font-size: 10px !important;">{{ useWaktuLaluReactive(item?.created_at)
+                  }}</u-text>
+              </div>
             </u-row>
           </u-row>
 
-          <u-col align="items-end" gap="gap-0" class="" padding="p-0">
+          <!-- <u-col align="items-end" gap="gap-0" class="" padding="p-0">
             <u-icon :name="item?.flag ? 'lock' : 'lock-open'" size="18" class="mb-1"
               :class="!item?.flag ? 'text-success' : 'text-danger'" />
             <u-text color="text-gray-500" style="font-size: 10px !important;">{{ useWaktuLaluReactive(item?.created_at)
               }}</u-text>
-          </u-col>
+          </u-col> -->
           <!-- <u-col align="items-end" gap="gap-0" class="w-full -mt-4 p-0" padding="p-0">
             <u-text color="text-gray-400">{{ useWaktuLaluReactive(item?.created_at) }}</u-text>
           </u-col> -->

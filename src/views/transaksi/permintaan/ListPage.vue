@@ -11,12 +11,11 @@
               <u-col gap="gap-0" class="w-full">
                 <u-row flex1>
 
-                  <u-text class="font-bold" color="text-gray-500">{{ item?.supplier?.nama }}</u-text>
-                  <u-text class="" color="text-primary">{{ item?.nomor_order }}</u-text>
+                  <u-text class="font-bold" color="text-gray-500">{{ item?.kode_mutasi }}</u-text>
                 </u-row>
                 <u-row>
                   <u-icon size="14" name="shopping-cart"></u-icon>
-                  <u-text class="" color="text-gray-500">{{ item?.order_records?.length }} items</u-text>
+                  <u-text class="" color="text-gray-500">{{ item?.rinci?.length }} items</u-text>
                 </u-row>
                 
               </u-col>
@@ -39,7 +38,6 @@ const props = defineProps({
   store: { type: Object, required: true },
   items: { type: Array, default: ()=> [] },
 })
-
 
 const handleEdit = (item) => {
   props.store.maxRight = false

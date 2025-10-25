@@ -57,7 +57,7 @@
             </div>
           </u-row>
           <u-row right class="">
-            <u-btn label="Detail" @click="openDetail" />
+            <u-btn label="Detail" @click="openDetail" :loading="loadingOpen" />
           </u-row>
         </u-row>
       </u-col>
@@ -69,6 +69,7 @@
 
 <script setup>
 import { api } from '@/services/api'
+import { useAppStore } from '@/stores/app'
 import { useWaktuLaluReactive } from '@/utils/dateHelper'
 import { formatRupiah } from '@/utils/numberHelper'
 import { defineAsyncComponent, onMounted, ref, watch } from 'vue'
@@ -78,10 +79,16 @@ const props = defineProps({
   item: { type: Object, default: null },
   range: { type: Object, default: null },
 })
+
+const app = useAppStore()
+const company = computed(() => {
+  return app?.form || null
+})
 const ModalDetail = defineAsyncComponent(() => import('./ModalDetail.vue'))
 const openModalDetail = ref(false)
+const loadingOpen = ref(false)
 onMounted(() => {
-
+  // console.log('props item Heder', props.item)
   // if (props.range) {
   //   fetchDetail()
   // }
@@ -102,16 +109,20 @@ onMounted(() => {
 //   console.log('params ready', params)
 // }
 
-const openDetail = async () => {
-  props.store.loading = true
+const openDetail = async (e) => {
+  e.preventDefault()
+  e.stopPropagation()
+  loadingOpen.value = true
   try {
     const params = {
       bulan: props.store.range.start_date,
       tahun: props.store.range.end_date,
-      id: props.item.id
+      id: props.item.id,
+      depo: company.value?.kode_toko
     }
-    // console.log('params', params)
+
     const response = await api.get(`api/v1/transactions/stok/get-rinci-kartu-stok`, { params })
+    console.log('detail Barang', response)
     if (response) {
 
       props.store.item = response.data.data
@@ -120,46 +131,41 @@ const openDetail = async () => {
   } catch (error) {
     console.error('Error fetching Kartu Stok:', error)
   } finally {
-    props.store.loading = false
+    loadingOpen.value = true
   }
   openModalDetail.value = true
-
+  loadingOpen.value = false
 }
 
 const handleCloseModalNota = () => {
   openModalDetail.value = false
-
+  loadingOpen.value = false
 }
 
-// saldo awal
 const saldoAwal = computed(() => {
-  // console.log('props.item', props.item);
   return (props.item?.stok_awal ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
 })
 
+
 // stok masuk
 const totalMasuk = computed(() => {
-  return (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
-    (props.item?.retur_pembelian_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
+  return company.value.kode_toko === 'APS0000' ?
+    (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
+    (props.item?.retur_pembelian_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) +
+    (props.item?.mutasi_masuk ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
+    : 
+    (props.item?.mutasi_masuk ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
 })
 
 // stok keluar
 const totalKeluar = computed(() => {
-  return (props.item?.penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
-    (props.item?.retur_penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
-
-
+  return company.value.kode_toko === 'APS0000' ?
+    (props.item?.mutasi_keluar ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
+    :
+    (props.item?.penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
+    (props.item?.retur_penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) +
+    (props.item?.mutasi_keluar ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
 })
-
-// retur penjualan (masuk)
-// const returPenjualan = computed(() => {
-//   return (props.item?.retur_penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
-// })
-
-// retur pembelian (keluar)
-// const returPembelian = computed(() => {
-//   return (props.item?.retur_pembelian_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
-// })
 
 // penyesuaian (bisa + atau -)
 const totalPenyesuaian = computed(() => {
@@ -171,6 +177,7 @@ const stokAkhir = computed(() => {
 })
 // stok akhir
 const stokSekarang = computed(() => {
+  console.log('stok sekarang props item', props.item?.stoks)
   return (props.item?.stok ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
 })
 

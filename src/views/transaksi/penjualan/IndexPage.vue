@@ -32,13 +32,13 @@ const ListPage = defineAsyncComponent(() => import('./ListPage.vue'))
 const store = usePenjualanStore()
 const route = useRoute()
 const title = computed(() => route?.meta?.title)
-
+const today = new Date().toISOString().split('T')[0]
 onMounted(() => {
   // console.log('Mounted ', title.value);
   
   store.per_page = 20
-  store.range.start_date = null
-  store.range.end_date = null
+  store.range.start_date = today
+  store.range.end_date = today
   Promise.all([
     store.fetchAll()
   ])

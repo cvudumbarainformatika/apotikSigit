@@ -22,6 +22,7 @@ import { computed, onMounted } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import { usePenerimaanStore } from '@/stores/template/register'
 import { useRoute } from 'vue-router'
+import { useAppStore } from '@/stores/app'
 
 const BaseTransaksi = defineAsyncComponent(() => import('@/components/templates/BaseTransaksi.vue'))
 const FormPage = defineAsyncComponent(() => import('./FormPage.vue'))
@@ -32,13 +33,14 @@ const ListPage = defineAsyncComponent(() => import('./ListPage.vue'))
 const store = usePenerimaanStore()
 const route = useRoute()
 const title = computed(() => route?.meta?.title)
-
+const profil = useAppStore()
 onMounted(() => {
     // console.log('Mounted ', title.value);
 
     store.per_page = 20
     Promise.all([
         store.fetchAll(),
+        profil.fetchData()
     ])
 })
 

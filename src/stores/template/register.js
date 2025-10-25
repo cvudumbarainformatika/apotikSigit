@@ -87,9 +87,7 @@ export const useBebanStore = createTemplateStore('beban', {
 //   persist: false
 // })
 
-
-// TRANSAKSI STORE
-
+// GUDANG
 export const useOrderStore = createTemplateTransaksiStore('order', {
   baseUrl: '/api/v1/transactions/order',
   persist: false
@@ -97,6 +95,18 @@ export const useOrderStore = createTemplateTransaksiStore('order', {
 
 export const usePenerimaanStore = createTemplateTransaksiStore('penerimaan', {
   baseUrl: '/api/v1/transactions/penerimaan',
+  persist: false
+})
+
+// TRANSAKSI STORE
+
+export const usePermintaanStore = createTemplateTransaksiStore('Permintaan', {
+  baseUrl: '/api/v1/transactions/mutasi',
+  persist: false
+})
+
+export const usePenerimaanDepoStore = createTemplateTransaksiStore('penerimaan-depo', {
+  baseUrl: '/api/v1/transactions/mutasi',
   persist: false
 })
 

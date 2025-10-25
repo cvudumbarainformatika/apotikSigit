@@ -40,7 +40,7 @@
                   {{ store.orderSelected?.nomor_order }}
                 </u-text>
               </u-row>
-              <button @click="clearSelectedOrder" class="text-primary hover:text-danger" aria-label="Hapus">
+              <button @click="initForm()" class="text-primary hover:text-danger" aria-label="Hapus">
                 <u-icon name="X" class="w-4 h-4" />
               </button>
             </div>
@@ -109,7 +109,7 @@
           <u-icon name="baggage-claim" class="w-4 h-4" />
           <u-text class="font-bold">Informasi Item</u-text>
         </u-row>
-        <u-row v-if="store.orderSelected && form.jenispajak">
+        <u-row v-if="store.orderSelected && form.hutang">
           <u-list :items="listItems">
             <template #item="{ item }">
               <u-view flex1 class="w-full" padding="px-3 py-3">
@@ -253,14 +253,13 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, defineAsyncComponent, onMounted } from 'vue'
+import { ref, computed, watch, defineAsyncComponent, onMounted, onUnmounted } from 'vue'
 import { useOrderStore } from '@/stores/template/register'
 import { getYearStartDate, getYearEndDate } from '@/utils/dateHelper'
 import { formatRupiah } from '@/utils/numberHelper'
 import { useNotificationStore } from '@/stores/notification'
 import { api } from '@/services/api'
 import ModalCetak from './ModalNota.vue'
-import { useAppStore } from '@/stores/app'
 
 const ModalData = defineAsyncComponent(() => import('./ModalGetdata.vue'))
 const props = defineProps({
@@ -307,19 +306,124 @@ const form = ref({
   rincian: {},
 })
 
+function rincianAsArray(r) {
+  if (!r) return []
+  if (Array.isArray(r)) return r
+  return Object.values(r)
+}
+
+function arrayToRincianObject(arr = []) {
+  const obj = {}
+  arr.forEach(item => {
+    if (item && item.kode_barang) obj[item.kode_barang] = item
+  })
+  return obj
+}
+
+
+
+const optionJenispajaks = computed(() => [
+  { value: 'Exclude', label: 'Exclude' },
+  { value: 'Include', label: 'Include' }
+])
+
+const params = computed(() => ({
+  from: getYearStartDate(),
+  to: getYearEndDate(),
+  flag: '1'
+}))
+
+// listItems used in template: prefer local form.rincian when present, otherwise build from orderSelected.order_records
+// const listItems = computed(() => {
+//   const rincianLocal = form.value.rincian || {}
+//   const orderSelected = props.store.orderSelected || {}
+//   const orderRecords = orderSelected.order_records || orderSelected.rincians || orderSelected.rincian || []
+
+//  console.log('🔄 listItems recomputed', { rincianLocal, orderRecords })
+//   if (Object.keys(rincianLocal).length > 0) {
+//     return Object.values(rincianLocal)
+//   }
+//   console.log('orderRecords empty', orderRecords)
+//   if (orderRecords.length > 0) {
+
+    
+//     return orderRecords.map(item => {
+//       console.log('Mapping orderRecord item:', item)
+//       const isiVal = parseInt(item.isi ?? item.barang?.isi, 1)
+//       const jumlahPesan = parseInt(item.jumlah_k, 0)
+//       const jumlahB = parseInt(item.jumlah_b)
+//       const jumlahK = jumlahB * isiVal
+//       return {
+//         nopenerimaan: item.nopenerimaan,
+//         nama: item.barang?.nama || item.nama || '',
+//         jumlah_pesan: jumlahPesan,
+//         jumlah_b: jumlahB,
+//         harga_b: parseFloat(item.harga_b || 0),
+//         nobatch: item.nobatch || '',
+//         diskon_persen: parseFloat(item.diskon_persen || 0),
+//         satuan_b: item.satuan_b || item.barang?.satuan_b || '',
+//         satuan_k: item.satuan_k || item.barang?.satuan_k || '',
+//         isi: isiVal,
+//         jumlah_k: jumlahK,
+//         kode_barang: item.kode_barang,
+//         pajak_rupiah: parseFloat(item.pajak_rupiah || 0),
+//         diskon_rupiah: parseFloat(item.diskon_rupiah || 0),
+//         loading: false,
+//         master: item.barang || null,
+//       }
+//     })
+//   }
+//   // fallback terakhir kalau semua kosong
+//   return []
+// })
+
+
+const listItems = computed(() => {
+  const rincianLocal = form.value.rincian || {}
+  const orderSelected = props.store.orderSelected || {}
+  const orderRecords = orderSelected.order_records || orderSelected.rincians || orderSelected.rincian || []
+  // console.log('🔄 listItems rincianLocal', rincianLocal)
+  // console.log('🔄 listItems orderSelected', orderSelected)
+  if (Object.keys(rincianLocal).length > 0) {
+    return Object.values(rincianLocal)
+  }
+  if (!form.value.rincian) {
+    form.value.rincian = {}
+  }
+
+  orderRecords.forEach(item => {
+  
+    const key = item.kode_barang
+    if (!form.value.rincian[key]) {
+      form.value.rincian[key] = {
+        kode_barang: key,
+        nama: item.barang?.nama || item.master?.nama || item.nama || '',
+        jumlah_pesan: parseInt(item.jumlah_b || item?.jumlah_pesan, 0),
+        jumlah_b: item.jumlah_b || item.jumlah_pesan || 0,
+        harga_b: parseFloat(item.harga_b || 0),
+        nobatch: item.nobatch || '',
+        diskon_persen: parseFloat(item.diskon_persen || 0),
+        tgl_exprd: item.tgl_exprd || new Date().toISOString().split('T')[0],
+        satuan_b: item.satuan_b || item.barang?.satuan_b || '',
+        satuan_k: item.satuan_k || item.barang?.satuan_k || '',
+        isi: item.isi || item.master?.isi || item.barang?.isi || 1,
+        pajak_rupiah: parseFloat(item.pajak_rupiah || 0),
+        diskon_rupiah: parseFloat(item.diskon_rupiah || 0),
+        loading: false,
+      }
+    }
+  })
+
+  return Object.values(form.value.rincian)
+})
 const openModalCetak = () => {
-  // if (!store.form?.nopenerimaan) {
-  //   notify({ message: 'Penerimaan belum terkunci', type: 'error' })
-  //   return
-  // }
   modalCetak.value = true
 }
 const handleCloseModalNota = () => {
   modalCetak.value = false
-
-  // initForm()
   window.location.reload()
 }
+
 const error = computed(() => {
   const err = props.store.error
   const status = err?.status === 422
@@ -337,137 +441,28 @@ function errorMessage(field) {
   return error.value?.[field]?.[0] ?? null
 }
 
-const optionJenispajaks = computed(() => [
-  { value: 'Exclude', label: 'Exclude' },
-  { value: 'Include', label: 'Include' }
-])
 
-const params = computed(() => ({
-  from: getYearStartDate(),
-  to: getYearEndDate(),
-  flag: '1'
-}))
+const ambilOrder = async () => {
+  await storeorder.fetchAll(params.value)
 
-const listItems = computed(() => {
-  const rincian = form.value.rincian || {}
-  const orderRecords = props.store.orderSelected?.order_records || []
-  // console.log('orderRecords', orderRecords)
-  if (Object.keys(rincian).length > 0) {
-    return Object.values(rincian)
-  }
+  const datasimpan = props.store.items.map(x => x.noorder)
+  const hasil = storeorder.items.filter(
+    item => !datasimpan.includes(item.nomor_order)
+  )
+  props.store.dataorder = hasil
 
-  return orderRecords.map(item => ({
-    nopenerimaan: item.nopenerimaan,
-    nama: item.master?.nama || item.nama || '',
-    jumlah_pesan: item.jumlah_pesan || '',
-    jumlah_b: item.jumlah_b || '',
-    harga_b: item.harga_b || '',
-    nobatch: item.nobatch || '',
-    diskon_persen: item.diskon_persen || 0,
-    satuan_b: item.satuan_b || item.master?.satuan_b || '',
-    satuan_k: item.satuan_k || item.master?.satuan_k || '',
-    isi: parseInt(item.isi || item.master?.isi) || 1,
-    jumlah_k: (parseInt(item.jumlah_b) || 0) * (parseInt(item.isi || item.master?.isi) || 1),
-    kode_barang: item.kode_barang,
-    pajak_rupiah: parseInt(item.pajak_rupiah) || 0,
-    diskon_rupiah: parseInt(item.diskon_rupiah) || 0,
-    loading: false,
-    master: item.master || null,
-  }))
-  
-})
-const profil = useAppStore()
-
-const company = computed(() => {
-  return profil?.form || null
-})
-
-
-const handleKunci = async (e) => {
-  e.preventDefault()
-  e.stopPropagation()
-  
-  const flag = (props.store.form?.flag === '1' || props.store.form?.flag === 1)
-  // console.log('handleKunci', flag)
-  const nopenerimaan = props.store.form?.nopenerimaan
-  const rincians = props.store.form?.rincian
-  const kode_depo = company.value?.kode_toko
-  console.log('kode_depo', kode_depo)
-  const payload = {
-    nopenerimaan,
-    kode_depo,
-    payload: rincians.map(item => ({
-      nopenerimaan: item.nopenerimaan,
-      noorder: item.noorder,
-      kode_barang: item.kode_barang,
-      nobatch: item.nobatch,
-      id_penerimaan_rinci: item.id,
-      
-      isi: item.isi,
-      satuan_b: item.satuan_b,
-      satuan_k: item.satuan_k,
-      jumlah_b: parseInt(item.jumlah_b),
-      jumlah_k: parseInt(item.jumlah_k),
-      harga: parseFloat(item.harga),
-      pajak_rupiah: parseFloat(item.pajak_rupiah),
-      diskon_persen: parseFloat(item.diskon_persen),
-      harga_total: parseFloat(item.harga_total),
-      subtotal: parseFloat(item.subtotal),
-      diskon_rupiah: parseFloat(item.diskon_rupiah),
-      tgl_exprd: item.tgl_exprd,
-      
-    }))
-  }
-  // console.log('payload', payload)
-  // console.log('rincians', rincians)
-  loadingLock.value = true
-
-  let resp
-  try {
-    if (!flag) {
-      resp = await api.post(`api/v1/transactions/penerimaan/lock_penerimaan`, payload)
-    }
-    if (resp.data.success === true) {
-      notify({ message: resp?.data?.message, type: 'success' })
-    }
-    // console.log('resp', resp);
-    // return
-  } catch (error) {
-    console.log('error', error);
-    notify({ message: error?.message ?? 'Kunci tidak bisa dibuka', type: 'error' })
-    return
-  } finally {
-    loadingLock.value = false
-  }
-
-  const data = resp?.data?.data
-  props.store.form.flag = data?.flag
-  props.store.initModeEdit(data)
-  
-
-}
-
-onMounted(() => {
-  console.log('profilx', profil.item)
-  initForm()
-  props.store.dataorder = []
-  storeorder.per_page = 20
-  ambilOrder()
-  
-})
-
-const ambilOrder = ()=> {
-  storeorder.fetchAll(params.value).then(() => {
-    const datasimpan = props.store.items.map(x => x.noorder)
-
-    const hasil = storeorder.items.filter(
-      item => !datasimpan.includes(item.nomor_order)
+  // 🧠 jika sudah ada form.noorder, sinkronkan langsung
+  if (props.store.form?.noorder) {
+    const selected = storeorder.items.find(
+      o => o.nomor_order === props.store.form.noorder
     )
-    props.store.dataorder = hasil
-  })
+    props.store.orderSelected = selected || null
+  }
 }
+
 function initForm() {
   props.store.mode = 'add'
+  props.store.init()
   const today = new Date().toISOString().split('T')[0]
   form.value = {
     tgl_penerimaan: today,
@@ -492,57 +487,31 @@ function initForm() {
     diskon_rupiah: '',
     rincian: {},
   }
-  props.store.init()
-  // if (props.store.mode === 'add') {
-  props.store.orderSelected = null
-  props.store.supplierSelected = null
-  ambilOrder()
-  // }
+  // ambilOrder()
 }
 
-const clearSelectedOrder = () => {
-
-  
-  props.store.init()
-  props.store.mode = 'add'
-  form.value.noorder = ''
-  form.value.nopenerimaan = ''
-  form.value.nofaktur = ''
-  form.value.jenispajak = ''
-  form.value.pajak = ''
-  form.value.kode_barang = ''
-  form.value.nobatch = ''
-  form.value.jumlah_b = ''
-  form.value.jumlah_k = ''
-  form.value.harga_b = ''
-  form.value.diskon_persen = ''
-  form.value.isi = ''
-  form.value.satuan_k = ''
-  form.value.satuan_b = ''
-  form.value.pajak_rupiah = ''
-  form.value.diskon_rupiah = ''
-  form.value.rincian = {}
-}
 
 const initializeRincian = (orderRecords) => {
-  // console.log('orderRecords', orderRecords)
   const today = new Date().toISOString().split('T')[0]
   const rincian = {}
   orderRecords.forEach(item => {
+    const isiVal = parseInt(item.isi || item.master?.isi)
+    const jumlahPesan = parseInt(item.jumlah_pesan, 0)
+    const jumlah_b_default = jumlahPesan
     rincian[item.kode_barang] = {
       nama: item.master?.nama || item.nama || '',
-      jumlah_pesan: item.jumlah_pesan || 0,
-      jumlah_b: item.jumlah_pesan || 0,
-      harga_b: item.harga_b || 0,
+      jumlah_pesan: jumlahPesan,
+      jumlah_b: jumlah_b_default,
+      harga_b: parseFloat(item.harga_b || 0),
       nobatch: item.nobatch || '',
-      diskon_persen: item.diskon_persen || 0,
+      diskon_persen: parseFloat(item.diskon_persen || 0),
       satuan_b: item.satuan_b || item.master?.satuan_b || '',
       satuan_k: item.satuan_k || item.master?.satuan_k || '',
-      isi: parseInt(item.isi || item.master?.isi) || 1,
-      jumlah_k: (parseInt(item.jumlah_b) || 0) * (parseInt(item.isi || item.master?.isi) || 1),
+      isi: isiVal,
+      jumlah_k: jumlah_b_default * isiVal,
       kode_barang: item.kode_barang,
-      pajak_rupiah: parseInt(item.pajak_rupiah) || 0,
-      diskon_rupiah: parseInt(item.diskon_rupiah) || 0,
+      pajak_rupiah: parseFloat(item.pajak_rupiah || 0),
+      diskon_rupiah: parseFloat(item.diskon_rupiah || 0),
       tgl_exprd: today,
       loading: false,
       master: item.master || null,
@@ -551,73 +520,141 @@ const initializeRincian = (orderRecords) => {
   form.value.rincian = { ...rincian, ...form.value.rincian }
 }
 
+
+const handleKunci = async (e) => {
+  e?.preventDefault?.()
+  e?.stopPropagation?.()
+
+  const flag = (props.store.form?.flag === '1' || props.store.form?.flag === 1)
+  const nopenerimaan = props.store.form?.nopenerimaan
+  const rincians = rincianAsArray(props.store.form?.rincian)
+
+  const payload = {
+    nopenerimaan,
+    payload: rincians.map(item => ({
+      nopenerimaan: item.nopenerimaan,
+      noorder: item.noorder,
+      kode_barang: item.kode_barang,
+      nobatch: item.nobatch,
+      id_penerimaan_rinci: item.id,
+      isi: parseInt(item.isi),
+      satuan_b: item.satuan_b || '',
+      satuan_k: item.satuan_k || '',
+      jumlah_b: parseInt(item.jumlah_b, 0),
+      jumlah_k: parseInt(item.jumlah_k, 0),
+      harga: parseFloat(item.harga_b || item.harga || 0),
+      pajak_rupiah: parseFloat(item.pajak_rupiah || 0),
+      diskon_persen: parseFloat(item.diskon_persen || 0),
+      harga_total: parseFloat(item.harga_total || 0),
+      subtotal: parseFloat(item.subtotal || 0),
+      diskon_rupiah: parseFloat(item.diskon_rupiah || 0),
+      tgl_exprd: item.tgl_exprd || null,
+    }))
+  }
+
+  if (flag) {
+    notify({ message: 'Penerimaan sudah terkunci', type: 'info' })
+    return
+  }
+
+  loadingLock.value = true
+  let resp = null
+  try {
+    resp = await api.post(`api/v1/transactions/penerimaan/lock_penerimaan`, payload)
+    if (resp?.data?.success === true) {
+      notify({ message: resp?.data?.message ?? 'Berhasil dikunci', type: 'success' })
+    } else {
+      notify({ message: resp?.data?.message ?? 'Gagal mengunci', type: 'error' })
+    }
+  } catch (error) {
+    console.log('error', error)
+    notify({ message: error?.message ?? 'Kunci tidak bisa dibuka', type: 'error' })
+    return
+  } finally {
+    loadingLock.value = false
+  }
+
+  const data = resp?.data?.data
+  if (data) {
+    props.store.form.flag = data?.flag
+    props.store.initModeEdit(data)
+  }
+}
+
+
 const handleSubmit = async (e, item) => {
-  e.preventDefault()
-  e.stopPropagation()
- 
+  e?.preventDefault?.()
+  e?.stopPropagation?.()
+
+  if ((form?.value?.hutang ?? '') === '') {
+    notify({ message: 'Silahkan Pilih Cara Pembayaran', type: 'error' })
+    return
+  }
   isSubmitting.value = true
 
   const kode_barang = item.kode_barang
-
   const rincianItem = form.value.rincian[kode_barang] || {}
-
+  console.log('Handling submit for kode_barang:', item)
+  // sync beberapa field ke form utama (mirip logic sebelumnya)
   form.value.kode_barang = kode_barang
   form.value.nobatch = rincianItem.nobatch || ''
-  form.value.jumlah_b = rincianItem.jumlah_b || ''
-  form.value.jumlah_k = (parseInt(rincianItem.jumlah_b) || 0) * (parseInt(item.isi || item.master?.isi) || 1)
-  form.value.harga_b = rincianItem.harga_b || ''
-  form.value.diskon_persen = rincianItem.diskon_persen || 0
-  form.value.isi = parseInt(item.isi || item.master?.isi) || 1
+  form.value.jumlah_b = rincianItem.jumlah_b || 0
+  form.value.jumlah_k = parseInt(rincianItem.jumlah_b, 0) * parseInt(item.isi || item.master?.isi)
+  form.value.harga_b = rincianItem.harga_b || 0
+  form.value.diskon_persen = parseFloat(rincianItem.diskon_persen || 0)
+  form.value.isi = parseInt(item.isi || item.master?.isi)
   form.value.satuan_k = item.satuan_k || item.master?.satuan_k || ''
   form.value.satuan_b = item.satuan_b || item.master?.satuan_b || ''
-  form.value.pajak_rupiah = parseInt(rincianItem.pajak_rupiah) || 0
-  form.value.diskon_rupiah = parseInt(rincianItem.diskon_rupiah) || 0
+  form.value.pajak_rupiah = parseFloat(rincianItem.pajak_rupiah)
+  form.value.diskon_rupiah = parseFloat(rincianItem.diskon_rupiah)
   form.value.tgl_exprd = rincianItem.tgl_exprd || ''
   form.value.kode_suplier = props.store.supplierSelected?.kode || ''
   form.value.noorder = props.store.orderSelected?.nomor_order || ''
+  console.log('Submitting rincian for kode_barang:', form.value)
+  // ensure rincian entry exists and mark loading
   form.value.rincian[kode_barang] = {
     ...form.value.rincian[kode_barang],
     nama: item.barang?.nama || item.nama || '',
-    jumlah_pesan: item.jumlah_pesan || '',
-    jumlah_b: parseInt(rincianItem.jumlah_b) || '',
-    harga_b: rincianItem.harga_b || '',
+    jumlah_pesan: item.jumlah_pesan || form.value.rincian[kode_barang]?.jumlah_pesan || '',
+    jumlah_b: parseInt(rincianItem.jumlah_b || 0),
+    harga_b: rincianItem.harga_b || 0,
     nobatch: rincianItem.nobatch || '',
-    diskon_persen: rincianItem.diskon_persen || 0,
+    diskon_persen: parseFloat(rincianItem.diskon_persen || 0),
     satuan_b: item.satuan_b || item.master?.satuan_b || '',
     satuan_k: item.satuan_k || item.master?.satuan_k || '',
-    isi: parseInt(item.isi || item.master?.isi) || 1,
-    jumlah_k: (parseInt(rincianItem.jumlah_b) || 0) * (parseInt(item.isi || item.master?.isi) || 1),
+    isi: parseInt(item.isi || item.master?.isi),
+    jumlah_k: parseInt(rincianItem.jumlah_b || 0) * parseInt(item.isi || item.master?.isi),
     kode_barang: kode_barang,
-    pajak_rupiah: parseInt(rincianItem.pajak_rupiah) || 0,
-    diskon_rupiah: parseInt(rincianItem.diskon_rupiah) || 0,
+    pajak_rupiah: parseFloat(rincianItem.pajak_rupiah || 0),
+    diskon_rupiah: parseFloat(rincianItem.diskon_rupiah || 0),
     tgl_exprd: rincianItem.tgl_exprd || '',
     loading: true
-    
   }
 
   const rincian = form.value.rincian[kode_barang]
-  if (!rincian) return
+  if (!rincian) {
+    isSubmitting.value = false
+    return
+  }
+
   try {
-    
-    const a = form.value.rincian[kode_barang].jumlah_pesan
-    const b = form.value.rincian[kode_barang].jumlah_b
-    
-    if (parseInt(b) > parseInt(a)) {
-      
+    const a = parseInt(form.value.rincian[kode_barang].jumlah_pesan, 0)
+    const b = parseInt(form.value.rincian[kode_barang].jumlah_b, 0)
+
+    if (b > a) {
       notify({ message: 'Penerimaan Lebih Besar Dari Jumlah Pesanan', type: 'error' })
-    } 
-    
-    else {
+      form.value.rincian[kode_barang].loading = false
+      return
+    } else {
+      // panggil proses buat/save ke store (sesuaikan create signature store)
       await props.store.create(form.value)
       ambilOrder()
     }
     form.value.rincian[kode_barang].loading = false
-    
   } catch (err) {
     console.error('Error saat menyimpan:', err)
-   
-      form.value.rincian[kode_barang].loading = false
-  
+    form.value.rincian[kode_barang].loading = false
+    notify({ message: err?.message ?? 'Gagal menyimpan data', type: 'error' })
   } finally {
     skipWatch.value = false
     isSubmitting.value = false
@@ -648,11 +685,21 @@ const handleBatal = (kode_barang) => {
   }
 }
 
+
 const isSameRincian = (nobatch, kode_barang) => {
   const local = form.value.rincian?.[kode_barang]
-  const remote = props.store.form?.rincian?.find(r => r.kode_barang === kode_barang && r.nobatch === nobatch)
+  const remoteArr = rincianAsArray(props.store.form?.rincian)
+  const remote = remoteArr.find(r => r.kode_barang === kode_barang && r.nobatch === nobatch)
 
   if (!local || !remote) return false
+
+  // 🚀 Jika nilai dihapus (harga, batch, diskon, dll kosong), langsung anggap beda
+  if (
+    local.harga_b == null ||
+    local.nobatch == null 
+  ) {
+    return false
+  }
 
   return (
     Number(local.jumlah_b) === Number(remote.jumlah_b) &&
@@ -665,42 +712,50 @@ const isSameRincian = (nobatch, kode_barang) => {
 
 
 const handleHapusRinci = async (e, item) => {
-  e.preventDefault()
-  e.stopPropagation()
- 
-  const rincian = props.store.form.rincian.find(x => x.kode_barang === item.kode_barang)
-  const id = rincian?.id || null
+  e?.preventDefault?.()
+  e?.stopPropagation?.()
+  const remoteArr = rincianAsArray(props.store.form?.rincian)
 
+  const rincian = remoteArr.find(x => x.kode_barang === item.kode_barang)
+
+  if (!rincian) {
+    notify({ message: 'Rincian tidak ditemukan', type: 'error' })
+    return
+  }
+
+  const id = rincian?.id || null
   const params = {
     nopenerimaan: props.store.form.nopenerimaan,
     id
   }
   rincian.loading = true
+  // set loading on local copy if possible
+  form.value.rincian[item.kode_barang].loading = true
   try {
     const resp = await api.post(`api/v1/transactions/penerimaan/delete`, params)
-    if (resp.data.success === true) {
-      rincian.harga_b = null
-      rincian.nobatch = null
-      rincian.diskon_persen = 0
-      rincian.jumlah_k = 0
-      rincian.pajak_rupiah = 0
-      rincian.diskon_rupiah = 0
-      
+    if (resp?.data?.success === true) {
+        rincian.harga_b = null
+        rincian.nobatch = null
+        rincian.diskon_persen = 0
+        rincian.jumlah_k = 0
+        rincian.pajak_rupiah = 0
+        rincian.diskon_rupiah = 0
+
+
       notify({ message: resp.data.message ?? 'Data Berhasil dihapus', type: 'success' })
-    }
-    props.store.fetchAll()
-    TotalPenerimaan
-    
-    console.log('resp', resp);
+      
+    } 
+      await props.store.fetchAll()
+      TotalPenerimaan
   } catch (error) {
-    console.log('error', error);
-    notify({ message: error.message ?? 'Gagal Hapus data', type: 'error' })
+    console.log('error', error)
+    notify({ message: error?.message ?? 'Gagal Hapus data', type: 'error' })
   } finally {
     rincian.loading = false
+    form.value.rincian[item.kode_barang].loading = false
   }
-
-
 }
+
 
 watch(() => props.store.orderSelected, (newOrderSelected) => {
   if (newOrderSelected?.order_records) {
@@ -711,7 +766,7 @@ watch(() => props.store.orderSelected, (newOrderSelected) => {
 }, { deep: true })
 
 
- watch(
+watch(
   () => ({ ...props.store.form }),
   (newForm, oldForm) => {
     if (!newForm) return
@@ -720,36 +775,40 @@ watch(() => props.store.orderSelected, (newOrderSelected) => {
       if ((oldForm?.[key]) !== newForm[key]) {
         props.store.clearFieldError(key)
       }
-      // console.log('form.value', form.value)
     }
+
     if (newForm) {
       const filteredOrders = storeorder.items
         ?.filter(o => o.nomor_order === newForm?.noorder)
         ?.flatMap(o => o.order_records) || []
       const today = new Date().toISOString().split('T')[0]
-
       const rincianObj = {}
-      filteredOrders.forEach(orderItem => {
-        const savedItem = newForm?.rincian?.find(r => r.kode_barang === orderItem.kode_barang)
-        const existing = form.value?.rincian?.[orderItem.kode_barang]
 
-        
+      filteredOrders.forEach(orderItem => {
+        const savedItem = (Array.isArray(newForm?.rincian) ? newForm?.rincian : rincianAsArray(newForm?.rincian))
+          .find(r => r.kode_barang === orderItem.kode_barang)
+        const existing = form.value?.rincian?.[orderItem.kode_barang]
+        console.log('Merging order item:', { orderItem, savedItem, existing })
+        const isiVal = parseInt(savedItem?.isi || orderItem?.isi)
+        const jumlahSavedB = parseInt(savedItem?.jumlah_b || 0)
+        const jumlahPesan = parseInt(orderItem?.jumlah_pesan || 0)
+
         rincianObj[orderItem.kode_barang] = {
           nama: savedItem?.barang?.nama || orderItem?.master?.nama,
-          jumlah_pesan: savedItem?.jumlah_pesan ?? orderItem?.jumlah_pesan ?? null,
-          jumlah_b: savedItem?.jumlah_b ?? orderItem.jumlah_pesan,
-          harga_b: savedItem?.harga_b ?? null,
-          nobatch: savedItem?.nobatch ?? null,
-          diskon_persen: savedItem?.diskon_persen ?? 0,
-          satuan_b: savedItem?.satuan_b ?? orderItem?.satuan_b ?? null,
-          satuan_k: savedItem?.satuan_k ?? orderItem?.satuan_k ?? null,
-          isi: parseInt(savedItem?.isi ?? orderItem?.isi ?? 1),
-          jumlah_k: parseInt(savedItem?.jumlah_b ?? 0) * parseInt(savedItem?.isi ?? orderItem?.isi ?? 1),
+          jumlah_pesan: savedItem?.jumlah_pesan || orderItem?.jumlah_pesan || null,
+          jumlah_b: savedItem?.jumlah_b || orderItem.jumlah_pesan,
+          harga_b: savedItem?.harga_b || null,
+          nobatch: savedItem?.nobatch || null,
+          diskon_persen: parseFloat(savedItem?.diskon_persen || 0),
+          satuan_b: savedItem?.satuan_b || orderItem?.satuan_b || null,
+          satuan_k: savedItem?.satuan_k || orderItem?.satuan_k || null,
+          isi: isiVal,
+          jumlah_k: (parseInt(savedItem?.jumlah_b || jumlahPesan)) * isiVal,
           kode_barang: orderItem.kode_barang,
-          tgl_exprd: savedItem?.tgl_exprd ?? today,
-          pajak_rupiah: parseInt(savedItem?.pajak_rupiah ?? 0),
-          diskon_rupiah: parseInt(savedItem?.diskon_rupiah ?? 0),
-          loading: existing?.loading ?? false
+          tgl_exprd: savedItem?.tgl_exprd || today,
+          pajak_rupiah: parseFloat(savedItem?.pajak_rupiah || 0),
+          diskon_rupiah: parseFloat(savedItem?.diskon_rupiah || 0),
+          loading: existing?.loading || false
         }
       })
 
@@ -765,17 +824,32 @@ watch(() => props.store.orderSelected, (newOrderSelected) => {
         flag: newForm?.flag,
         hutang: newForm?.hutang,
         rincian: rincianObj
-    }
-      
+      }
     }
 
-    if (!props.store.orderSelected && newForm?.noorder) {
-      const order = storeorder.items?.find(o => o.nomor_order === newForm?.noorder)
+    if (newForm?.noorder) {
+      let order = null
+
+      if (storeorder.items && storeorder.items.length > 0) {
+        order = storeorder.items.find(o => o.nomor_order === newForm.noorder)
+      }
+
+      // 🔥 Fallback: kalau gak ada di storeorder, ambil dari daftar penerimaan aktif
+      if (!order && props.store.items?.length) {
+        const penerimaan = props.store.items.find(p => p.noorder === newForm.noorder)
+        if (penerimaan) {
+          order = {
+            nomor_order: penerimaan.noorder,
+            tgl_order: penerimaan.tgl_order || penerimaan.tgl_penerimaan,
+            supplier: penerimaan.suplier || penerimaan.supplier,
+            rincian: penerimaan.rincian || [],
+          }
+        }
+      }
+
       props.store.orderSelected = order || null
-    }
-
-    if (!props.store.supplierSelected && newForm?.suplier) {
-      props.store.supplierSelected = newForm.suplier
+    } else {
+      props.store.orderSelected = null
     }
   },
   { deep: true }
@@ -786,15 +860,60 @@ const TotalPenerimaan = computed(() => {
   if (props.store.mode === 'add') {
     return 0
   } else {
-  
-    const items = props?.store?.form?.rincian ?? []
+    const items = rincianAsArray(props.store.form?.rincian ?? [])
     return items.reduce((a, b) => {
-      const subtotal = (Number(b?.jumlah_b ?? 0) * Number(b?.harga_b ?? 0)) - (Number(b?.jumlah_k ?? 0) * Number(b?.diskon_rupiah ?? 0)) + (Number(b?.jumlah_k ?? 0) * Number(b?.pajak_rupiah ?? 0))
+      const jumlah_b = Number(b?.jumlah_b || 0)
+      const harga_b = Number(b?.harga_b || 0)
+      const diskon_rp = Number(b?.diskon_rupiah || 0)
+      const pajak_rp = Number(b?.pajak_rupiah || 0)
+      const jumlah_k = Number(b?.jumlah_k || (jumlah_b * Number(b?.isi || 1)))
+      const subtotal = (jumlah_b * harga_b) - (jumlah_k * diskon_rp) + (jumlah_k * pajak_rp)
       return a + subtotal
     }, 0)
   }
 })
 
+const clearSelectedOrder = () => {
+  console.log('Clearing selected order and supplier', form.value.rincian)
+  if (form.value.rincian && Object.keys(form.value.rincian).length > 0) {
+    const confirmClear = notify({
+      message: 'Mengganti Order akan menghapus data penerimaan yang sudah diinput. Lanjutkan?',
+      type: 'error',
+      duration: 0
+    })
+    if (!confirmClear) {
+      return
+    }
+  }
+  props.store.orderSelected = null
+  props.store.supplierSelected = null
+}
+/* ---------- lifecycle ---------- */
 
+onMounted(async () => {
+  // console.log('🟢 Form transaksi mounted')
+  initForm()
+  props.store.dataorder = []
+  storeorder.per_page = 20
+  await ambilOrder()
+})
 
+onUnmounted(() => {
+  // console.log('🔴 Form transaksi unmounted')
+})
+
+watch(
+  () => ({ ...form.value }),
+  (newForm, oldForm) => {
+    // console.log('🔥 watch form', newForm, oldForm);
+
+    for (const key in newForm) {
+      if (newForm[key] !== oldForm[key]) {
+        props.store.clearFieldError(key)
+      }
+    }
+  },
+  { deep: true }
+)
 </script>
+
