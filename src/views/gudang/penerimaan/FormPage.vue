@@ -260,6 +260,7 @@ import { formatRupiah } from '@/utils/numberHelper'
 import { useNotificationStore } from '@/stores/notification'
 import { api } from '@/services/api'
 import ModalCetak from './ModalNota.vue'
+import { useAppStore } from '@/stores/app'
 
 const ModalData = defineAsyncComponent(() => import('./ModalGetdata.vue'))
 const props = defineProps({
@@ -276,7 +277,7 @@ const skipWatch = ref(false)
 const loadingLock = ref(false)
 const modalCetak = ref(false)
 const loadingHapusItem = ref(true)
-
+const app = useAppStore()
 const form = ref({
   nopenerimaan: '',
   noorder: '',
@@ -524,34 +525,22 @@ const initializeRincian = (orderRecords) => {
 const handleKunci = async (e) => {
   e?.preventDefault?.()
   e?.stopPropagation?.()
-
+  console.log('kode depo', app.form)
   const flag = (props.store.form?.flag === '1' || props.store.form?.flag === 1)
   const nopenerimaan = props.store.form?.nopenerimaan
   const rincians = rincianAsArray(props.store.form?.rincian)
 
   const payload = {
     nopenerimaan,
+    kode_depo: app.form?.kode_toko || '',
     payload: rincians.map(item => ({
-      nopenerimaan: item.nopenerimaan,
-      noorder: item.noorder,
       kode_barang: item.kode_barang,
-      nobatch: item.nobatch,
-      id_penerimaan_rinci: item.id,
-      isi: parseInt(item.isi),
-      satuan_b: item.satuan_b || '',
       satuan_k: item.satuan_k || '',
-      jumlah_b: parseInt(item.jumlah_b, 0),
       jumlah_k: parseInt(item.jumlah_k, 0),
-      harga: parseFloat(item.harga_b || item.harga || 0),
-      pajak_rupiah: parseFloat(item.pajak_rupiah || 0),
-      diskon_persen: parseFloat(item.diskon_persen || 0),
-      harga_total: parseFloat(item.harga_total || 0),
-      subtotal: parseFloat(item.subtotal || 0),
-      diskon_rupiah: parseFloat(item.diskon_rupiah || 0),
-      tgl_exprd: item.tgl_exprd || null,
+      kode_depo: app.form?.kode_toko || '',
     }))
   }
-
+  console.log('Payload untuk kunci penerimaan:', payload)
   if (flag) {
     notify({ message: 'Penerimaan sudah terkunci', type: 'info' })
     return
@@ -561,6 +550,7 @@ const handleKunci = async (e) => {
   let resp = null
   try {
     resp = await api.post(`api/v1/transactions/penerimaan/lock_penerimaan`, payload)
+    console.log('Data resp', resp)
     if (resp?.data?.success === true) {
       notify({ message: resp?.data?.message ?? 'Berhasil dikunci', type: 'success' })
     } else {
@@ -575,6 +565,7 @@ const handleKunci = async (e) => {
   }
 
   const data = resp?.data?.data
+  
   if (data) {
     props.store.form.flag = data?.flag
     props.store.initModeEdit(data)

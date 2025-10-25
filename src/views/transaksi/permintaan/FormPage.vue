@@ -149,24 +149,23 @@
           <u-text class="font-bold" size="sm">{{ store.form?.rinci?.length || 0 }}</u-text>
         </u-row>
         <u-row>
-          <u-badge v-if="store.form?.flag" variant="danger">Terkunci</u-badge>
+          <u-badge v-if="store.form?.status" variant="danger">Terkunci</u-badge>
           <u-badge v-else :variant="store.mode === 'add' ? 'success' : 'warning'">Mode {{ store.mode === 'add' ?
             'Tambah' : 'Edit' }}</u-badge>
         </u-row>
         <u-separator spacing="-my-1"></u-separator>
         <u-row class="z-9">
           <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn>
-          <u-btn v-if="store.form" :loading="loadingLock" @click="handleKunci">{{ store.form?.flag ? 'Buka Kunci' :
-            'Kunci Order' }}</u-btn>
+          <u-btn v-if="store.form" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
         </u-row>
         <u-row class="z-9">
-          <u-btn v-if="store.form?.flag" :loading="loadingLock" @click="handlePrint">Print Order</u-btn>
+          <u-btn v-if="store.form?.status" :loading="loadingLock" @click="handlePrint">Print Order</u-btn>
         </u-row>
 
       </u-col>
     </u-grid>
 
-    <div v-if="store.form?.flag"
+    <div v-if="store.form?.status"
       class="absolute top-0 left-0 right-0 w-full h-full rounded-2xl flex items-center justify-center p-4 bg-light-primary/10"
       padding="p-0"></div>
 
@@ -201,9 +200,11 @@ const loadingLock = ref(false)
 const cabangselected = ref(null)
 const modalCetak = ref(false)
 
+const today = new Date().toISOString().split('T')[0];
+
 const form = ref({
   kode_mutasi: '',
-  tgl_permintaan: '',
+  tgl_permintaan: today,
   pengirim: '',
   dari: '',
   tujuan: '',
@@ -281,26 +282,15 @@ const onItemsLoadedBarang = (items) => {
   
 }
 
-const clearSelectedSupplier = () => {
-  // cabangselected.value = null
-  props.store.supplierSelected = null
-  form.value.tujuan = ''
-}
-const clearSelectedBarang = () => {
-  props.store.barangSelected = null
-  form.value.kode_barang = ''
-  form.value.satuan_k = ''
-  form.value.jumlah_k = ''
-  form.value.harga_beli = ''
-}
 
 const handleSubmit = (e) => {
   e.preventDefault()
   e.stopPropagation()
-  // console.log('form', form.value);
+  const supplierBackup = props.store.supplierSelected
   props.store.create(form.value)
   .then(() => {
     clearSelectedBarang()
+    props.store.supplierSelected = supplierBackup
   })
 }
 
@@ -311,30 +301,28 @@ const handleBatal = () => {
 const handleKunci = async (e) => {
   e.preventDefault()
   e.stopPropagation()
-  // console.log('store', props.store.items);
-  // console.log('store form', props.store.form);
-
-  const flag = (props.store.form?.flag === '1' || props.store.form?.flag === 1)
-  const nomor_order = props.store.form?.nomor_order
+  const status = (props.store.form?.status === '1' || props.store.form?.status === 1)
+  const kode_mutasi = props.store.form?.kode_mutasi
   const payload = {
-    nomor_order
+    kode_mutasi
   }
 
   loadingLock.value = true
 
   let resp
   try {
-    if (!flag) {
-      resp = await api.post(`api/v1/transactions/order/lock-order`, payload)
-    } else {
-      resp = await api.post(`api/v1/transactions/order/unlock-order`, payload)
-    }
+    if (!status) {
+      resp = await api.post(`api/v1/transactions/mutasi/kirim`, payload)
+    } 
+    // else {
+    //   resp = await api.post(`api/v1/transactions/order/unlock-order`, payload)
+    // }
     notify({ message: resp?.data?.message, type: 'success' })
     // console.log('resp', resp);
     // return
   } catch (error) {
     console.log('error', error);
-    notify({ message: error?.message ?? 'Kunci tidak bisa dibuka', type: 'error' })
+    notify({ message: error?.message ?? 'Gagal Kirim', type: 'error' })
     return
   } finally {
     loadingLock.value = false
@@ -342,8 +330,10 @@ const handleKunci = async (e) => {
   
 
   const data = resp?.data?.data
-  props.store.form.flag = data?.flag
+  props.store.form.status = data?.status
   props.store.initModeEdit(data)
+  props.store.fetchAll()
+  initForm()
 
 }
 
@@ -358,15 +348,26 @@ function initForm(){
   form.value.kode_mutasi = ''
   props.store.init()
   clearSelectedBarang()
-  clearSelectedSupplier()
+  // clearSelectedSupplier()
 } 
 
 onUnmounted(() => {
   // document.removeEventListener('click', handleClickOutside)
 })
 
+const clearSelectedSupplier = () => {
+  // cabangselected.value = null
+  props.store.supplierSelected = null
+  initForm()
+}
+const clearSelectedBarang = () => {
+  props.store.barangSelected = null
+  form.value.kode_barang = ''
+  form.value.satuan_k = ''
+  form.value.jumlah_k = ''
+  form.value.harga_beli = ''
+}
 watch(() => ({ ...props.store.form }), (newForm, oldForm) => {
-  // console.log('🔥 watch form', newForm, oldForm);
   
   for (const key in newForm) {
     if (newForm[key] !== oldForm[key]) {
@@ -381,10 +382,9 @@ watch(() => ({ ...props.store.form }), (newForm, oldForm) => {
         ? newForm.tgl_permintaan.substring(0, 10) // ambil yyyy-mm-dd saja
         : '',
       // kode_user: newForm?.kode_user,
-      tujuan: newForm?.tujuan?.kodecabang ?? '',
+      tujuan: newForm?.tujuan?.kodecabang ?? newForm?.tujuan ?? '',
       
     }
-    console.log('form.value', form.value);
   }
 
 }, { deep: true })
