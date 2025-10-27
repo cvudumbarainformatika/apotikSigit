@@ -47,7 +47,6 @@
             </div>
           </div>
 
-
           <div v-else
             class="bg-danger/10 border border-danger rounded-xl shadow-sm p-4 transition-all duration-300 hover:shadow-md w-full">
             <u-row class="items-start" padding="p-0">
@@ -59,7 +58,6 @@
               </div>
             </u-row>
           </div>
-
         </u-row>
       </u-card>
 
@@ -69,7 +67,6 @@
 
     <!-- CONTENT -->
     <u-grid cols="12">
-
       <!-- List Items -->
       <u-card class="col-span-8 h-full space-y-4">
         <u-row>
@@ -156,22 +153,18 @@
         <u-separator spacing="-my-1"></u-separator>
         <u-row class="z-9">
           <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn>
-          <u-btn variant="secondary" :loading="loadingLock" @click="handlePrint">Print</u-btn>
+          <u-btn v-if="store.mode === 'edit'" variant="secondary" :loading="loadingLock" @click="handlePrint">Print</u-btn>
           <u-btn v-if="store.form" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
 
         </u-row>
         <u-row class="z-9">
-
         </u-row>
-
       </u-col>
     </u-grid>
 
     <div v-if="store.form?.status"
       class="absolute top-0 left-0 right-0 w-full h-full rounded-2xl flex items-center justify-center p-4 bg-light-primary/10"
       padding="p-0"></div>
-
-
 
     <!-- Cetak -->
     <modal-cetak v-model="modalCetak" title="Cetak Order" :store="store" @close="modalCetak = false" />
@@ -245,14 +238,7 @@ const handleSelectedBarang = (item) => {
   form.value.satuan_k = item?.satuan_k ?? null
   form.value.harga_beli = item?.harga_beli ?? null
   searchBarang.value = ''
-  // console.log('handleSelectedBarang', form.value);
-
-  // await nextTick()
-  // console.log('ref', inpJumlahRef.value);
-  // const el 
-  // inpJumlahRef.value?.inputRef?.focus()
   handleFocus(inpJumlahRef)
-  
 }
 
 const handlePrint = () => {
@@ -263,7 +249,6 @@ const handleFocus = async (e) => {
   
   await nextTick()
   const el = e?.value
-  // console.log('handleFocus', el);
   el?.inputRef?.focus()
   el?.inputRef?.select()
   
