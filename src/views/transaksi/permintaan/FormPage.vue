@@ -156,10 +156,12 @@
         <u-separator spacing="-my-1"></u-separator>
         <u-row class="z-9">
           <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn>
+          <u-btn variant="secondary" :loading="loadingLock" @click="handlePrint">Print</u-btn>
           <u-btn v-if="store.form" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
+
         </u-row>
         <u-row class="z-9">
-          <u-btn v-if="store.form?.status" :loading="loadingLock" @click="handlePrint">Print Order</u-btn>
+
         </u-row>
 
       </u-col>

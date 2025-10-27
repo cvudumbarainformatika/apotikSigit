@@ -38,30 +38,21 @@ const props = defineProps({
 const loadingHapusItem = ref(false)
 
 const handleDelete = async (item) => {
-  console.log('handleDelete', item);
+  loadingHapusItem.value = true
   const payload = {
     kode_barang: item?.kode_barang ?? null,
-    nomor_order: props.store.form?.nomor_order,
+    kode_mutasi: props.store.form?.kode_mutasi,
   }
 
-  
-
-  // console.log('handleDelete payload', props.store.form.rinci);
-
   try {
-    const resp = await api.post(`api/v1/transactions/order/delete-record`, payload)
+    const resp = await api.post(`api/v1/transactions/mutasi/delete`, payload)
 
-    // console.log('resp hapus', resp);
-    const rincian = props?.store?.form?.order_records?.filter(el => el?.kode_barang !== item?.kode_barang)
-    props.store.form.order_records = rincian
+    const rincian = props?.store?.form?.rinci?.filter(el => el?.kode_barang !== item?.kode_barang)
+    props.store.form.rinci = rincian
+    notify({ message: resp?.data.message, type: 'success' })
 
-
-    // console.log('handleDelete resp', props.store.form.rinci);
-    // if (props?.store?.form?.order_records?.length === 0) {
-    //   props.store.init()
-    // }
     props.store.fetchAll()
-
+    loadingHapusItem.value = false
   } catch (error) {
     console.log('error', error);
   } finally {

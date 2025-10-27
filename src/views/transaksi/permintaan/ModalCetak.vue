@@ -17,23 +17,18 @@
         </div>
         <div class="text-right">
           <div class="inline-block px-3 py-1 rounded-full border text-xs uppercase tracking-wider">
-            ORDER PRODUCT
+            Permintaan Depo
           </div>
           <div class="mt-3 grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
             <div class="text-gray-500">No. Order</div>
-            <div class="font-medium">{{ data?.nomor_order || '-' }}</div>
+            <div class="font-medium">{{ data?.kode_mutasi || '-' }}</div>
             <div class="text-gray-500">Tanggal</div>
-            <div class="font-medium">{{ formatDateIndo(data?.tgl_order) }}</div>
-            <div class="text-gray-500">Supplier</div>
-            <div class="font-medium">{{ data?.supplier?.nama || '-' }}</div>
+            <div class="font-medium">{{ formatDateIndo(data?.tgl_permintaan) }}</div>
+            <div class="text-gray-500">Tujuan</div>
+            <div class="font-medium">{{ data?.tujuan?.namacabang || '-' }}</div>
           </div>
         </div>
       </div>
-
-
-       
-
-
 
 
       <div class="w-full border-t border-dashed border-black my-1"></div>
@@ -47,7 +42,7 @@
               <th class="th">#</th>
               <th class="th">Kode</th>
               <th class="th">Nama Barang</th>
-              <th class="th text-right">Jumlah Pesan</th>
+              <th class="th text-right">Jumlah Permintaan</th>
               <!-- <th class="th text-right">Harga</th>
               <th class="th text-right">Diskon</th>
               <th class="th text-right">pajak</th> -->
@@ -55,20 +50,20 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(it, idx) in data?.order_records" :key="idx" class="align-top">
+            <tr v-for="(it, idx) in data?.rinci" :key="idx" class="align-top">
               <td class="td text-gray-500">{{ idx + 1 }}</td>
               <td class="td">{{ it?.kode_barang || '-' }}</td>
               <td class="td">
                 <div class="font-medium">{{ it?.master?.nama || '-' }}</div>
                 <!-- <div class="text-gray-500">Batch: {{ it?.nobatch || '-' }} • Exp: {{ it.tgl_exprd ? formatDateIndo(it.tgl_exprd) : '-' }}</div> -->
               </td>
-              <td class="td text-right">{{ it?.jumlah_pesan || 0 }} {{ it?.satuan_b }}</td>
+              <td class="td text-right">{{ it?.jumlah || 0 }} {{ it?.satuan_k }}</td>
               <!-- <td class="td text-right">{{ formatRupiah(it?.harga_b) || '-' }}</td> -->
               <!-- <td class="td text-right">{{ it?.discount ? formatRupiah(it?.discount) : '-' }}</td> -->
               <!-- <td class="td text-right">{{ formatRupiah(it?.pajak_rupiah) || '-' }}</td> -->
               <!-- <td class="td text-right">{{ formatRupiah(it?.subtotal) || '-' }}</td> -->
             </tr>
-            <tr v-if="data?.rincian?.length === 0">
+            <tr v-if="data?.rinci?.length === 0">
               <td class="td text-center text-gray-500" colspan="8">Belum ada item retur.</td>
             </tr>
           </tbody>
@@ -92,7 +87,7 @@
           <div class="space-y-2 text-sm">
             <div class="flex items-center justify-between">
               <span>Total Item Order</span>
-              <span class="font-medium">{{ data.order_records?.length || 0 }}</span>
+              <span class="font-medium">{{ data.rinci?.length || 0 }} Items</span>
             </div>
             <!-- <div class="flex items-center justify-between" >
               <span>Pajak </span>
