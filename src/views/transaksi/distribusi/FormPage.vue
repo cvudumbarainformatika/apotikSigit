@@ -9,9 +9,6 @@
           <u-text class="font-bold">Informasi Permintaan</u-text>
         </u-row>
         <u-row>
-          <u-input-date type="date" v-model="form.tgl_permintaan" :error="errorMessage('tgl_permintaan')" />
-        </u-row>
-        <u-row>
           <u-input v-model="form.kode_mutasi" label="Nomor Permintaan(Auto)" readonly :error="isError('kode_mutasi')"
             :error-message="errorMessage('kode_mutasi')" />
         </u-row>
@@ -24,21 +21,13 @@
           <u-text class="font-bold">Informasi Cabang</u-text>
         </u-row>
         <u-row>
-          <u-autocomplete v-model="searchSupplier" placeholder="Cari Cabang" :debounce="300" :min-search-length="2"
-            item-key="id" item-label="namacabang" not-found-text="Data Cabang tidak ditemukan"
-            not-found-subtext="Coba kata kunci lain" :show-add-button="false"
-            api-url="/api/v1/transactions/mutasi/get-cabang" api-response-path="data.data"
-            :api-params="{ per_page: 10 }" :use-api="true" @select="handleSelected"
-            @items-loaded="onItemsLoaded"></u-autocomplete>
-        </u-row>
-        <u-row>
           <div v-if="store.supplierSelected"
             class="bg-primary/10 border border-primary rounded-xl shadow-sm p-4 transition-all duration-300 hover:shadow-md w-full">
             <div class="flex flex-1 justify-between items-start">
               <u-row flex1 class="w-full">
                 <u-icon name="UserSearch" class="w-5 h-5 text-primary" />
                 <u-text>
-                  {{ store.supplierSelected?.tujuan?.namacabang ?? store.supplierSelected?.namacabang }}
+                  {{ store.supplierSelected?.dari?.namacabang }}
                 </u-text>
               </u-row>
               <button @click="clearSelectedSupplier" class="text-primary hover:text-danger " aria-label="Hapus">
@@ -53,7 +42,7 @@
               <u-icon name="UserSearch" class="w-4 h-4 text-primary" />
               <div>
                 <u-text>
-                  Silahkan cari dan pilih Cabang di atas untuk melanjutkan order
+                  Nama Cabang
                 </u-text>
               </div>
             </u-row>
@@ -74,64 +63,11 @@
           <u-text class="font-bold">Informasi Item</u-text>
         </u-row>
         <u-row>
-          <u-autocomplete v-model="searchBarang" placeholder="Cari Barang" :debounce="300" :min-search-length="2"
-            item-key="id" item-label="nama" not-found-text="Data Barang tidak ditemukan"
-            not-found-subtext="Coba kata kunci lain" :show-add-button="false"
-            api-url="/api/v1/transactions/mutasi/get-barang" api-response-path="data.data"
-            :api-params="{ per_page: 10 }" :use-api="true" @select="handleSelectedBarang"
-            @items-loaded="onItemsLoadedBarang">
-            <template #item="{ item }">
-              <u-col gap="gap-1">
-                <u-text size="sm" class="font-medium">{{ item?.nama }}</u-text>
-                <u-row class="-mt-1" gap="gap-1">
-                  <u-text class="">{{ item?.kode }}</u-text>,
-                  <u-text class="">{{ item?.satuan_k }}</u-text> |
-                  <u-text class="">{{ item?.satuan_b }}</u-text>
-                  <u-text class="">Isi {{ item?.isi }}</u-text>
-                </u-row>
-              </u-col>
-            </template>
-          </u-autocomplete>
-        </u-row>
-
-        <u-row class="relative -mt-4">
-          <div v-if="store?.barangSelected" ref="menuBarangRef"
-            class="bg-background border-1 border-primary rounded-xl shadow-sm p-4 transition-all duration-300 hover:shadow-md w-full absolute z-10 -top-4">
-            <u-grid cols="12" gap="gap-4">
-              <div class="col-span-4">
-                <u-text class="font-bold">Nama Barang</u-text>
-                <u-text>{{ store.barangSelected?.nama || '-' }}</u-text>
-              </div>
-              <div class="col-span-4 text-center">
-                <u-text class="font-bold">Satuan</u-text>
-                <u-text>{{ store.barangSelected?.satuan_k || '-' }} | {{ store.barangSelected?.satuan_b || '-' }}, {{
-                  store.barangSelected?.isi || 0 }}</u-text>
-              </div>
-              <div class="col-span-4 text-right">
-                <u-text class="font-bold">Kode</u-text>
-                <u-text>{{ store.barangSelected?.kode || '-' }}</u-text>
-              </div>
-
-              <div class="col-span-12">
-                <u-separator spacing="-my-2"></u-separator>
-              </div>
-
-              <u-row class="col-span-4">
-                <u-input ref="inpJumlahRef" v-model="form.jumlah_k" label="jml permintaan" type="number"
-                  :error="isError('jumlah_k')" :error-message="errorMessage('jumlah_k')" />
-              </u-row>
-              <u-row right class="col-span-8 ">
-                <u-btn variant="secondary" label="Batal" @click="handleBatal" />
-                <u-btn :loading="store.loadingSave" label="Simpan" @click.stop="handleSubmit" />
-              </u-row>
-            </u-grid>
-          </div>
-        </u-row>
-        <u-row>
           <u-empty v-if="!store.form?.rinci?.length" title="Belum Ada Items" icon="baggage-claim" />
           <u-list v-else :spaced="true" anim :items="store.form?.rinci">
             <template #item="{ item, isHovered }">
-              <ListRincian :item="item" :store="store" :is-hovered="isHovered" />
+              <ListRincian :item="item" :store="store" :is-hovered="isHovered" @distribusi-saved="handleDistribusiSaved"
+                @distribusi-delete="handleDistribusiDelete" />
             </template>
           </u-list>
         </u-row>
@@ -139,22 +75,23 @@
       </u-card>
 
       <u-col align="items-end" class="col-span-4">
-        <u-text class="font-bold" size="sm">Ringkasan Permintaan</u-text>
+        <u-text class="font-bold" size="sm">Ringkasan Distribusi</u-text>
         <u-separator spacing="-my-2"></u-separator>
         <u-row>
-          <u-text>Total Item Permintaan : </u-text>
+          <u-text>Total Item Distribusi : </u-text>
           <u-text class="font-bold" size="sm">{{ store.form?.rinci?.length || 0 }}</u-text>
         </u-row>
         <u-row>
-          <u-badge v-if="store.form?.status" variant="danger">Terkunci</u-badge>
+          <u-badge v-if="store.form?.status === '1'" variant="danger">Belum Dikirim</u-badge>
           <u-badge v-else :variant="store.mode === 'add' ? 'success' : 'warning'">Mode {{ store.mode === 'add' ?
             'Tambah' : 'Edit' }}</u-badge>
         </u-row>
         <u-separator spacing="-my-1"></u-separator>
         <u-row class="z-9">
           <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn>
-          <u-btn v-if="store.mode === 'edit'" variant="secondary" :loading="loadingLock" @click="handlePrint">Print</u-btn>
-          <u-btn v-if="store.form" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
+          <u-btn v-if="store.mode === 'edit'" variant="secondary" :loading="loadingLock"
+            @click="handlePrint">Print</u-btn>
+          <u-btn v-if="store.form && distribusiTersimpan" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
 
         </u-row>
         <u-row class="z-9">
@@ -162,7 +99,7 @@
       </u-col>
     </u-grid>
 
-    <div v-if="store.form?.status"
+    <div v-if="store.form?.status === '2'"
       class="absolute top-0 left-0 right-0 w-full h-full rounded-2xl flex items-center justify-center p-4 bg-light-primary/10"
       padding="p-0"></div>
 
@@ -177,6 +114,7 @@ import { ref, computed, nextTick, onMounted, onUnmounted, watch, defineAsyncComp
 import { api } from '@/services/api'
 import { useNotificationStore } from '@/stores/notification'
 import ModalCetak from './ModalCetak.vue'
+import { formatDateIndo, formatWaktuSisa, getYearEndDate, getYearStartDate } from '@/utils/dateHelper'
 
 const notify = useNotificationStore().notify
 const ListRincian = defineAsyncComponent(() => import('./ListRincian.vue'))
@@ -187,26 +125,30 @@ const props = defineProps({
   mode: { type: String, default: 'add' }
 })
 
-const searchSupplier = ref('')
-const searchBarang = ref('')
+const cabangList = ref([])
 const menuBarangRef = ref(null)
-const inpJumlahRef = ref(null)
 const loadingLock = ref(false)
-const cabangselected = ref(null)
 const modalCetak = ref(false)
+const loading = ref(false)
 
 const today = new Date().toISOString().split('T')[0];
 
 const form = ref({
   kode_mutasi: '',
-  tgl_permintaan: today,
-  pengirim: '',
-  dari: '',
-  tujuan: '',
-  satuan_k: '',
-  jumlah_k: '',
+  kode_barang: '',
+  distribusi: '',
   harga_beli: '',
+  satuan_k: '',
+  
 })
+const distribusiTersimpan = ref(false)
+
+function handleDistribusiSaved(item) {
+  distribusiTersimpan.value = true
+}
+function handleDistribusiDelete(item) {
+  distribusiTersimpan.value = false
+}
 
 const error = computed(() => {
   const err = props.store.error
@@ -225,71 +167,33 @@ function errorMessage(field){
   return error.value?.[field]?.[0] ?? null
 } 
 
-const handleSelected = (item) => {
-  // console.log('handleSelected cabang', item);
-  // cabangselected.value = item
-  props.store.supplierSelected = item
-  form.value.tujuan = item?.kodecabang ?? null
-  searchSupplier.value = ''
-  
-}
-const handleSelectedBarang = (item) => {
-  props.store.barangSelected = item
-  form.value.kode_barang = item?.kode ?? null
-  form.value.satuan_k = item?.satuan_k ?? null
-  form.value.harga_beli = item?.harga_beli ?? null
-  searchBarang.value = ''
-  handleFocus(inpJumlahRef)
-}
 
 const handlePrint = () => {
   modalCetak.value = true
 }
 
-const handleFocus = async (e) => {
-  
-  await nextTick()
-  const el = e?.value
-  el?.inputRef?.focus()
-  el?.inputRef?.select()
-  
-}
 
-function handleClickOutside(event) {
-  if (menuBarangRef.value && !menuBarangRef.value.contains(event.target)) {
-    clearSelectedBarang()
+async function loadCabang() {
+  loading.value = true
+  try {
+    const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
+    if (response.status === 200) {
+      const allcabang = response.data
+      cabangList.value = allcabang.data.filter(a => a.kodecabang === kodetoko.value).map(c => c.kodecabang)
+
+    }
+  } catch (err) {
+    console.error('Gagal load cabang:', err)
+    err.message || 'Gagal memuat data cabang'
+  } finally {
+    loading.value = false
   }
-}
-
-const onItemsLoaded = (items) => {
-  // console.log('items', items);
-  
-}
-const onItemsLoadedBarang = (items) => {
-  // console.log('items', items);
-  
-}
-
-
-const handleSubmit = (e) => {
-  e.preventDefault()
-  e.stopPropagation()
-  const supplierBackup = props.store.supplierSelected
-  props.store.create(form.value)
-  .then(() => {
-    clearSelectedBarang()
-    props.store.supplierSelected = supplierBackup
-  })
-}
-
-const handleBatal = () => {
-  clearSelectedBarang()
 }
 
 const handleKunci = async (e) => {
   e.preventDefault()
   e.stopPropagation()
-  const status = (props.store.form?.status === '1' || props.store.form?.status === 1)
+  // const status = (props.store.form?.status === '1' || props.store.form?.status === 1)
   const kode_mutasi = props.store.form?.kode_mutasi
   const payload = {
     kode_mutasi
@@ -299,15 +203,10 @@ const handleKunci = async (e) => {
 
   let resp
   try {
-    if (!status) {
-      resp = await api.post(`api/v1/transactions/mutasi/kirim`, payload)
-    } 
-    // else {
-    //   resp = await api.post(`api/v1/transactions/order/unlock-order`, payload)
-    // }
+    resp = await api.post(`api/v1/transactions/mutasi/kirim-distribusi`, payload)
+  
     notify({ message: resp?.data?.message, type: 'success' })
-    // console.log('resp', resp);
-    // return
+
   } catch (error) {
     console.log('error', error);
     notify({ message: error?.message ?? 'Gagal Kirim', type: 'error' })
@@ -315,18 +214,23 @@ const handleKunci = async (e) => {
   } finally {
     loadingLock.value = false
   }
-  
 
-  const data = resp?.data?.data
-  props.store.form.status = data?.status
-  props.store.initModeEdit(data)
-  props.store.fetchAll()
+  loadCabang()
+
+  const params = {
+    from: getYearStartDate(),
+    to: getYearEndDate(),
+    tujuan: cabangList.value,
+    status: '1'
+  }
+  props.store.fetchAll(params)
   initForm()
 
 }
 
 onMounted(() => {
   // document.addEventListener('click', handleClickOutside)
+  console.log('mounted distribusi formpage', props.store?.form);
   initForm()
 })
 
