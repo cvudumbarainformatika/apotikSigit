@@ -6,7 +6,7 @@
       <u-card class="col-span-2 h-full min-h-[100px] space-y-4">
         <u-row>
           <u-icon name="layers" class="w-4 h-4" />
-          <u-text class="font-bold">Informasi Distribusi</u-text>
+          <u-text class="font-bold">Informasi Permintaan</u-text>
         </u-row>
         <u-row>
           <u-input v-model="form.kode_mutasi" label="Nomor Permintaan(Auto)" readonly :error="isError('kode_mutasi')"
@@ -18,7 +18,7 @@
       <u-card class="col-span-3 h-full space-y-4">
         <u-row>
           <u-icon name="users" class="w-4 h-4" />
-          <u-text class="font-bold">Distribusi ke Cabang</u-text>
+          <u-text class="font-bold">Terima Dari Cabang</u-text>
         </u-row>
         <u-row>
           <div v-if="store.supplierSelected"
@@ -27,7 +27,7 @@
               <u-row flex1 class="w-full">
                 <u-icon name="UserSearch" class="w-5 h-5 text-primary" />
                 <u-text>
-                  {{ store.supplierSelected?.dari?.namacabang }}
+                  {{ store.supplierSelected?.tujuan?.namacabang }}
                 </u-text>
               </u-row>
               <button @click="clearSelectedSupplier" class="text-primary hover:text-danger " aria-label="Hapus">
@@ -82,16 +82,16 @@
           <u-text class="font-bold" size="sm">{{ store.form?.rinci?.length || 0 }}</u-text>
         </u-row>
         <u-row>
-          <u-badge v-if="store.form?.status === '1'" variant="danger">Belum Dikirim</u-badge>
+          <u-badge v-if="store.form?.status === '2'" variant="danger">Belum Diterima</u-badge>
           <u-badge v-else :variant="store.mode === 'add' ? 'success' : 'warning'">Mode {{ store.mode === 'add' ?
             'Tambah' : 'Edit' }}</u-badge>
         </u-row>
         <u-separator spacing="-my-1"></u-separator>
         <u-row class="z-9">
-          <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn>
+          <!-- <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn> -->
           <u-btn v-if="store.mode === 'edit'" variant="secondary" :loading="loadingLock"
             @click="handlePrint">Print</u-btn>
-          <u-btn v-if="store.form && distribusiTersimpan" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
+          <u-btn v-if="store.form" :loading="loadingLock" @click="handleKunci">Terima</u-btn>
 
         </u-row>
         <u-row class="z-9">
@@ -117,7 +117,6 @@ import ModalCetak from './ModalCetak.vue'
 import { formatDateIndo, formatWaktuSisa, getYearEndDate, getYearStartDate } from '@/utils/dateHelper'
 import { useAppStore } from '@/stores/app'
 
-const app = useAppStore()
 const notify = useNotificationStore().notify
 const ListRincian = defineAsyncComponent(() => import('./ListRincian.vue'))
 
@@ -126,7 +125,7 @@ const props = defineProps({
   title: { type: String, default: 'Data' },
   mode: { type: String, default: 'add' }
 })
-
+const app = useAppStore()
 const cabangList = ref([])
 const menuBarangRef = ref(null)
 const loadingLock = ref(false)
@@ -143,13 +142,13 @@ const form = ref({
   satuan_k: '',
   
 })
-const distribusiTersimpan = ref(false)
+const terimaDistribusi = ref(false)
 
 function handleDistribusiSaved(item) {
-  distribusiTersimpan.value = true
+  terimaDistribusi.value = true
 }
 function handleDistribusiDelete(item) {
-  distribusiTersimpan.value = false
+  terimaDistribusi.value = false
 }
 
 const error = computed(() => {
@@ -195,7 +194,6 @@ async function loadCabang() {
 const handleKunci = async (e) => {
   e.preventDefault()
   e.stopPropagation()
-  // const status = (props.store.form?.status === '1' || props.store.form?.status === 1)
   const kode_mutasi = props.store.form?.kode_mutasi
   const payload = {
     kode_mutasi
@@ -205,7 +203,7 @@ const handleKunci = async (e) => {
 
   let resp
   try {
-    resp = await api.post(`api/v1/transactions/mutasi/kirim-distribusi`, payload)
+    resp = await api.post(`api/v1/transactions/mutasi/terima`, payload)
   
     notify({ message: resp?.data?.message, type: 'success' })
 
@@ -222,8 +220,8 @@ const handleKunci = async (e) => {
   const params = {
     from: getYearStartDate(),
     to: getYearEndDate(),
-    tujuan: cabangList.value,
-    status: '1'
+    dari: cabangList.value,
+    status: '2'
   }
   await props.store.fetchAll(params)
   initForm()

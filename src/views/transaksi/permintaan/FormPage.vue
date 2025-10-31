@@ -21,7 +21,7 @@
       <u-card class="col-span-3 h-full space-y-4">
         <u-row>
           <u-icon name="users" class="w-4 h-4" />
-          <u-text class="font-bold">Informasi Cabang</u-text>
+          <u-text class="font-bold">Permintaan ke Cabang</u-text>
         </u-row>
         <u-row>
           <u-autocomplete v-model="searchSupplier" placeholder="Cari Cabang" :debounce="300" :min-search-length="2"
