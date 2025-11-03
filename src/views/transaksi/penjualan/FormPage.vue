@@ -766,9 +766,9 @@ function handleKeydown(e) {
     e.preventDefault();
     e.stopPropagation();
     inpPembayaranRef.value?.focus();
-  // } else if (e.key === 'F2') {
-  //   e.preventDefault();
-  //   if (searchBox.value) searchBox.value.focus();
+  } else if (e.key === 'F1') {
+    e.preventDefault();
+    window.location.reload()
   // } else if (e.key === 'F3') {
   //   e.preventDefault();
   //   if (cart.value.length > 0) {
@@ -786,7 +786,7 @@ function handleKeydown(e) {
   //     addToCart(lastClickedProduct.value);
   //   }
   } else if (e.key === 'Escape') {
-    if (showModal.value) closeModal();
+    if (props?.store?.barangSelected) handleOk();
   }
 }
 
