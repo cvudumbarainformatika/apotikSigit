@@ -113,7 +113,7 @@
               </div>
 
               <div class="col-span-12">
-                <u-separator spacing="-my-2"></u-separator>
+                <u-separator spacing="-my-2 "></u-separator>
               </div>
 
               <u-row class="col-span-4">

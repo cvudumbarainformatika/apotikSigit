@@ -3,7 +3,7 @@
     <u-grid cols="6">
 
       <!-- HEADER 1 -->
-      <u-card class="col-span-2 h-full min-h-[100px] space-y-2">
+      <!-- <u-card class="col-span-2 h-full min-h-[100px] space-y-2">
         <u-row>
           <u-icon name="layers" class="w-4 h-4" />
           <u-text class="font-bold">Informasi Penjualan</u-text>
@@ -28,13 +28,6 @@
           </div>
         </u-row>
         <u-row >
-          <!-- <div 
-            class="bg-primary/10 border border-primary rounded-xl shadow-sm p-2 transition-all duration-300 hover:shadow-md w-full">
-            <div class="flex flex-1 justify-center items-center">
-              <u-text class="font-medium" size="md" color="text-light-primary">{{ currentTime }}</u-text>
-             
-            </div>
-          </div> -->
 
           <div
             class="inline-flex rounded-lg overflow-hidden border border-light-primary bg-grady-primary w-full justify-center">
@@ -51,8 +44,8 @@
           </div>
         </u-row>
         
-      </u-card>
-
+      </u-card> -->
+      <HeaderOne :jenis="jenis" :auth="auth" class="col-span-2" />
       <!-- HEADER 2 -->
       <u-card class="col-span-2 h-full space-y-2">
         <u-row>
@@ -169,6 +162,7 @@
           </u-row>
           <u-row>
             <u-autocomplete v-model="searchBarang" placeholder="Cari Barang" 
+              ref="searchBarangRef"
               :debounce="300" :min-search-length="2" 
               item-key="id" 
               item-label="nama"
@@ -185,15 +179,17 @@
                     <u-col gap="gap-1">
                       <u-text size="sm" class="font-medium">{{ item?.nama }}</u-text>
                       <u-row class="-mt-1" gap="gap-1">
-                        <u-text class="">{{ item?.kode }}</u-text>
+                        <u-text class="">
+                          {{ item?.barcode }} | ({{ lihatStokAll(item) }}) {{ item?.satuan_k }}
+                        </u-text>
                       </u-row>
                     </u-col>
                   </u-row>
                   <u-row>
                     <u-col align="items-end" gap="gap-1">
-                      <u-text class="-mb-1">Total Stok</u-text>
+                      <u-text class="-mb-1">Harga</u-text>
                       <u-text size="lg" class="font-medium">
-                        {{ lihatStokAll(item) }}
+                        {{ lihatHargaBy(item) }}
                       </u-text>
                     </u-col>
                   </u-row>
@@ -207,70 +203,54 @@
           <u-row class="relative -mt-4">
             <div v-if="store?.barangSelected"
               ref="menuBarangRef"
-              class="bg-background border-1 border-primary rounded-xl shadow-sm p-4 transition-all duration-300 hover:shadow-md w-full absolute z-10 -top-4">
+              class="bg-background border-1 border-primary rounded-xl shadow-sm p-4 transition-all duration-300 hover:shadow-md w-full absolute z-10 -top-8">
               <u-grid cols="12" gap="gap-4">
                 <div class="col-span-6">
                   <u-text class="font-medium" size="md">{{ store.barangSelected?.nama }}</u-text>
+                  <u-text class="text-light-primary/90 -mt-1" size="xs">
+                     {{ store.barangSelected?.barcode }} | ({{ lihatStokAll(store.barangSelected) }}) {{ store.barangSelected?.satuan_k }}
+                  </u-text>
                 </div>
 
-                <div class="col-span-6 flex items-center justify-end gap-2">
-                  <u-text>Total Stok : </u-text> <u-text class="font-bold" size="lg">  {{ lihatStokAll(store.barangSelected) }}</u-text>
+                <div class="col-span-6  gap-2">
+                  <div class="flex items-center justify-end">
+                    <u-text>Rp : </u-text> <u-text class="font-bold" size="lg">  {{ formatRupiah(getHargaJual(store.barangSelected)) }}</u-text>
+                  </div>
+                  <div class="flex items-center justify-end -mt-1">
+                    <u-text class=" text-light-primary/90" size="xs">
+                      / {{ store.barangSelected?.satuan_k }}
+                    </u-text>
+                  </div>
                 </div>
-
-                <!-- <div class="col-span-12">
-                  <u-separator spacing="-my-2"></u-separator>
-                </div> -->
-              </u-grid>
-              <u-col flex1 class="w-full" gap="gap-0">
-                <template v-for="(item,) in store.barangSelected?.stok" :key="item?.id">
-                  <u-row flex1 class="w-full bg-secondary" gap="gap-2" padding="px-2 py-3">
-                    <u-row flex1 class="w-full items-start">
-                      <u-text class="italic" label="Expired : " />
-                      <div>
-                        <u-text class="font-medium italic">
-                          {{ formatDateIndo(item?.tgl_exprd) }}
-                        </u-text>
-                        <u-text color="text-gray-500 italic">
-                          {{ formatWaktuSisa(item?.tgl_exprd) }}
-                        </u-text>
-                      </div>
-                    </u-row>
-                    <u-row gap="gap-3">
-                      <div class="flex flex-col">
-                        <div class="text-right">
-                          <div>
-                            <div class="text-xs">Harga : <b class="font-bold text-sm">Rp. {{ formatRupiah(getHargaJual()) }} </b></div>
-                          </div>
-                          <div>
-                            <div class="text-xs">Sisa Stok : <b class="font-bold text-md">{{  item?.jumlah_k }}</b></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="w-20" :class="{ 'animate-shake': parseInt(item?.jumlah) > parseInt(item?.jumlah_k) }">
-                        <u-input type="number" v-model.number="item.jumlah" label="Jumlah" @focus="handleFocusJumlah" 
-                          :error="parseInt(item?.jumlah) > parseInt(item?.jumlah_k)"
+                <div class="col-span-12 -mt-4">
+                  <u-separator spacing="-mb-8"></u-separator>
+                </div>
+                <u-row flex1 class="col-span-12 w-full -mt-4" gap="gap-2">
+                  <u-grid cols="12">
+                    <u-row class="col-span-3">
+                      <u-input ref="inpJumlahRef" v-model="form.jumlah_k" label="jumlah" type="number"
+                        :error="isError('jumlah_k')" :error-message="errorMessage('jumlah_k')" 
+                        @keydown.enter.stop="()=> {
+                          inpDiscRef?.focus()
+                        }"
                         />
-                      </div>
-                      <div class="w-24" >
-                        <u-input type="number" v-model.number="item.diskon" label="Disc" 
-                          
-                        />
-                      </div>
-
-                      <!-- <u-btn :disabled="(parseInt(item?.jumlah) > parseInt(item?.jumlah_k)) || parseInt(item?.jumlah) === 0" 
-                        :loading="store.loadingSave"
-                        variant="secondary" size="sm" @click.stop="handleAdd(item)">Ad</u-btn> -->
-                      <u-btn-icon :disabled="(parseInt(item?.jumlah) > parseInt(item?.jumlah_k)) || parseInt(item?.jumlah) === 0" 
-                        :loading="store.loadingSave"
-                        icon="check" variant="secondary" size="sm" @click.stop="handleAdd(item)" />
                     </u-row>
-                  </u-row>
-                  <u-separator spacing=""></u-separator>
-                </template>
-                <u-row flex1 right class="w-full mt-2"  gap="gap-2">
-                  <u-btn  @click="handleOk">Tutup</u-btn>
+                    <u-row class="col-span-3">
+                      <u-input ref="inpDiscRef" v-model="form.diskon" label="discount Rp" type="number"
+                        :error="isError('diskon')" :error-message="errorMessage('diskon')" 
+                        @keydown.enter.stop="()=> {
+                          handleAdd(store.barangSelected)
+                        }"
+                        />
+                    </u-row>
+                    <u-row flex1 right class="col-span-6 w-full mt-2"  gap="gap-2">
+                      <u-btn-icon icon="add" variant="secondary" tooltip="Simpan Rincian"  @click="handleAdd(store.barangSelected)" />
+                      <u-btn-icon icon="cancel" tooltip="Tutup"  @click="handleOk" />
+                    </u-row>
+                  </u-grid>
                 </u-row>
-              </u-col>
+              </u-grid>
+              
 
             </div>
           </u-row>
@@ -326,7 +306,9 @@
 
 
           <u-row v-if="store.mode === 'edit'" class="w-full">
-            <u-input v-model.number="formBayar.jumlah_bayar" label="Pembayaran" :error="errorPembayaran"/>
+            <u-input ref="inpPembayaranRef" v-model.number="formBayar.jumlah_bayar" label="Pembayaran" :error="errorPembayaran"
+              @keydown.enter.stop="simpanPenjualan"
+            />
           </u-row>
           <u-row>
             <u-text>Kembali : Rp. </u-text>
@@ -354,10 +336,12 @@
 import { ref, computed, nextTick, onMounted, onUnmounted, watch, defineAsyncComponent } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { api } from '@/services/api'
-import { formatWaktuSisa, formatDateIndo } from '@/utils/dateHelper'
+import { formatWaktuSisa, formatDateIndo, toLocalDateString } from '@/utils/dateHelper'
 import { formatRupiah } from '@/utils/numberHelper'
 import { useNotificationStore } from '@/stores/notification'
 import ModalNota from './ModalNota.vue'
+
+import HeaderOne from './compForm/HeaderOne.vue'
 
 
 const ListRincian = defineAsyncComponent(() => import('./ListRincian.vue'))
@@ -370,12 +354,12 @@ const props = defineProps({
 })
 
 function lihatStokAll(item) {
-  // console.log('lihatStokAll', item);
-  const stocks = item?.stok
+  // console.log('lihatStokAll', item?.stok);
+  const stocks = item?.stok ?? null
 
-  if (!stocks?.length) return 0
+  if (!stocks) return 0
 
-  return stocks?.reduce((a, b) => parseInt(a) + parseInt(b.jumlah_k), 0)
+  return parseInt(stocks?.jumlah_k ?? 0)
   
 }
 
@@ -384,8 +368,11 @@ const auth = useAuthStore()
 const searchPelanggan = ref('')
 const searchDokter = ref('')
 const searchBarang = ref('')
+const searchBarangRef = ref('')
 const menuBarangRef = ref(null)
 const inpJumlahRef = ref(null)
+const inpDiscRef = ref(null)
+const inpPembayaranRef = ref(null)
 const loadingLock = ref(false)
 const modalNota = ref(false)
 
@@ -415,7 +402,7 @@ onUnmounted(() => {
 })
 
 const form = ref({
-  nopenjualan: '',
+  nopenjualan: null,
   tgl_penjualan: null,
   kode_pelanggan: '',
   kode_dokter: '',
@@ -426,10 +413,10 @@ const form = ref({
   isi: '',
   harga_jual: 0,
   harga_beli: 0,
-  id_penerimaan_rinci: null,
-  nopenerimaan: null,
-  nobatch: null,
-  tgl_exprd: null,
+  // id_penerimaan_rinci: null,
+  // nopenerimaan: null,
+  // nobatch: null,
+  // tgl_exprd: null,
   id_stok: null,
   hpp: '',
   diskon: 0,
@@ -445,8 +432,6 @@ const formBayar = ref({
 })
 
 watch(() => ({ ...props.store.form }), (newForm, oldForm) => {
-  // console.log('🔥 watch form', newForm, oldForm);
-  
   for (const key in newForm) {
     if (newForm[key] !== oldForm[key]) {
       props.store.clearFieldError(key)
@@ -525,7 +510,7 @@ const groupedItems = computed(() => {
   const map = new Map()
 
   const items = props?.store?.form?.rinci ?? []
-  console.log('groupedItems', items);
+  // console.log('groupedItems', items);
   items.forEach(item => {
     const key = item.kode_barang
     if (!map.has(key)) {
@@ -558,43 +543,47 @@ const groupedItems = computed(() => {
 
 
 const handleOk = () => {
-  console.log('handleOk');
+  // console.log('handleOk');
   clearSelectedBarang()
   
+}
+
+const lihatHargaBy = (item) => {
+  const harga = item?.harga_jual_umum || 0
+  return formatRupiah(harga)
 }
 const handleAdd = async(item) => {
   // console.log('handleAdd', item);
   // console.log('handleAdd', props.store.barangSelected);
 
   const selected = props?.store?.barangSelected ?? null
-  console.log('handleAdd', selected);
-  form.value.kode_barang = item?.kode_barang ?? null
-  form.value.jumlah_k = item?.jumlah ?? 0
-  form.value.diskon = item?.diskon ?? 0
+  // console.log('handleAdd', selected);
+
+  const hrIni = new Date()
+
+  form.value.tgl_penjualan = toLocalDateString(hrIni) ?? null
+  form.value.kode_barang = item?.kode ?? null
   form.value.satuan_k = item?.satuan_k ?? null
   form.value.satuan_b = item?.satuan_b ?? null
   form.value.isi = parseInt(item?.isi ?? 1)
   form.value.harga_jual = getHargaJual()
-  form.value.harga_beli = parseInt(item?.harga_total ?? 0)
-  form.value.id_penerimaan_rinci = parseInt(item?.id_penerimaan_rinci)
-  form.value.nopenerimaan = item?.nopenerimaan ?? null
-  form.value.nobatch = item?.nobatch ?? null
-  form.value.tgl_exprd = item?.tgl_exprd ?? null
-  form.value.id_stok = item?.id ?? null
-  form.value.hpp = parseFloat(selected?.hpp)
+  form.value.harga_beli = parseInt(item?.harga_beli ?? 0)
+  // form.value.nobatch = item?.nobatch ?? null
+  // form.value.tgl_exprd = item?.tgl_exprd ?? null
+  form.value.id_stok = item?.stok?.id ?? null
+  form.value.hpp = parseFloat(item?.harga_beli ?? 0)
 
 
   console.log('form', form.value);
   props.store.create(form.value)
+
+  handleOk()
   
 }
 
 function getHargaJual() {
   const selected = props?.store?.barangSelected ?? null
-  // const resep = parseFloat(selected?.hpp ?? 0) + (parseFloat(selected?.hpp ?? 0) * parseInt(selected?.persen_resep ?? 0) / 100)
-  // const biasa = parseFloat(selected?.hpp ?? 0) + (parseFloat(selected?.hpp ?? 0) * parseInt(selected?.persen_biasa ?? 0) / 100)
-  return form.value.kode_dokter ? parseInt(selected?.harga_jual_resep_k ?? 0) : parseInt(selected?.harga_jual_biasa_k ?? 0)
-  // return form.value.kode_dokter ? Math.ceil(resep) : Math.ceil(biasa)
+  return form.value.kode_dokter ? parseInt(selected?.harga_jual_resep ?? 0) : parseInt(selected?.harga_jual_umum ?? 0)
 }
 
 const handleSelectedPelanggan = (item) => {
@@ -627,7 +616,7 @@ const handleSelectedBarang = (item) => {
       if (idStok) {
         const keeping = item?.penjualan_rinci.filter(el => el.id_stok === idStok)
         const totalKeeping = keeping?.reduce((a, b) => parseInt(a) + parseInt(b.jumlah_k), 0)
-        console.log('keeping', totalKeeping);
+        // console.log('keeping', totalKeeping);
         
       }
 
@@ -635,25 +624,13 @@ const handleSelectedBarang = (item) => {
   }
 
   props.store.barangSelected = item
-  console.log('handleSelectedBarang form', item);
+  // console.log('handleSelectedBarang form', item);
   searchBarang.value = ''
-  handleFocus(inpJumlahRef)
+  setTimeout(() => inpJumlahRef.value?.focus(), 80)
   
 }
 
-const handleFocus = async (e) => {
-  
-  await nextTick()
-  const el = e?.value
-  // console.log('handleFocus', el);
-  el?.inputRef?.focus()
-  el?.inputRef?.select()
-  
-}
 
-const handleFocusJumlah = async (e) => {
-  // console.log('handleFocusJumlah', e);
-}
 
 
 function handleClickOutside(event) {
@@ -681,11 +658,17 @@ const clearSelectedDokter = () => {
 }
 const clearSelectedBarang = () => {
   props.store.barangSelected = null
-  form.value.kode_barang = ''
+  form.value.kode_barang = null
   form.value.satuan_k = ''
   form.value.satuan_b = ''
   form.value.isi = 0
-  form.value.jumlah_pesan = 1
+  form.value.jumlah_k = 1
+  form.value.diskon = 0
+  form.value.harga_beli = 0
+  form.value.harga_jual = 0
+  form.value.hpp = 0
+  form.value.id_stok = null
+
 }
 
 
@@ -745,13 +728,22 @@ const handleCloseModalNota = () => {
 
 onMounted(() => {
   // document.addEventListener('click', handleClickOutside)
+  window.addEventListener('keydown', handleKeydown);
   initForm()
+
+ setTimeout(() => {
+    initCursor()
+  }, 200)
+})
+
+onUnmounted(() => {
+  // document.removeEventListener('click', handleClickOutside)
 })
 
 function initForm(){
   const today = new Date().toISOString().split('T')[0];
-  form.value.tgl_order = today
-  form.value.nomor_order = ''
+  form.value.tgl_penjualan = today
+  // form.value.nomor_order = ''
   props.store.init()
   clearSelectedBarang()
   clearSelectedPelanggan()
@@ -761,18 +753,52 @@ function initForm(){
   formBayar.value.cara_bayar = 'TUNAI'
 } 
 
-onUnmounted(() => {
-  // document.removeEventListener('click', handleClickOutside)
-})
+async function initCursor(){
+  await nextTick()
+  const el = searchBarangRef?.value
+  console.log('el', el);
+  
+  el?.focus?.()
+}
+
+function handleKeydown(e) {
+  if (e.key === 'F2') {
+    e.preventDefault();
+    e.stopPropagation();
+    inpPembayaranRef.value?.focus();
+  // } else if (e.key === 'F2') {
+  //   e.preventDefault();
+  //   if (searchBox.value) searchBox.value.focus();
+  // } else if (e.key === 'F3') {
+  //   e.preventDefault();
+  //   if (cart.value.length > 0) {
+  //     cart.value[cart.value.length - 1].qty += 1;
+  //   }
+  // } else if (e.key === 'F4') {
+  //   e.preventDefault();
+  //   removeLastItem();
+  // } else if (e.key === 'F5') {
+  //   e.preventDefault();
+  //   clearCart();
+  // } else if (e.key === 'F6') {
+  //   e.preventDefault();
+  //   if (lastClickedProduct.value) {
+  //     addToCart(lastClickedProduct.value);
+  //   }
+  } else if (e.key === 'Escape') {
+    if (showModal.value) closeModal();
+  }
+}
 
 
 
-watch(() => props.store.maxRight, (newMax, oldMax) => {
-  // if (!newMax) {
-  //   initForm()
-  // }
-  console.log('newMax', newMax);
-  console.log('form', form.value);
+
+
+watch(() => props.store.mode, (obj) => {
+  
+  if (obj === 'edit') {
+    initCursor()
+  }
   
 }, { deep: true })
 

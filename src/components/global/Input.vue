@@ -89,7 +89,13 @@ function handleClickError() {
 
 const hasValue = computed(() => !!props.modelValue)
 
-defineExpose({ inputRef })
+function focus() {
+  inputRef.value?.focus()
+  inputRef.value?.select()
+}
+
+defineExpose({ inputRef, focus })
+
 </script>
 
 
