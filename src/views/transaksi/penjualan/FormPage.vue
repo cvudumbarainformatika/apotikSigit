@@ -689,14 +689,10 @@ const simpanPenjualan = async (e) => {
     loadingLock.value = false
   }
   
-
   const data = resp?.data?.data
   props.store.form.flag = data?.flag
   props.store.initModeEdit(data)
 
-  
-
-  
 }
 
 const handleCloseModalNota = () => {

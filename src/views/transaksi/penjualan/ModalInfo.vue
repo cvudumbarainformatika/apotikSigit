@@ -1,5 +1,5 @@
 <template>
-    <u-modal persistent :title="title" @close="emit('close')">
+    <u-modal persistent :title="'Info Shortcut Kasir'" @click="handleClose">
         <template #default>
             <div class="w-full mx-auto bg-white rounded-lg text-gray-800 space-y-3 p-2">
                 <div v-for="(item, i) in shortcutList" :key="i"
@@ -16,15 +16,15 @@
         </template>
 
         <template #footer>
-            <u-row flex1 class="w-full" right>
+            <!-- <u-row flex1 class="w-full" right>
                 <u-btn variant="secondary" label="Tutup" @click="emit('close')" />
-            </u-row>
+            </u-row> -->
         </template>
     </u-modal>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { defineProps, defineEmits, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
     title: { type: String, default: 'Informasi Shortcut Kasir' },
@@ -36,10 +36,30 @@ const shortcutList = [
     { keys: ['Ctrl', '1'], action: 'Fokus ke Cari Pelanggan' },
     { keys: ['Ctrl', '2'], action: 'Fokus ke Cari Dokter' },
     { keys: ['F2'], action: 'Fokus ke Input Pembayaran' },
-    { keys: ['Ctrl', 'Space'], action: 'Ganti metode pembayaran (Tunai / Transfer)' },
-    { keys: ['F1'], action: 'Reload halaman kasir' },
-    { keys: ['Escape'], action: 'Konfirmasi transaksi (selesaikan penjualan)' },
+    { keys: ['Ctrl', 'Space'], action: 'Ganti Metode Pembayaran (Tunai / Transfer)' },
+    { keys: ['F1'], action: 'Reload Halaman Kasir' },
+    { keys: ['Ctrl', 'i'], action: 'Buka Info Shortcut' },
+    { keys: ['Escape'], action: 'Batal Pilih Barang / Tutup Komponen' },
 ]
+
+function handleClose() {
+    emit('close')
+}
+
+function handleKeydown(e) {
+    if (e.key === 'Escape') {
+        e.preventDefault()
+        handleClose()
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('keydown', handleKeydown)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <style scoped>

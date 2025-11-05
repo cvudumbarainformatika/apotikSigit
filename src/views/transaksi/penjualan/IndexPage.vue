@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import { usePenjualanStore } from '@/stores/template/register'
 import { useRoute } from 'vue-router'
@@ -44,10 +44,22 @@ onMounted(() => {
   store.per_page = 20
   store.range.start_date = today
   store.range.end_date = today
-  Promise.all([
+  // Promise.all([
     store.fetchAll()
-  ])
+  // ])
+  window.addEventListener('keydown', handleGlobalShortcut)
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleGlobalShortcut)
+})
+
+function handleGlobalShortcut(e) {
+  if (e.ctrlKey && e.key.toLowerCase() === 'i') {
+    e.preventDefault()
+    handleInfo()
+  }
+}
 
 function handleInfo() {
   showShortcutInfo.value = true
