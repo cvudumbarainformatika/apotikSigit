@@ -1,5 +1,5 @@
 <template>
-  <base-transaksi :title="title" :titleKanan="`Riwayat ${title}`" :store="store">
+  <base-transaksi :title="title" :titleKanan="`Riwayat ${title}`" showinfoButton :store="store" :onInfo="handleInfo">
     <template #kiri>
       <FormPage :store="store" :title="title" :mode="store.mode" />
     </template>
@@ -11,24 +11,29 @@
       </template>
       <template v-else>
         <ListPage v-if="store.items.length" :store="store" :items="store.items" />
-        <u-empty :title="store.emptyTitle" subtitle="Belum Ada Data Order pada Periode Ini" v-else-if="!store.loading && !store.items.length" />
+        <u-empty :title="store.emptyTitle" subtitle="Belum Ada Data Order pada Periode Ini"
+          v-else-if="!store.loading && !store.items.length" />
       </template>
     </template>
+
+
   </base-transaksi>
+  <modal-info v-model="showShortcutInfo" title="Cetak Order" @close="showShortcutInfo = false" />
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import { usePenjualanStore } from '@/stores/template/register'
 import { useRoute } from 'vue-router'
+import ModalInfo from './ModalInfo.vue'
 
 const BaseTransaksi = defineAsyncComponent(() => import('@/components/templates/BaseTransaksi.vue'))
 const FormPage = defineAsyncComponent(() => import('./FormPage.vue'))
 const ListPage = defineAsyncComponent(() => import('./ListPage.vue'))
 
 
-
+const showShortcutInfo = ref(false)
 const store = usePenjualanStore()
 const route = useRoute()
 const title = computed(() => route?.meta?.title)
@@ -43,5 +48,9 @@ onMounted(() => {
     store.fetchAll()
   ])
 })
+
+function handleInfo() {
+  showShortcutInfo.value = true
+}
 
 </script>

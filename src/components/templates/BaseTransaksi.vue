@@ -8,6 +8,11 @@
           <u-row flex1>
             <div class="font-medium text-lg text-primary">{{ title }}</div>
           </u-row>
+          <u-row>
+            <div class="pr-2">
+              <u-btn-icon v-if="showinfoButton" class="" icon="info" tooltip="Info Shortcut" @click="onInfo" />
+            </div>
+          </u-row>
         </u-view>
         <u-separator />
 
@@ -65,6 +70,8 @@ const props = defineProps({
   title: { type: String, default: 'Title' },
   titleKanan: { type: String, default: 'Riwayat' },
   isLoadMore: { type: Boolean, default: true },
+  showinfoButton: { type: Boolean, default: false },
+  onInfo: Function,
   // onAdd: { type: Function, default: () => {} }, // ✅ supaya tidak error saat dipanggil
   // onRefresh: Function // ✅ hanya dipanggil kalau diberikan
 })
