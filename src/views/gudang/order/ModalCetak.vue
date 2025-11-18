@@ -8,10 +8,10 @@
         <div class="flex items-center gap-4">
           <img src="/images/logo.svg" alt="logo" class="w-14 h-14 object-contain" />
           <div>
-            <div class="text-xl font-semibold tracking-wide">{{ company?.nama || 'Nama Apotik nya' }}</div>
+            <div class="text-xl font-semibold tracking-wide">{{ company?.nama }}</div>
             <p class="text-sm text-gray-600">
-              {{ company?.address || 'Alamat Apotik nya' }}<br />
-              Tel: {{ company?.telepon || '08123456789' }}
+              {{ company?.alamat }}<br />
+              Tel: {{ company?.telepon }}
             </p>
           </div>
         </div>
@@ -146,7 +146,6 @@ const emit = defineEmits(['close', 'save'])
 
 
 const app = useAppStore()
-
 const company = computed(() => {
   return app?.form || null
 })

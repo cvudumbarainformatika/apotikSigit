@@ -99,6 +99,13 @@
           <u-radio class="bg-background" v-model="form.hutang" value="HUTANG" label="HUTANG" />
           <u-radio class="bg-background" v-model="form.hutang" value="CASH" label="CASH" />
         </u-grid>
+        <u-grid cols="3" class="gap-2 mt-4" role="radiogroup">
+          <u-row class="">Diskon : </u-row>
+          <u-row class="">
+            <u-input v-model="form.diskon_heder" label="Disc(%)" :error="isError('diskon_heder')" type="number"
+              :error-message="errorMessage('diskon_heder')" />
+          </u-row>
+        </u-grid>
       </u-card>
     </u-grid>
 
@@ -174,9 +181,9 @@
                             <div>
                               <u-text>
                                 Diskon Rp. {{ formatRupiah(
-                                  ((Number(form.rincian[item.kode_barang]?.harga_b ?? 0) *
-                                    Number(form.rincian[item.kode_barang]?.jumlah_b ?? 0)) *
-                                    (Number(form.rincian[item.kode_barang]?.diskon_persen ?? 0) / 100))
+                                ((Number(form.rincian[item.kode_barang]?.harga_b ?? 0) *
+                                Number(form.rincian[item.kode_barang]?.jumlah_b ?? 0)) *
+                                (Number(form.rincian[item.kode_barang]?.diskon_persen ?? 0) / 100))
                                 ) }}
                                 <!-- {{ nilaiDiskon }} -->
                               </u-text>
@@ -289,6 +296,7 @@ const form = ref({
   pajak: '',
   flag: null,
   hutang: '',
+  diskon_heder: 0,
 
   // rincian (object key by kode_barang)
   kode_barang: '',
@@ -486,6 +494,7 @@ function initForm() {
     satuan_b: '',
     pajak_rupiah: '',
     diskon_rupiah: '',
+    diskon_heder: 0,
     rincian: {},
   }
   // ambilOrder()
@@ -814,6 +823,7 @@ watch(
         pajak: newForm?.pajak,
         flag: newForm?.flag,
         hutang: newForm?.hutang,
+        diskon_heder: newForm?.diskon,
         rincian: rincianObj
       }
     }

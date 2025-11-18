@@ -51,7 +51,7 @@ function parseDate(str) {
 }
 
 function handleInput(e) {
- let raw = e.target.value
+  let raw = e.target.value
 
   // ❗ Hanya izinkan angka dan koma
   if (props.type === 'number') {
@@ -59,10 +59,10 @@ function handleInput(e) {
     e.target.value = raw // Untuk refleksi langsung di input
     internalValue.value = raw
 
-    const parsed = parseNumber(raw)
-    emit('update:modelValue', isNaN(parsed) ? null : parsed)
+    // const parsed = parseNumber(raw)
+    // emit('update:modelValue', isNaN(parsed) ? null : parsed)
 
-  
+
   } else {
     internalValue.value = raw
     emit('update:modelValue', raw)
@@ -78,7 +78,10 @@ function handleBlur() {
   emit('blur')
   isFocussed.value = false
   if (props.type === 'number') {
-    internalValue.value = formatNumber(props.modelValue)
+    const parsed = parseNumber(internalValue.value)
+    emit('update:modelValue', isNaN(parsed) ? null : parsed)
+
+    internalValue.value = formatNumber(parsed)
   }
 }
 

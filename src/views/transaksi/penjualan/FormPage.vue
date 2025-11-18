@@ -149,11 +149,11 @@
           <u-text class="font-bold">Informasi Item</u-text>
         </u-row>
         <u-row>
-          <u-autocomplete v-model="searchBarang" placeholder="Cari Barang" ref="searchBarangRef"
-            :debounce="300" :min-search-length="2" item-key="id" item-label="nama"
-            not-found-text="Data Barang tidak ditemukan" not-found-subtext="Coba kata kunci lain"
-            :show-add-button="false" api-url="/api/v1/transactions/penjualan/get-list-obat"
-            api-response-path="data.data" :api-params="{ per_page: 30 }" :use-api="true" @select="handleSelectedBarang">
+          <u-autocomplete v-model="searchBarang" placeholder="Cari Barang" ref="searchBarangRef" :debounce="300"
+            :min-search-length="2" item-key="id" item-label="nama" not-found-text="Data Barang tidak ditemukan"
+            not-found-subtext="Coba kata kunci lain" :show-add-button="false"
+            api-url="/api/v1/transactions/penjualan/get-list-obat" api-response-path="data.data"
+            :api-params="{ per_page: 30 }" :use-api="true" @select="handleSelectedBarang">
             <template #item="{ item }">
 
               <u-row flex1 class="w-full" gap="gap-2">
@@ -332,15 +332,6 @@ const props = defineProps({
   mode: { type: String, default: 'add' }
 })
 
-function lihatStokAll(item) {
-  // console.log('lihatStokAll', item?.stok);
-  const stocks = item?.stok ?? null
-
-  if (!stocks) return 0
-
-  return parseInt(stocks?.jumlah_k ?? 0)
-  
-}
 
 const auth = useAuthStore()
 
@@ -405,6 +396,15 @@ const form = ref({
   diskon: 0,
 
 })
+function lihatStokAll(item) {
+  // console.log('lihatStokAll', item?.stok);
+  const stocks = item?.stok ?? null
+
+  if (!stocks) return 0
+
+  return parseInt(stocks?.jumlah_k ?? item?.limit_stok ?? 0)
+
+}
 
 const loadingSimpan = ref(false)
 
@@ -536,13 +536,8 @@ const lihatHargaBy = (item) => {
   return formatRupiah(harga)
 }
 const handleAdd = async(item) => {
-  // console.log('handleAdd', item);
-  // console.log('handleAdd', props.store.barangSelected);
-
   const selected = props?.store?.barangSelected ?? null
-
   const hrIni = new Date()
-
   form.value.tgl_penjualan = toLocalDateString(hrIni) ?? null
   form.value.kode_barang = item?.kode ?? selected.kode ?? null
   form.value.satuan_k = item?.satuan_k ?? selected.satuan_k ?? null
@@ -555,6 +550,7 @@ const handleAdd = async(item) => {
   form.value.id_stok = item?.stok?.id ?? null
   form.value.hpp = parseFloat(item?.harga_beli ?? selected.harga_beli ?? 0)
 
+ 
   props.store.create(form.value)
 
   handleOk()
@@ -567,47 +563,36 @@ function getHargaJual() {
 }
 
 const handleSelectedPelanggan = (item) => {
-  // console.log('pelanggan', item);
-
-  
   props.store.pelangganSelected = item
   form.value.kode_pelanggan = item?.kode ?? null
   searchPelanggan.value = ''
   
 }
 const handleSelectedDokter = (item) => {
-  console.log('dokter', item);
-  
-  
   props.store.dokterSelected = item
   form.value.kode_dokter = item?.kode ?? null
   searchDokter.value = ''
   
 }
 const handleSelectedBarang = (item) => {
-
   const stok = item?.stok
   if (stok?.length) {
     for (let i = 0; i < stok?.length; i++) {
       const el = stok[i];
-      el.jumlah = 0 // ini menambah elemen jumlah
+      el.jumlah = 0
       el.diskon = 0
       const idStok = el?.id ?? null
       if (idStok) {
         const keeping = item?.penjualan_rinci.filter(el => el.id_stok === idStok)
         const totalKeeping = keeping?.reduce((a, b) => parseInt(a) + parseInt(b.jumlah_k), 0)
-        // console.log('keeping', totalKeeping);
-        
       }
 
     }
   }
 
   props.store.barangSelected = item
-  // console.log('handleSelectedBarang form', item);
   searchBarang.value = ''
   setTimeout(() => inpJumlahRef.value?.focus(), 80)
-  
 }
 
 
@@ -656,7 +641,6 @@ const clearSelectedBarang = () => {
 const simpanPenjualan = async (e) => {
   e.preventDefault()
   e.stopPropagation()
-  // console.log('store', props.store.items);
 
   const payload = {
     id: props.store.form?.id,
@@ -665,10 +649,6 @@ const simpanPenjualan = async (e) => {
     kembali: kembali.value ?? 0,
     cara_bayar: formBayar.value.cara_bayar ?? null,
   }
-  // console.log('store form', payload);
-
-  
-  // modalNota.value = true
   loadingLock.value = true
 
   let resp
@@ -703,7 +683,6 @@ const handleCloseModalNota = () => {
 }
 
 onMounted(() => {
-  // document.addEventListener('click', handleClickOutside)
   window.addEventListener('keydown', handleKeydown);
   initForm()
 
@@ -732,7 +711,6 @@ function initForm(){
 async function initCursor(){
   await nextTick()
   const el = searchBarangRef?.value
-  console.log('el', el);
   
   el?.focus?.()
   // tryFocus(searchBarangRef)

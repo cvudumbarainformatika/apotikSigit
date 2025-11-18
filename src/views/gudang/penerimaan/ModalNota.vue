@@ -80,21 +80,29 @@
             <div class="space-y-2 text-sm">
               Pembayaran: <span class="font-semibold">{{ form?.hutang }}</span>
             </div>
+            <div v-if="totalPajak == 0" class="space-y-2 text-xs mt-4">
+              Harga Sudah Termasuk Pajak
+            </div>
           </div>
+
           <div class="rounded-xl p-4 bg-gray-50">
             <div class="space-y-2 text-sm">
               <div class="flex items-center justify-between">
                 <span>Subtotal</span>
-                <span class="font-medium">Rp . {{ formatRupiah(subTotal) }}</span>
+                <span class="font-medium">Rp {{ formatRupiah(subTotal) }}</span>
               </div>
-              <div class="flex items-center justify-between">
+              <div v-if="diskonHeader != 0" class="flex items-center justify-between">
+                <span>Diskon </span>
+                <span class="font-medium">(Rp {{ formatRupiah(diskonHeader) }})</span>
+              </div>
+              <div v-if="totalPajak != 0" class="flex items-center justify-between">
                 <span>Pajak </span>
-                <span class="font-medium">Rp. {{ formatRupiah(totalPajak) }}</span>
+                <span class="font-medium">Rp {{ formatRupiah(totalPajak) }}</span>
               </div>
               <div class="border-t my-2"></div>
               <div class="flex items-center justify-between text-sm">
                 <span class="font-semibold">Total Penerimaan</span>
-                <span class="font-semibold">Rp . {{ formatRupiah(totalPenerimaan) }}</span>
+                <span class="font-semibold">Rp {{ formatRupiah(totalPenerimaan) }}</span>
               </div>
             </div>
           </div>
@@ -160,15 +168,18 @@ const app = useAppStore()
 const auth = useAuthStore()
 const { user } = storeToRefs(auth)
 
-
+// onMounted(async() => {
+//   await app.fetchData()
+//   console.log('Profil Toko', app.item)
+// })
 const printType = ref('a4') // 'a4' | 'thermal-58 | 'thermal-80' | 'thermal-100'
 const company = computed(() => {
+  console.log('Profil Toko', app.item)
   return app?.form || null
 })
 // console.log('form', props?.store?.form)
 const groupedItems = computed(() => {
   const map = new Map()
-  // console.log('store', props.store?.form)
   const items = props?.store?.form?.rincian ?? []
   items.forEach(item => {
     const key = item.kode_barang
@@ -185,7 +196,8 @@ const groupedItems = computed(() => {
         harga_b: Number(item?.harga_b),
         diskon: Number(item?.diskon_persen),
         diskonitems: Number(item?.harga_b) * Number(item?.jumlah_b) * (Number(item?.diskon_persen)/Number(100)),
-        subtotal: Number(item?.subtotal) - (Number(item?.pajak_rupiah) * Number(item?.jumlah_k || 0)),
+        // subtotal: Number(item?.subtotal) - (Number(item?.pajak_rupiah) * Number(item?.jumlah_k || 0)),
+        subtotal: Number(item?.harga_b) * Number(item?.jumlah_b) - Number(item?.harga_b) * Number(item?.jumlah_b) * (Number(item?.diskon_persen) / Number(100)),
         created_at: item?.created_at
       })
     } 
@@ -205,7 +217,7 @@ const groupedItems = computed(() => {
 
 const subTotal = computed(() => {
   const items = props?.store?.form?.rincian ?? []
-  return items.reduce((a, b) => a + Number(b?.subtotal - (b?.pajak_rupiah * b?.jumlah_k)), 0)
+  return items.reduce((a, b) => a + Number((b?.harga_b * b?.jumlah_b) - (b?.harga_b * b?.jumlah_b * (b?.diskon_persen / 100))), 0)
 })
 
 const totalPajak = computed(() => {
@@ -213,6 +225,10 @@ const totalPajak = computed(() => {
   return items.reduce((a, b) => a + Number(b?.pajak_rupiah * b?.jumlah_k), 0)
 })
 
+const diskonHeader = computed(() => {
+  const items = props?.store?.form?.rincian ?? []
+  return items.reduce((a, b) => a + Number(b?.diskon_rupiah_heder * b?.jumlah_k), 0)
+})
 
 const totalPenerimaan = computed(() => {
   const items = props?.store?.form?.rincian ?? []

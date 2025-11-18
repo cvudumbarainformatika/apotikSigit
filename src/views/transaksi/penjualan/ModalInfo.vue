@@ -1,5 +1,5 @@
 <template>
-    <u-modal persistent :title="'Info Shortcut Kasir'" @click="handleClose">
+    <u-modal persistent :title="'Info Shortcut Kasir'" @close="handleClose">
         <template #default>
             <div class="w-full mx-auto bg-white rounded-lg text-gray-800 space-y-3 p-2">
                 <div v-for="(item, i) in shortcutList" :key="i"

@@ -381,7 +381,7 @@ const clearSelectedBarang = () => {
 }
 
 const handleRetur = (e) => {
-  // console.log('handleRetur', e);
+  console.log('handleRetur', e);
   
   // e.preventDefault()
   // e.stopPropagation()
@@ -399,6 +399,7 @@ const handleRetur = (e) => {
   form.value.id_penerimaan_rinci = e?.id_penerimaan_rinci ?? null
   form.value.jumlah_k = e.jumlah ?? null
   form.value.harga = e.harga_jual ?? null
+  form.value.diskon = e.diskon ?? null
   // console.log('form', form.value);
   // console.log('handleRetur', e);
   // console.log('store', props.store.penerimaanSelected);

@@ -23,8 +23,7 @@
         </u-row>
       </u-row>
       <u-row right justify-self-end class="gap-2">
-        <u-date-range  v-model="store.range" @update:modelValue="store.setRange"
-          default-period="today" />
+        <u-date-range v-model="store.range" @update:modelValue="store.setRange" default-period="today" />
         <!-- <order-by v-if="showOrder" 
           :fields="store.orders"
           v-model="store.order"
@@ -34,41 +33,41 @@
       </u-row>
     </u-view>
 
-   
+
 
     <u-view id="printArea" ref="printArea" class="w-full relative print-a4" flex1 scrollY gap="gap-0" padding="p-0">
-        <u-view v-if="store.loading" flex1 class="flex items-center justify-center w-full">
-          <u-load-spinner />
-        </u-view>
+      <u-view v-if="store.loading" flex1 class="flex items-center justify-center w-full">
+        <u-load-spinner />
+      </u-view>
 
-        <!-- Tabel -->
+      <!-- Tabel -->
       <div v-else class=" bg-white rounded-lg">
 
         <!-- Header -->
-      <div class="flex items-start justify-between gap-6 mb-1">
-        <div class="flex items-center gap-4">
-          <img src="/images/logo.svg" alt="logo" class="w-14 h-14 object-contain" />
-          <div>
-            <div class="text-xl font-semibold tracking-wide">{{ app?.form?.nama || 'Nama Apotik nya' }}</div>
-            <p class="text-sm text-gray-600">
-              {{ app?.form?.alamat || 'Alamat Apotik nya' }}<br />
-              Telp: {{ app?.form?.telepon || '08123456789' }}
-            </p>
+        <div class="flex items-start justify-between gap-6 mb-1">
+          <div class="flex items-center gap-4">
+            <img src="/images/logo.svg" alt="logo" class="w-14 h-14 object-contain" />
+            <div>
+              <div class="text-xl font-semibold tracking-wide">{{ app?.form?.nama || 'Nama Apotik nya' }}</div>
+              <p class="text-sm text-gray-600">
+                {{ app?.form?.alamat || 'Alamat Apotik nya' }}<br />
+                Telp: {{ app?.form?.telepon || '08123456789' }}
+              </p>
+            </div>
           </div>
+          <div class="flex flex-col p-2">
+            <div class="pt-2 uppercase text-md font-bold text-right">
+              LAPORAN PENJUALAN
+            </div>
+            <div class=" uppercase text-xs">
+              Periode {{ formatDateIndo(store.params?.from) }} - {{ formatDateIndo(store.params?.to) }}
+            </div>
+            <div class="pt-2 uppercase text-sm font-bold text-right">
+              TOTAL PENJUALAN : {{ formatRupiah(store?.grand?.total_penjualan) }}
+            </div>
+          </div>
+
         </div>
-        <div class="flex flex-col p-2">
-          <div class="pt-2 uppercase text-md font-bold text-right">
-            LAPORAN PENJUALAN
-          </div>
-           <div class=" uppercase text-xs">
-            Periode {{ formatDateIndo(store.params?.from) }} - {{ formatDateIndo(store.params?.to) }}
-          </div>
-           <div class="pt-2 uppercase text-sm font-bold text-right">
-            TOTAL PENJUALAN : {{ formatRupiah(store?.total) }}
-          </div>
-        </div>
-        
-      </div>
 
 
         <table class="w-full border-collapse">
@@ -81,10 +80,9 @@
           </thead>
           <tbody>
             <template v-for="(item, i) in store.items" :key="i">
-              <tr
-                class="border-b hover:bg-gray-50 transition"
-              >
-                <td class="td font-semibold">Tanggal : {{ formatDateIndo(item?.tgl_penjualan) }} ({{ item?.nopenjualan }})</td>
+              <tr class="border-b hover:bg-gray-50 transition">
+                <td class="td font-semibold">Tanggal : {{ formatDateIndo(item?.tgl_penjualan) }} ({{ item?.nopenjualan
+                  }})</td>
                 <!-- <td class="td font-semibold">{{ item?.nopenjualan }}</td> -->
                 <!-- <td class="td">{{ item.customer }}</td> -->
                 <td class="td text-sm text-right font-semibold ">
@@ -93,26 +91,30 @@
               </tr>
               <!-- detail item -->
               <tr v-for="(rinci, i) in item?.rinci" :key="i" class="border-b last:border-0">
-                <td class="td text-gray-600">• {{ rinci?.master?.nama }} ({{ rinci?.harga_jual }} x {{ rinci?.jumlah_k }})</td>
+                <td class="td text-gray-600">
+                  <div>• {{ rinci?.master?.nama }} (Rp {{ formatRupiah(rinci?.harga_jual) }} x {{ rinci?.jumlah_k }})
+                  </div>
+                  <div v-if="rinci.retur">
+                    &nbsp;&nbsp; ↳ Retur: {{ rinci.retur }} x Rp
+                    {{ formatRupiah(rinci.harga_jual) }} =
+                    {{ formatRupiah(rinci.subtotal_retur) }}
+                  </div>
+                </td>
                 <!-- <td class="px-4 py-2 text-sm text-gray-600">{{ rinci?.jumlah_k }}</td> -->
-                <td class="td text-right text-gray-600">{{ formatRupiah(rinci?.subtotal) }}</td>
+                <td class="td text-right text-gray-600">{{ formatRupiah(Number(rinci?.subtotal - rinci?.subtotal_retur)) }}</td>
               </tr>
             </template>
           </tbody>
         </table>
       </div>
     </u-view>
-    
+
     <u-view>
-      <Pagination
-        v-if="store?.meta"
-        :total-items="store?.meta?.total"
-        :per-page="store.params.per_page"
-        v-model:currentPage="store.params.page"
-      />
+      <Pagination v-if="store?.meta" :total-items="store?.meta?.total" :per-page="store.params.per_page"
+        v-model:currentPage="store.params.page" />
     </u-view>
 
-    
+
   </u-page>
 </template>
 
@@ -137,7 +139,7 @@ function getTotal (item) {
   let subtotal = 0
   let subtotalRetur
   item.rinci.forEach((r) => {
-    subtotal += parseInt(r?.subtotal)
+    subtotal += parseInt(r?.subtotal - r?.subtotal_retur)
   })
 
 

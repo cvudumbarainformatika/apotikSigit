@@ -196,9 +196,10 @@ const handleKunci = async (e) => {
   e.preventDefault()
   e.stopPropagation()
   // const status = (props.store.form?.status === '1' || props.store.form?.status === 1)
-  const kode_mutasi = props.store.form?.kode_mutasi
+  // const kode_mutasi = props.store.form?.kode_mutasi
+  const id = props.store.form?.id
   const payload = {
-    kode_mutasi
+    id
   }
 
   loadingLock.value = true

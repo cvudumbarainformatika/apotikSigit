@@ -38,7 +38,7 @@ onMounted(() => {
   store.per_page = 20
   Promise.all([
     store.fetchAll(),
-    console.log('store', store.items)
+    // console.log('store', store.items)
   ])
 })
 
