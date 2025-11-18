@@ -58,7 +58,7 @@
         <u-row flex1 class="w-full">
           <u-input type="number" v-model="form.harga_beli" label="Harga Beli" :error="isError('harga_beli')"
             :error-message="errorMessage('harga_beli')" />
-          <u-input type="number" v-model="form.limit_stok" label="Limit St0" :error="isError('limit_stok')"
+          <u-input type="number" v-model="form.limit_stok" label="Limit Stok" :error="isError('limit_stok')"
             :error-message="errorMessage('limit_stok')" />
         </u-row>
         <div flex1 class="w-full row justify-center items-center mt-1 mb-1">
