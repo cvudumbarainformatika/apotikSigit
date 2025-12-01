@@ -22,22 +22,18 @@
             </u-col>
 
           </u-card>
-          <u-card padding="p-6" class="col-span-1 md:col-span-5 w-full flex items-center justify-center">
+          <!-- <u-card padding="p-6" class="col-span-1 md:col-span-5 w-full flex items-center justify-center">
             <div class="text-center">
               <u-text size="md" class="font-light mb-4" color="text-light-primary">Upload Foto</u-text>
 
               <div class="relative w-64 h-64">
-                <!-- Preview Foto -->
                 <img v-if="previewFoto || store.form.foto" :src="previewFoto || store.form.foto"
                   class="w-full h-full rounded-full object-cover border-4 border-white shadow-md" />
-
-                <!-- Placeholder -->
                 <div v-else
                   class="w-full h-full rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-lg border-4 border-white shadow-md">
                   No Image
                 </div>
 
-                <!-- Tombol Upload -->
                 <label for="fileUpload"
                   class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 text-white text-lg rounded-full opacity-0 hover:opacity-100 cursor-pointer transition">
                   Upload
@@ -45,8 +41,8 @@
                 <input id="fileUpload" type="file" accept="image/*" class="hidden" @change="handleFileUpload" />
               </div>
             </div>
-          </u-card>
-          <u-card padding="p-6" class="col-span-1 md:col-span-7 w-full">
+          </u-card> -->
+          <u-card padding="p-6" class="col-span-1 md:col-span-5 w-full">
             <u-row class="">
               <u-text size="md" class="font-light" color="text-light-primary">Preferrence</u-text>
             </u-row>
