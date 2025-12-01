@@ -36,7 +36,7 @@
 
    
 
-    <u-view id="printArea" ref="printArea" class="w-full relative print-a4" flex1 scrollY gap="gap-0" padding="p-0">
+    <u-view id="printAreax" ref="printArea" class="w-full relative print-a4" flex1 scrollY gap="gap-0" padding="p-0">
         <u-view v-if="store.loading" flex1 class="flex items-center justify-center w-full">
           <u-load-spinner />
         </u-view>
@@ -123,7 +123,7 @@
               </td>
             </tr>
             <tr v-for="(it, idx) in store.items?.rincianbeban" :key="idx">
-              <td class="px-4 py-2 pl-8">- {{ it?.nama_beban }}</td>
+              <td class="px-4 py-2 pl-8">- {{ it?.nama }}</td>
               <td class="px-4 py-2 text-right">
                 Rp. {{ formatRupiah(it?.subtotal) || 0 }}
               </td>
@@ -217,7 +217,7 @@ onMounted(store.fetchData)
 
 
 const printObj = {
-  id: '#printArea', // ref elemen yang mau diprint
+  id: '#printAreax', // ref elemen yang mau diprint
   popTitle: 'Laporan Penjualan',
   preview: false,
   extraCss: '',

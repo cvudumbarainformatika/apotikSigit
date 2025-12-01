@@ -21,7 +21,7 @@
         <table flex1 class="w-full text-sm border-separate [border-spacing:0]">
             <thead>
                 <tr>
-                    <td class="td text-left p-1 font-bold">Nomor Penerimaan</td>
+                    <!-- <td class="td text-left p-1 font-bold">Nomor Penerimaan</td> -->
                     <td class="td text-left p-1 font-bold">Nama Obat</td>
                     <td class="td text-left p-1 font-bold">Nobatch</td>
                     <td class="td text-left p-1 font-bold">Satuan</td>
@@ -34,7 +34,7 @@
             <tbody>
                 <template v-for="(it, index) in store.items" :key="index">
                     <tr>
-                        <td class="td p-1 align-top text-left">{{ it?.nopenerimaan }}</td>
+                        <!-- <td class="td p-1 align-top text-left">{{ it?.nopenerimaan }}</td> -->
                         <td class="td p-1 align-top text-left font-semibold">({{ it?.barang?.kode }}) - {{
                             it?.barang?.nama }}</td>
                         <td class="td p-1 align-top text-left">{{ it?.nobatch || '-' }}</td>

@@ -168,7 +168,7 @@ console.log('data', props.store.form);
 
 const printObj = {
   id: '#printArea', // ref elemen yang mau diprint
-  popTitle: 'Retur PBF',
+  popTitle: 'Distribusi Barang',
   preview: false,
   extraCss: '',
   extraHead: '',

@@ -9,7 +9,7 @@
         <u-col gap="gap-1">
           <u-row gap="gap-2">
             <!-- <span>💊 </span> -->
-            <u-text size="md" class="font-bold">{{ item?.mbeban?.nama_beban || '-' }}</u-text>
+            <u-text size="md" class="font-bold">{{ item?.mbeban?.nama || '-' }}</u-text>
           </u-row>
           <u-row gap="gap-1">
             <u-badge variant="warning">Rp. {{ formatRupiah(item?.subtotal) }}</u-badge>

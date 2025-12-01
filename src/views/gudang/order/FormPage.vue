@@ -16,11 +16,11 @@
             :error-message="errorMessage('no_order')" />
         </u-row>
 
-        <u-select label="Order dari Cabang" v-model="form.cabang" :options="cabangList.map(c => ({
+        <u-select label="Order dari Cabang" v-model="form.kode_depo" :options="cabangList.map(c => ({
             value: c.kodecabang,
             label: c.namacabang
           }))"
-          :error="isError('cabang')" :error-message="errorMessage('cabang')" @update:modelValue="(val) => {
+          :error="isError('kode_depo')" :error-message="errorMessage('kode_depo')" @update:modelValue="(val) => {
             console.log('selected cabang', val);
           }" />
 
@@ -235,7 +235,7 @@ const form = ref({
   satuan_b: '',
   isi: '',
   jumlah_pesan: 1,
-  cabang: '',
+  kode_depo: '',
 })
 
 
@@ -419,8 +419,9 @@ async function loadCabang() {
   try {
     const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
     if (response.status === 200) {
-      const allcabang = response.data
-      cabangList.value = allcabang.data.filter(a => a.kodecabang !== kodetoko.value)
+      const allcabang = response.data?.data
+      cabangList.value = allcabang
+      // cabangList.value = allcabang.data.filter(a => a.kodecabang !== kodetoko.value)
       // console.log('cabangList', cabangList.value);
     }
   } catch (err) {
@@ -432,7 +433,7 @@ async function loadCabang() {
 }
 
 watch(() => ({ ...props.store.form }), (newForm, oldForm) => {
-  // console.log('🔥 watch form', newForm, oldForm);
+  console.log('🔥 watch form', newForm);
   
   for (const key in newForm) {
     if (newForm[key] !== oldForm[key]) {
@@ -444,10 +445,11 @@ watch(() => ({ ...props.store.form }), (newForm, oldForm) => {
     form.value = {
       nomor_order: newForm?.nomor_order ?? '',
       tgl_order: newForm?.tgl_order ?? '',
-      cabang: newForm?.kode_cabang ?? '',
+      kode_depo: newForm?.cabang?.kodecabang ?? '',
       kode_supplier: newForm?.kode_supplier ?? '',
       
     }
+    console.log('updated form', form.value);
   }
 
 }, { deep: true })

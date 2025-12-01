@@ -35,7 +35,7 @@
 
         <!-- Content -->
 
-        <u-view id="printArea" ref="uViewRef" class="w-full relative" flex1 scrollY>
+        <u-view id="printArea2" ref="uViewRef" class="w-full relative" flex1 scrollY>
             <!-- <div class="absolute inset-0 top-12">
         <u-load-spinner></u-load-spinner>
       </div> -->
@@ -98,7 +98,7 @@ const company = computed(() => {
     return app?.form || null
 })
 const printObj = {
-    id: '#printArea', // ref elemen yang mau diprint
+    id: '#printArea2', // ref elemen yang mau diprint
     popTitle: `${props.title} ${company.value?.nama}`,
     preview: false,
     extraCss: '',

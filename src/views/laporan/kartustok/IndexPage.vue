@@ -1,9 +1,10 @@
 <template>
-  <base-master :title="title" :store="store" :showPrint="true" :showOpnameButton="true" :showMonthButton="true"
-    :showAddButton="false" :onRange="handleRange" :onRefresh="handleRefresh" :onTriger="handleOpname">
-    <!-- <template #loading>
+  <base-master :title="title" :store="store" :showPrint="true" :showOpnameButton="true" :showCabangButton="true"
+    :showMonthButton="true" :showAddButton="false" :onRange="handleRange" :onCabang="handleRange"
+    :onRefresh="handleRefresh" :onTriger="handleOpname" :loading="store.loading">
+    <template #loading>
       <LoaderItem />
-    </template> -->
+    </template>
     <template #item="{ item }">
       <Suspense>
         <template #default>
@@ -49,7 +50,7 @@ const route = useRoute()
 const title = computed(() => route.meta.title)
 const dateRange = ref({})
 const app = useAppStore()
-
+const loading = ref(false)
 onMounted(async () => {
   store.per_page = 100
   app.fetchData()
@@ -84,13 +85,14 @@ const getCurrentDate = () => {
 }
 const handleRange = async () => {
   // console.log('handleRange', store.range);
+  loading.value = true
   const params = {
     bulan: store.range?.start_date,
     tahun: store.range?.end_date,
     q: store.q,
     page: store.page,
     per_page: store.per_page,
-    depo: company.value?.kode_toko
+    depo: store.depo
   }
   console.log('params', params);
   store.loading = true
@@ -106,6 +108,7 @@ const handleRange = async () => {
     console.error('Error fetching Kartu Stok:', error)
   } finally {
     store.loading = false
+    loading.value = true
   }
   // console.log('items', store.items);
 }

@@ -54,13 +54,13 @@
         </u-row>
         <u-row>
           <u-autocomplete v-model="searchBarang" placeholder="Cari Jenis Beban" :debounce="300" :min-search-length="2"
-            item-key="id" item-label="nama_beban" not-found-text="Data tidak ditemukan"
+            item-key="id" item-label="nama" not-found-text="Data tidak ditemukan"
             not-found-subtext="Coba kata kunci lain" :show-add-button="false" api-url="/api/v1/master/beban/get-list"
             api-response-path="data.data" :api-params="{ per_page: 10 }" :use-api="true" @select="handleSelectedBarang"
             @items-loaded="onItemsLoadedBarang">
             <template #item="{ item }">
               <u-col gap="gap-1">
-                <u-text size="sm" class="font-medium">{{ item?.nama_beban }}</u-text>
+                <u-text size="sm" class="font-medium">{{ item?.nama }}</u-text>
                 <!-- <u-row class="-mt-1" gap="gap-1">
                     <u-text class="">{{ item?.kode }}</u-text>, 
                     <u-text class="">{{ item?.satuan_k }}</u-text> | 
@@ -78,7 +78,7 @@
             <u-grid cols="12" gap="gap-4">
               <div class="col-span-6">
                 <u-text class="font-bold">Nama Beban</u-text>
-                <u-text>{{ store.barangSelected?.nama_beban || '-' }}</u-text>
+                <u-text>{{ store.barangSelected?.nama || '-' }}</u-text>
               </div>
               <u-row class="col-span-6">
                 <u-input ref="inpJumlahRef" v-model="form.subtotal" label="Nilai Pengeluaran" type="number"

@@ -11,7 +11,7 @@
             </u-row>
 
             <u-col class="w-full mt-4" gap="gap-6">
-              <u-input v-model="store.form.nama" label="Nama Apotik" :error="isError('nama')"
+              <u-input v-model="store.form.nama" label="Nama Toko" :error="isError('nama')"
                 :error-message="errorMessage('nama')" />
               <u-input v-model="store.form.telepon" label="Telepon" :error="isError('telepon')"
                 :error-message="errorMessage('telepon')" />
@@ -28,7 +28,7 @@
 
               <div class="relative w-64 h-64">
                 <!-- Preview Foto -->
-                <img v-if="store.form.foto" :src="store.form.foto"
+                <img v-if="previewFoto || store.form.foto" :src="previewFoto || store.form.foto"
                   class="w-full h-full rounded-full object-cover border-4 border-white shadow-md" />
 
                 <!-- Placeholder -->
@@ -76,29 +76,91 @@
 
 <script setup>
 import { onMounted, ref, computed } from 'vue'
-
 import { useAppStore } from '@/stores/app'
 
-
-
 const store = useAppStore()
-
-// console.log('store', store.form);
-
 const previewFoto = ref(null)
 
-const handleFileUpload = (event) => {
+const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    const base64 = e.target.result
-    store.form.foto = base64     // simpan string base64 ke form
-    previewFoto.value = base64   // untuk ditampilkan langsung
-  }
-  reader.readAsDataURL(file)
+  // Generate nama file & path yg dikirim ke backend
+  const fileName = `foto_toko_${Date.now()}.${file.name.split('.').pop()}`
+  const filePath = `/images/${fileName}`
+
+  // === 1. Kompres untuk preview saja ===
+  const compressedBlob = await compressImage(file, 800, 0.7)
+  const base64Preview = await blobToBase64(compressedBlob)
+
+  // Tampilkan preview hasil kompres
+  previewFoto.value = base64Preview
+
+  // === 2. Kirim ke backend: HANYA PATH ===
+  store.form.foto = filePath
+  store.form.base64_foto = null
+  delete store.form.base64_foto
 }
+
+// const handleFileUpload = async (event) => {
+//   const file = event.target.files[0]
+//   if (!file) return
+
+//   const compressedBlob = await compressImage(file, 800, 0.7) // width=800px, quality=70%
+//   const base64 = await blobToBase64(compressedBlob)
+
+//   store.form.foto = base64
+//   previewFoto.value = base64
+//   // const file = event.target.files[0]
+//   // if (!file) return
+
+//   // const reader = new FileReader()
+//   // reader.onload = (e) => {
+//   //   const base64 = e.target.result
+//   //   store.form.foto = base64     // simpan string base64 ke form
+//   //   previewFoto.value = base64   // untuk ditampilkan langsung
+//   // }
+//   // reader.readAsDataURL(file)
+// }
+
+function compressImage(file, maxWidth = 800, quality = 0.7) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      img.src = e.target.result;
+    };
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      const scale = maxWidth / img.width;
+      canvas.width = maxWidth;
+      canvas.height = img.height * scale;
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(
+        (blob) => resolve(blob),
+        "image/jpeg",
+        quality
+      );
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+}
+
 const error = computed(() => {
   const err = store.error
   const status = err?.status === 422
@@ -108,13 +170,13 @@ const error = computed(() => {
   return null
 })
 
-function isError(field){
+function isError(field) {
   return !!error.value?.[field]
 }
 
-function errorMessage(field){
+function errorMessage(field) {
   return error.value?.[field]?.[0] ?? null
-} 
+}
 
 onMounted(() => {
   store.fetchData()
@@ -124,7 +186,7 @@ const handleSave = (e) => {
   e.preventDefault()
   e.stopPropagation()
   console.log('store', store.form);
-  
+
   store.create()
 }
 

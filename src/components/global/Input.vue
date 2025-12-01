@@ -56,8 +56,10 @@ function handleInput(e) {
   // ❗ Hanya izinkan angka dan koma
   if (props.type === 'number') {
     raw = raw.replace(/[^\d,]/g, '') // Hanya digit dan koma
-    e.target.value = raw // Untuk refleksi langsung di input
     internalValue.value = raw
+    e.target.value = raw
+    emit('update:modelValue', raw)
+
 
     // const parsed = parseNumber(raw)
     // emit('update:modelValue', isNaN(parsed) ? null : parsed)

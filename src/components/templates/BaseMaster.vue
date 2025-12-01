@@ -40,6 +40,9 @@
         </u-row>
       </u-row>
       <u-row right justify-self-end class="gap-2">
+        <u-row>
+          <u-select v-if="showCabangButton" label="Pilih Cabang" v-model="store.depo" :options="optionCabang" @update:modelValue="onCabang" />
+        </u-row>
         <u-date-range v-if="showDateButton" v-model="store.range" @update:modelValue="onRange" default-period="month" />
         <order-by v-if="showOrder" :fields="store.orders" v-model="store.order" label="Urut By"
           @update:model-value="onSortChange" />
@@ -84,6 +87,8 @@ import { useScroll } from '@vueuse/core'
 import OrderBy from './OrderBy.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
+import { api } from '@/services/api'
+
 
 const auth = useAuthStore()
 const printContent = ref('')
@@ -94,17 +99,20 @@ const props = defineProps({
   showAddButton: { type: Boolean, default: true }, // baris ini Tambahkan agar bisa memilih false/true
   showDateButton: { type: Boolean, default: false },
   showMonthButton: { type: Boolean, default: false },
+  showCabangButton: { type: Boolean, default: false },
   showOrder: { type: Boolean, default: false },
   showOpnameButton: { type: Boolean, default: false },
   showPrint: { type: Boolean, default: false },
   onAdd: Function, // ✅ supaya tidak error saat dipanggil
   onRefresh: Function, // ✅ hanya dipanggil kalau diberikan
   onRange: Function, // ✅ hanya dipanggil kalau diberikan
+  onCabang: Function, // ✅ hanya dipanggil kalau diberikan
   onTriger: Function, // ✅ hanya dipanggil kalau diberikan
 })
 
 const emit = defineEmits(['close', 'save'])
-
+const loading = ref(false)
+const cabangList = ref([])
 // Ref ke u-view
 const uViewRef = ref()
 
@@ -148,8 +156,16 @@ const generateTahuns = computed(() => {
 })
 
 
-onMounted(() => {
+const optionCabang = computed(() => {
+  return cabangList.value.map(c => ({
+    value: c.kodecabang,
+    label: c.namacabang
+  }))
+})
 
+onMounted(async () => {
+  await app.fetchData()
+  await loadCabang()
   if (props?.onRange) {
     if (!props.store.range.start_date) {
       props.store.range.start_date = bulanSekarang
@@ -157,6 +173,9 @@ onMounted(() => {
     if (!props.store.range.end_date) {
       props.store.range.end_date = tahunSekarang.toString()
     }
+  }
+  if (!props.store.depo) {
+    props.store.depo = 'APS0000'
   }
 })
 function onSortChange(qs) {
@@ -170,6 +189,34 @@ const company = computed(() => {
   return app?.form || null
 })
 
+async function loadCabang() {
+  loading.value = true
+  try {
+    const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
+    if (response.status === 200) {
+      const allcabang = response.data?.data
+      const mainCabang = allcabang.find(
+        c => c.kodecabang === company.value?.kode_toko
+      )
+
+      if (!mainCabang) {
+        cabangList.value = []
+        return
+      }
+      const targetUrl = mainCabang.url
+      cabangList.value = allcabang.filter(
+        c => c.url === targetUrl
+      )
+
+
+    }
+  } catch (err) {
+    console.error('Gagal load cabang:', err)
+    err.message || 'Gagal memuat data cabang'
+  } finally {
+    loading.value = false
+  }
+}
 const printObj = {
   id: '#printArea', // ref elemen yang mau diprint
   popTitle: `${props.title} ${company.value?.nama}`,

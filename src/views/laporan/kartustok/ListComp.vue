@@ -118,7 +118,7 @@ const openDetail = async (e) => {
       bulan: props.store.range.start_date,
       tahun: props.store.range.end_date,
       id: props.item.id,
-      depo: company.value?.kode_toko
+      depo: props.store?.depo
     }
 
     const response = await api.get(`api/v1/transactions/stok/get-rinci-kartu-stok`, { params })
@@ -149,19 +149,18 @@ const saldoAwal = computed(() => {
 
 // stok masuk
 const totalMasuk = computed(() => {
-  return company.value.kode_toko === 'APS0000' ?
-    (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
+  // console.log('total masuk props item', company.value.kode_toko)
+  return (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
     (props.item?.retur_pembelian_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) +
     (props.item?.mutasi_masuk ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
-    : 
+    ??
     (props.item?.mutasi_masuk ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
 })
 
 // stok keluar
 const totalKeluar = computed(() => {
-  return company.value.kode_toko === 'APS0000' ?
-    (props.item?.mutasi_keluar ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
-    :
+  return (props.item?.mutasi_keluar ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
+    ??
     (props.item?.penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
     (props.item?.retur_penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) +
     (props.item?.mutasi_keluar ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
@@ -177,7 +176,7 @@ const stokAkhir = computed(() => {
 })
 // stok akhir
 const stokSekarang = computed(() => {
-  console.log('stok sekarang props item', props.item?.stoks)
+  // console.log('stok sekarang props item', props.item?.stoks)
   return (props.item?.stok ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
 })
 

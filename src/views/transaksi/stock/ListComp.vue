@@ -23,8 +23,7 @@
                 </div>
                 <div class="col-span-4 text-center">
                   <u-text class="font-bold">Jumlah Sekarang</u-text>
-                  <u-text>{{ item.jumlah_k }} {{ item.satuan_k }} ( {{ item.jumlah_b }} {{ item.satuan_b }}
-                    )</u-text>
+                  <u-text>{{ item.jumlah_k }} {{ item.satuan_k }}</u-text>
                 </div>
                 <div class="col-span-4 text-right">
                   <u-text class="font-bold">Kode</u-text>
@@ -58,7 +57,7 @@
         <u-row flex1 class="w-full pt-0 pb-1">
           <u-row flex1 class="w-full">
             <div class="w-full">
-              <u-grid cols="8">
+              <!-- <u-grid cols="8">
                 <u-row class="col-span-1">
                   <span class="font-medium">No Penerimaan</span>
                 </u-row>
@@ -107,13 +106,13 @@
                 <u-row class="col-span-7">
                   <span>: {{ item?.isi }}</span>
                 </u-row>
-              </u-grid>
+              </u-grid> -->
 
               <u-grid cols="10">
                 <u-row class="col-span-5">
                   <u-grid cols="4">
                     <u-row class="col-span-2">
-                      <span class="font-medium">Harga Resep</span>
+                      <span class="font-medium">Harga Distributor</span>
                     </u-row>
                     <u-row class="col-span-2">
                       <span>: {{ item?.barang?.harga_jual_resep }}</span>
@@ -121,7 +120,7 @@
                   </u-grid>
                   <u-grid cols="4">
                     <u-row class="col-span-2">
-                      <span class="font-medium">Harga Biasa</span>
+                      <span class="font-medium">Harga Eceran</span>
                     </u-row>
                     <u-row class="col-span-2">
                       <span>: {{ item?.barang?.harga_jual_umum }}</span>
@@ -129,25 +128,30 @@
                   </u-grid>
                 </u-row>
                 <u-row class="col-span-5">
-
                 </u-row>
               </u-grid>
 
-              <u-grid cols="8">
-                <u-row class="col-span-1">
-                  <span class="font-medium">Kandungan</span>
-                </u-row>
-                <u-row class="col-span-7">
-                  <span>: {{ item?.barang?.kandungan }}</span>
-                </u-row>
-              </u-grid>
 
-              <u-grid cols="8" class="mb-3">
-                <u-row class="col-span-1">
-                  <span class="font-medium">Tgl Expired</span>
+              <u-grid cols="10">
+                <u-row class="col-span-5">
+                  <u-grid cols="4">
+                    <u-row class="col-span-2">
+                      <span class="font-medium">Kategori</span>
+                    </u-row>
+                    <u-row class="col-span-2">
+                      <span>: {{ item?.barang?.kategori }}</span>
+                    </u-row>
+                  </u-grid>
+                  <u-grid cols="4">
+                    <u-row class="col-span-2">
+                      <span class="font-medium">Merk</span>
+                    </u-row>
+                    <u-row class="col-span-2">
+                      <span>: {{ item?.barang?.merk }}</span>
+                    </u-row>
+                  </u-grid>
                 </u-row>
-                <u-row class="col-span-7">
-                  <span>: {{ formatDateIndo(item?.tgl_exprd) }}</span>
+                <u-row class="col-span-5">
                 </u-row>
               </u-grid>
             </div>
@@ -168,6 +172,7 @@
 </template>
 
 <script setup>
+import { useAppStore } from '@/stores/app'
 import { useStockStore } from '@/stores/template/register'
 import { formatDateIndo, useWaktuLaluReactive } from '@/utils/dateHelper'
 import { computed, defineAsyncComponent, ref } from 'vue'
@@ -229,7 +234,7 @@ const clearSelectedBarang = () => {
   form.value.keterangan = ''
 }
 const openModalTambah = () => {
-  console.log('itemscacac', props.store?.items)
+  // console.log('itemscacac', props.store?.items)
   openmodalData.value = true
   isModalTambah.value = true
   isModalMinus.value = false
@@ -253,7 +258,7 @@ const openModalMinus = () => {
   clearSelectedBarang()
 }
 
-const handleSubmit = async (e) =>  {
+const handleSubmit = async (e) => {
   e.preventDefault()
   e.stopPropagation()
   if (isModalTambah.value) {
@@ -273,13 +278,13 @@ const handleSubmit = async (e) =>  {
         console.log('Data saved successfully:', props.store.items)
       })
     openmodalData.value = false
-  }  catch (err) {
+  } catch (err) {
     props.store.error = err
   } finally {
     props.store.loading = false
   }
 
-  
+
   // store.fetchAll()
 }
 

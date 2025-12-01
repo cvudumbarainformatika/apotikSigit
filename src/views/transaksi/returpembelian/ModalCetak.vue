@@ -70,10 +70,10 @@
                 <th class="th">Kode</th>
                 <th class="th">Nama Barang</th>
                 <th class="th text-right">Qty</th>
-                <th class="th text-right">Harga</th>
-                <th class="th text-right">Diskon</th>
-                <th class="th text-right">pajak</th>
-                <th class="th text-right">Subtotal</th>
+                <th class="th text-right">Harga (Rp)</th>
+                <th class="th text-right">Diskon (Rp)</th>
+                <th class="th text-right">pajak (Rp)</th>
+                <th class="th text-right">Subtotal (Rp)</th>
               </tr>
             </thead>
             <tbody>
@@ -115,11 +115,11 @@
             <div class="space-y-2 text-sm">
               <div class="flex items-center justify-between">
                 <span>Subtotal</span>
-                <span class="font-medium">Rp . {{ formatRupiah(totalSubtotal) }}</span>
+                <span class="font-medium">Rp {{ formatRupiah(totalSubtotal) }}</span>
               </div>
               <div class="flex items-center justify-between">
                 <span>Pajak </span>
-                <span class="font-medium">Rp. {{ formatRupiah(totalPajak) }}</span>
+                <span class="font-medium">Rp {{ formatRupiah(totalPajak) }}</span>
               </div>
               <!-- <div class="flex items-center justify-between" >
               <span>Biaya Restock</span>
@@ -128,7 +128,7 @@
               <div class="border-t my-2"></div>
               <div class="flex items-center justify-between text-base">
                 <span class="font-semibold">Total Pengembalian</span>
-                <span class="font-semibold">Rp . {{ formatRupiah(totals) }}</span>
+                <span class="font-semibold">Rp {{ formatRupiah(totals) }}</span>
               </div>
             </div>
           </div>

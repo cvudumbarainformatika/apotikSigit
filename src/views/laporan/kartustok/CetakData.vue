@@ -68,8 +68,7 @@ const props = defineProps({
 // const ModalDetail = defineAsyncComponent(() => import('./ModalDetail.vue'))
 // const openModalDetail = ref(false)
 onMounted(() => {
-    const items = props.store.items
-    console.log('items props', items)
+    // const items = props.store.items
     // if (props.range) {
     //   fetchDetail()
     // }
@@ -112,21 +111,32 @@ const mapItems = computed(() => {
             isi: it?.isi,
             saldoawal: it?.stok_awal?.map((x) => parseInt(x.jumlah_k)).reduce((a,b) => a+b,0),
             stokmasuk: it?.penerimaan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) - 
-                it?.retur_pembelian_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0),
-            stokkeluar: it?.penjualan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) -
-                it?.retur_penjualan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0),
+                it?.retur_pembelian_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) +
+                it?.mutasi_masuk?.map((x) => parseInt(x.jumlah)).reduce((a, b) => a + b, 0) ??
+                it?.mutasi_masuk?.map((x) => parseInt(x.jumlah)).reduce((a, b) => a + b, 0),
+            stokkeluar: it?.mutasi_keluar?.map((x) => parseInt(x.jumlah)).reduce((a, b) => a + b, 0) ??
+                it?.penjualan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) -
+                it?.retur_penjualan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) +
+                it?.mutasi_keluar?.map((x) => parseInt(x.jumlah)).reduce((a, b) => a + b, 0),
             penyesuaian: it?.penyesuaian?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0),
             stokakhir: it?.stok_awal?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) +
-                (it?.penerimaan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) -
-                    it?.retur_pembelian_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0)) -
-                (it?.penjualan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) -
-                    it?.retur_penjualan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0)) +
+                ( 
+                it?.penerimaan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) - 
+                it?.retur_pembelian_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) +
+                it?.mutasi_masuk?.map((x) => parseInt(x.jumlah)).reduce((a, b) => a + b, 0) ??
+                it?.mutasi_masuk?.map((x) => parseInt(x.jumlah)).reduce((a, b) => a + b, 0)) -
+                (
+                it?.mutasi_keluar?.map((x) => parseInt(x.jumlah)).reduce((a, b) => a + b, 0) ??
+                it?.penjualan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) -
+                it?.retur_penjualan_rinci?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0) +
+                it?.mutasi_keluar?.map((x) => parseInt(x.jumlah)).reduce((a, b) => a + b, 0)) +
                 it?.penyesuaian?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0),
             stoksekarang: it?.stok?.map((x) => parseInt(x.jumlah_k)).reduce((a, b) => a + b, 0),
         })
     })
 
     console.log('itms barang xxxx', map)
+    console.log('xxxx', props.item)
     return Array.from(map.values())
 })
 

@@ -34,6 +34,7 @@ export function createTemplateTransaksiStore(storeId, config) {
       q: '',
       order_by: 'created_at',
       sort: 'desc',
+      depo: '',
 
       range:{
         start_date: null,

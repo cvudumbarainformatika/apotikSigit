@@ -8,10 +8,10 @@
         <div class="flex items-center gap-4">
           <img src="/images/logo.svg" alt="logo" class="w-14 h-14 object-contain" />
           <div>
-            <div class="text-xl font-semibold tracking-wide">{{ company?.nama }}</div>
+            <div class="text-xl font-semibold tracking-wide">{{ data?.cabang?.namacabang }}</div>
             <p class="text-sm text-gray-600">
-              {{ company?.alamat }}<br />
-              Tel: {{ company?.telepon }}
+              {{ data?.cabang?.identitas?.alamat }}<br />
+              Tel: {{ data?.cabang?.identitas?.telp }}
             </p>
           </div>
         </div>
@@ -170,7 +170,7 @@ console.log('data', props.store.form);
 
 const printObj = {
   id: '#printArea', // ref elemen yang mau diprint
-  popTitle: 'Retur PBF',
+  popTitle: 'Order Product',
   preview: false,
   extraCss: '',
   extraHead: '',

@@ -46,8 +46,8 @@
                 <th class="th text-left p-1">Tanggal</th>
                 <th class="th text-left p-1">Nomor Transaksi</th>
                 <th class="th text-left p-1">Jenis Transaksi</th>
-                <th class="th text-left p-1">Keterangan</th>
-                <th class="th text-right p-1">Harga Beli (Rp.)</th>
+                <!-- <th class="th text-left p-1">Keterangan</th>
+                <th class="th text-right p-1">Harga Beli (Rp.)</th> -->
                 <th class="th text-right p-1">Penerimaan ({{ store?.item?.satuan_k }}) </th>
                 <th class="th text-right p-1">Pengeluaran ({{ store?.item?.satuan_k }}) </th>
                 <th class="th text-right p-1">Saldo ({{ store?.item?.satuan_k }}) </th>
@@ -58,14 +58,14 @@
                 <td class="td p-1 text-left">{{ formatDateIndo(item?.tanggal) }}</td>
                 <td class="td p-1 text-left">{{ item?.notrans || '-' }}</td>
                 <td class="td p-1 text-left">{{ item?.jenis || '-' }}</td>
-                <td class="td p-1 text-left">{{ item?.ket || '-' }}</td>
-                <td class="td p-1 text-right">{{ formatRpkoma(item?.hargabeli) }}</td>
+                <!-- <td class="td p-1 text-left">{{ item?.ket || '-' }}</td>
+                <td class="td p-1 text-right">{{ formatRpkoma(item?.hargabeli) }}</td> -->
                 <td class="td p-1 text-right">{{ formatRupiah(item?.debit) }}</td>
                 <td class="td p-1 text-right">{{ formatRupiah(item?.kredit) }}</td>
                 <td class="td p-1 text-right">{{ formatRupiah(item?.saldo) }}</td>
               </tr>
               <tr>
-                <td colspan="7" class="td p-1 text-right font-bold">SALDO AKHIR</td>
+                <td colspan="5" class="td p-1 text-right font-bold">SALDO AKHIR</td>
                 <td class="td p-1 text-right font-bold">{{ formatRupiah(totalStokAkhir) }}</td>
               </tr>
             </tbody>
@@ -96,21 +96,20 @@
                 <span class="font-semibold">{{ formatRupiah(totalPenerimaan) }} {{ store?.item?.satuan_k }}</span>
               </div>
               <div class="flex items-center justify-between text-sm">
+                <span class="font-semibold">Total Retur Pembelian</span>
+                <span class="font-semibold">{{ formatRupiah(totalReturPembelian) }} {{ store?.item?.satuan_k }}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="font-semibold">Total Penjualan</span>
+                <span class="font-semibold">{{ formatRupiah(totalPenjualan) }} {{ store?.item?.satuan_k }}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
                 <span class="font-semibold">Total Retur Penjualan</span>
                 <span class="font-semibold">{{ formatRupiah(totalReturPenjualan) }} {{ store?.item?.satuan_k }}</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="font-semibold">Total Penyesuaian</span>
                 <span class="font-semibold">{{ formatRupiah(totalPenyesuaian) }} {{ store?.item?.satuan_k }}</span>
-              </div>
-
-              <div class="flex items-center justify-between text-sm">
-                <span class="font-semibold">Total Penjualan</span>
-                <span class="font-semibold">{{ formatRupiah(totalPenjualan) }} {{ store?.item?.satuan_k }}</span>
-              </div>
-              <div class="flex items-center justify-between text-sm">
-                <span class="font-semibold">Total Retur Pembelian</span>
-                <span class="font-semibold">{{ formatRupiah(totalReturPembelian) }} {{ store?.item?.satuan_k }}</span>
               </div>
               <div class="w-full border-t border-dotted border-black my-1"></div>
               <div class="flex items-center justify-between text-sm">
@@ -341,36 +340,36 @@ const groupedItems = computed(() => {
 // PENERIMAAN //
 const totalPenerimaan = computed(() => {
   const items = props.store?.item?.penerimaan_rinci ?? props.store?.item?.mutasi_masuk
-  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0)
+  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
 const totalReturPenjualan = computed(() => {
   const items = props.store?.item?.retur_penjualan_rinci
-  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0)
+  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
 const totalPenyesuaian = computed(() => {
   const items = props.store?.item?.penyesuaian
-  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0)
+  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
 
 // PENGELUARAN //
 const totalPenjualan = computed(() => {
   const items = props.store?.item?.penjualan_rinci
-  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0)
+  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
 
 const totalReturPembelian = computed(() => {
   const items = props.store?.item?.retur_pembelian_rinci
-  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0)
+  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
 
 const totalSaldoAwal = computed(() => {
   const items = props.store?.item?.stok_awal ?? []
-  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0)
+  const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
 
