@@ -18,6 +18,9 @@ RUN npm run build
 # Stage 2: Nginx untuk serve file static
 FROM nginx:stable-alpine
 
+# Install curl (untuk debug)
+RUN apk update && apk add --no-cache curl
+
 # Hapus default config
 RUN rm -rf /etc/nginx/conf.d/*
 
