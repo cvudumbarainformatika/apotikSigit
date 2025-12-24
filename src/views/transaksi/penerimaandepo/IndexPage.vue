@@ -87,6 +87,7 @@ async function loadCabang() {
             store.range.end_date = getYearEndDate()
             store.status = '2'
             store.dari = cabangList.value
+            store.tujuan = ''
             await store.fetchAll()
         }
     } catch (err) {

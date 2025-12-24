@@ -76,6 +76,7 @@ async function loadCabang() {
             store.range.end_date = getYearEndDate()
             store.status = '1'
             store.tujuan = cabangList.value
+            store.dari = ''
             // const payload = {
             //     from: getYearStartDate(),
             //     to: getYearEndDate(),
