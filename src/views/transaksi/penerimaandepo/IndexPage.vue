@@ -55,18 +55,39 @@ async function loadCabang() {
     try {
         const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
         if (response.status === 200) {
-            const allcabang = response.data
-            cabangList.value = allcabang.data.filter(a => a.kodecabang === kodetoko.value).map(c => c.kodecabang)
+            // const allcabang = response.data
+            // cabangList.value = allcabang.data.filter(a => a.kodecabang === kodetoko.value).map(c => c.kodecabang)
             // console.log('cabangList', cabangList.value);
-            await nextTick()
-            const payload = {
-                from: getYearStartDate(),
-                to: getYearEndDate(),
-                dari: cabangList.value,
-                status: '2'
-            }
+            // await nextTick()
+            // const payload = {
+            //     from: getYearStartDate(),
+            //     to: getYearEndDate(),
+            //     dari: cabangList.value,
+            //     status: '2'
+            // }
             // Promise.all([
-            await store.fetchAll(payload)
+            const allcabang = response.data?.data
+            const mainCabang = allcabang.find(
+                c => c.kodecabang === company.value?.kode_toko
+            )
+
+            if (!mainCabang) {
+                cabangList.value = []
+                return
+            }
+            const targetUrl = mainCabang.url
+            cabangList.value = allcabang.filter(
+                c => c.url === targetUrl
+            ).map(c => c.kodecabang)
+            // const allcabang = response.data
+            // cabangList.value = allcabang.data.filter(a => a.kodecabang === kodetoko.value).map(c => c.kodecabang)
+            console.log('cabangList', cabangList.value);
+            await nextTick()
+            store.range.start_date = getYearStartDate()
+            store.range.end_date = getYearEndDate()
+            store.status = '2'
+            store.dari = cabangList.value
+            await store.fetchAll()
         }
     } catch (err) {
         console.error('Gagal load cabang:', err)

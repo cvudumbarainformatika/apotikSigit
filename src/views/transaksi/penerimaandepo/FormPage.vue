@@ -194,9 +194,12 @@ async function loadCabang() {
 const handleKunci = async (e) => {
   e.preventDefault()
   e.stopPropagation()
+  console.log('props.store.form', props.store.form);
+  console.log('props.store.items', e);
   const kode_mutasi = props.store.form?.kode_mutasi
   const payload = {
-    kode_mutasi
+    kode_mutasi,
+    id: props.store.form?.id
   }
 
   loadingLock.value = true

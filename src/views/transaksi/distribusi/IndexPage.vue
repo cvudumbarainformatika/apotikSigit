@@ -70,7 +70,7 @@ async function loadCabang() {
             ).map(c => c.kodecabang)
             // const allcabang = response.data
             // cabangList.value = allcabang.data.filter(a => a.kodecabang === kodetoko.value).map(c => c.kodecabang)
-            console.log('cabangList', cabangList.value);
+            
             await nextTick()
             store.range.start_date = getYearStartDate()
             store.range.end_date = getYearEndDate()
