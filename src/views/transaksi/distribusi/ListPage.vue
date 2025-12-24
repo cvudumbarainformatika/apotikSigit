@@ -17,6 +17,7 @@
                 <u-row>
                   <u-icon size="14" name="shopping-cart"></u-icon>
                   <u-text class="" color="text-gray-500">{{ item?.rinci?.length }} items</u-text>
+                  <u-text class="" color="text-gray-500">Tujan ke {{ item?.tujuan?.namacabang }}</u-text>
                 </u-row>
 
               </u-col>

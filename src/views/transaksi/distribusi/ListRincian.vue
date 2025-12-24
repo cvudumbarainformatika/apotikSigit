@@ -10,6 +10,7 @@
           <u-row gap="gap-2">
             <span>💊 </span>
             <u-text size="md" class="font-bold">{{ item?.master?.nama || '-' }}</u-text>
+            <u-text size="md" class="font-bold">Stok : {{ item?.stok?.jumlah_k || '-' }}</u-text>
           </u-row>
           <u-row gap="gap-2">
             <u-badge variant="warning" class="">Permintaan : {{ item?.jumlah || 0 }} {{ item?.satuan_k }}</u-badge>
@@ -78,7 +79,7 @@ const handleFocusJumlah = async (e) => {
 }
 
 const handleAdd = async (item) => {
-
+  form.value.id = item?.mutasi_header_id ?? null
   form.value.kode_mutasi = item?.kode_mutasi ?? ''
   form.value.kode_barang = item?.master?.kode ?? null
   form.value.satuan_k = item?.satuan_k ?? null

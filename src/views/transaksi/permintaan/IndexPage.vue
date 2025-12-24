@@ -34,7 +34,7 @@ const title = computed(() => route?.meta?.title)
 
 onMounted(() => {
   // console.log('Mounted ', title.value);
-  
+  store.status = null
   store.per_page = 20
   Promise.all([
     store.fetchAll(),

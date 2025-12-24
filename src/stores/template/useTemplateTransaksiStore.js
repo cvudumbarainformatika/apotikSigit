@@ -35,6 +35,9 @@ export function createTemplateTransaksiStore(storeId, config) {
       order_by: 'created_at',
       sort: 'desc',
       depo: '',
+      status: '',
+      dari: '',
+      tujuan: '',
 
       range:{
         start_date: null,
@@ -63,6 +66,9 @@ export function createTemplateTransaksiStore(storeId, config) {
             sort: this.sort,
             from: this.range.start_date,
             to: this.range.end_date,
+            dari: this.dari,
+            tujuan: this.tujuan,
+            status: this.status,
             ...extraParams
           }
           const res = await api.get(`${config.baseUrl}${config?.createUrl  || '/get-list'}`, { params })
@@ -213,12 +219,13 @@ export function createTemplateTransaksiStore(storeId, config) {
       },
 
       setRange(val) {
-        // console.log('range', val);
+        console.log('range', val);
         
         this.from = val.start_date
         this.to = val.end_date
         this.page = 1
         this.fetchAll()
+        console.log('rangerange', this.from, this.to);
       },  
 
       clearFieldError(field) {
