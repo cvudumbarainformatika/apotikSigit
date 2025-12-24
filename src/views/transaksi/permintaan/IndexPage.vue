@@ -92,7 +92,7 @@ async function loadCabang() {
       store.range.start_date = getYearStartDate()
       store.range.end_date = getYearEndDate()
       store.status = null
-      store.dari = cabangList.value
+      store.dari = [company.value?.kode_toko]
       store.tujuan = ''
       await store.fetchAll()
     }
