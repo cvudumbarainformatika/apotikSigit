@@ -10,7 +10,7 @@
           <u-row gap="gap-2">
             <span>💊 </span>
             <u-text size="md" class="font-bold">{{ item?.master?.nama || '-' }}</u-text>
-            <u-text size="md" class="font-bold">Stok : {{ item?.stok?.jumlah_k || '-' }}</u-text>
+            <u-text size="md" class="font-bold">Stok : {{ item?.jumlah_stok || '-' }}</u-text>
           </u-row>
           <u-row gap="gap-2">
             <u-badge variant="warning" class="">Permintaan : {{ item?.jumlah || 0 }} {{ item?.satuan_k }}</u-badge>
