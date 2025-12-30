@@ -4,7 +4,7 @@
     <!-- Header Search & Action -->
     <u-view class="w-full" padding="pt-1 px-2">
       <u-row flex1>
-        <div class="font-bold text-lg text-primary">Laporan Penjualan</div>
+        <div class="font-bold text-lg text-primary">Laporan Laba Rugi</div>
       </u-row>
     </u-view>
 
