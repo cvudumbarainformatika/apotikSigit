@@ -3,10 +3,23 @@ import { useAuthStore } from '@/stores/auth'
 import { useNotificationStore } from '@/stores/notification'
 
 const notify = useNotificationStore().notify
+const host = location.hostname;
 
+let baseURL = 'https://api.apoteksetyawan1.my.id' // default production (AMAN)
+
+if (host === 'localhost') {
+  baseURL = 'http://localhost:8081'
+} else if (host.startsWith('192.168.')) {
+  baseURL = 'http://192.168.1.214:8081'
+}
+
+// 🔹 Override jika ENV tersedia (env > auto detect)
+if (import.meta.env.VITE_API_URL) {
+  baseURL = import.meta.env.VITE_API_URL
+}
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8195/',
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
