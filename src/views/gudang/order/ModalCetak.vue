@@ -38,9 +38,24 @@
 
       <div class="w-full border-t border-dashed border-black my-1"></div>
        
+      <div class="flex items-start justify-between gap-6">
+          <div class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
+            <div class="text-gray-500">Apoteker :
+              <span class="font-medium">{{ data?.apoteker?.nama || '-' }} ({{ data?.apoteker?.sipa || '-' }})</span>
+            </div>
+
+          </div>
+          <div class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
+            <!-- <div class="text-gray-500">Apoteker :
+              <span class="font-medium">{{ data?.user?.nama || '-' }} ({{ data?.user?.kode || '-' }})</span>
+            </div> -->
+
+          </div>
+
+        </div>
 
         <!-- Items Table -->
-      <div class="mt-6">
+      <div class="mt-3">
         <table class="w-full text-sm border-separate [border-spacing:0]">
           <thead>
             <tr class="text-left">

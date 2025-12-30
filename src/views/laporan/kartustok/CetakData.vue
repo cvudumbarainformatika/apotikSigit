@@ -135,8 +135,6 @@ const mapItems = computed(() => {
         })
     })
 
-    console.log('itms barang xxxx', map)
-    console.log('xxxx', props.item)
     return Array.from(map.values())
 })
 

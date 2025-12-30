@@ -15,14 +15,27 @@
           <u-input v-model="form.nomor_order" label="Nomor Order (Auto)" readonly :error="isError('no_order')"
             :error-message="errorMessage('no_order')" />
         </u-row>
-
-        <u-select label="Order dari Cabang" v-model="form.kode_depo" :options="cabangList.map(c => ({
+        <u-row>
+          <u-select label="Order dari Cabang" v-model="form.kode_depo" :options="cabangList.map(c => ({
             value: c.kodecabang,
             label: c.namacabang
-          }))"
-          :error="isError('kode_depo')" :error-message="errorMessage('kode_depo')" @update:modelValue="(val) => {
+          }))" :error="isError('kode_depo')" :error-message="errorMessage('kode_depo')" @update:modelValue="(val) => {
             console.log('selected cabang', val);
           }" />
+        </u-row>
+        <u-row>
+          <u-select label="Apoteker" v-model="form.kode_apoteker" :options="optionApoteker"
+            :error="isError('kode_apoteker')" :error-message="errorMessage('kode_apoteker')" @inputval="cariApoteker"
+            @update:modelValue="(val) => {
+              console.log('val', val);
+              if (!val) {
+                masterApoteker.q = null
+                valApoteker = null
+                masterApoteker.fetchAll()
+              }
+            }" />
+        </u-row>
+        
 
       </u-card>
 
@@ -69,6 +82,7 @@
           </div>
 
         </u-row>
+        
       </u-card>
 
 
@@ -205,6 +219,7 @@ const notify = useNotificationStore().notify
 import ModalCetak from './ModalCetak.vue'
 import FormBarangSelected from './FormBarangSelected.vue'
 import { useAppStore } from '@/stores/app'
+import { useApotekerStore } from '@/stores/template/register'
 
 
 const ListRincian = defineAsyncComponent(() => import('./ListRincian.vue'))
@@ -228,7 +243,7 @@ const cabangList = ref([])
 const form = ref({
   nomor_order: '',
   tgl_order: '',
-  // kode_user: '',
+  kode_apoteker: '',
   kode_supplier: '',
   kode_barang: '',
   satuan_k: '',
@@ -237,6 +252,22 @@ const form = ref({
   jumlah_pesan: 1,
   kode_depo: '',
 })
+const masterApoteker = useApotekerStore()
+const valApoteker = ref(null)
+const optionApoteker = ref([])
+function cariApoteker(val) {
+  valApoteker.value = val
+  const match = masterApoteker?.items.filter(o => o.nama?.toLowerCase()?.includes(valApoteker.value))
+  if (match.length > 0) optionApoteker.value = match?.map(item => ({ label: item?.nama, value: item?.kode }))
+  else {
+    masterApoteker.q = val
+    masterApoteker.fetchAll()
+  }
+}
+watch(() => masterApoteker?.items, () => {
+  const match = !!valApoteker.value ? masterApoteker?.items.filter(o => o.nama?.toLowerCase()?.includes(valApoteker.value)) : masterApoteker?.items
+  if (match.length > 0) optionApoteker.value = match?.map(item => ({ label: item?.nama, value: item?.kode }))
+}, { immediate: true })
 
 
 const optionJenispajaks = computed(() => [
@@ -375,7 +406,7 @@ const handleKunci = async (e) => {
       resp = await api.post(`api/v1/transactions/order/unlock-order`, payload)
     }
     notify({ message: resp?.data?.message, type: 'success' })
-    // console.log('resp', resp);
+    console.log('resp kunci', resp);
     // return
   } catch (error) {
     console.log('error', error);
@@ -444,6 +475,7 @@ watch(() => ({ ...props.store.form }), (newForm, oldForm) => {
   if (newForm) {
     form.value = {
       nomor_order: newForm?.nomor_order ?? '',
+      kode_apoteker: newForm?.kode_apoteker ?? '',
       tgl_order: newForm?.tgl_order ?? '',
       kode_depo: newForm?.cabang?.kodecabang ?? '',
       kode_supplier: newForm?.kode_supplier ?? '',

@@ -1,6 +1,6 @@
 <script setup>
-import { defineAsyncComponent, onMounted, computed, ref, onBeforeMount } from 'vue'
-import { useBarangStore, useKategoriStore, useMerkStore, useRakStore, useSatuanStore } from '@/stores/template/register'
+import { defineAsyncComponent, onMounted, computed, ref } from 'vue'
+import { useApotekerStore, useDokterStore } from '@/stores/template/register'
 import { useRoute } from 'vue-router'
 import { inject } from 'vue'
 const $confirm = inject('confirm')
@@ -8,43 +8,25 @@ const $confirm = inject('confirm')
 
 import BaseMaster from '@/components/templates/BaseMaster.vue'
 import LoaderItem from './LoaderItem.vue'
-// const LoaderItem = defineAsyncComponent(() => import('./LoaderItem.vue'))
+// const BaseMaster = defineAsyncComponent(() => import('@/components/templates/BaseMaster.vue'))
 const ListComp = defineAsyncComponent(() => import('./ListComp.vue'))
 const ModalForm = defineAsyncComponent(() => import('./ModalForm.vue'))
-const CetakData = defineAsyncComponent(() => import('./CetakData.vue'))
 
-const store = useBarangStore()
-const masterSatuan = useSatuanStore()
-const masterMerk = useMerkStore()
-const masterKategori = useKategoriStore()
-const masterRak = useRakStore()
+
+const store = useApotekerStore()
+
 
 const route = useRoute()
 const title = computed(() => route.meta.title)
 
 onMounted(() => {
-  // console.log('Mounted ', title.value);
+  console.log('Mounted ', title.value);
   
   store.per_page = 100
   Promise.all([
-    store.fetchAll(),
-    masterSatuan.fetchAll(),
-    masterMerk.fetchAll(),
-    masterKategori.fetchAll(),
-    masterRak.fetchAll(),
+    store.fetchAll()
   ])
 })
-
-// onBeforeMount(() => {
-//   console.log('Before Mounted ', title.value);
-//   store.per_page = 100
-//   Promise.all([
-//     store.fetchAll(),
-//     masterSatuan.fetchAll()
-//   ])
-// }),
-
-
 function handleAdd() {
   store.item = null
   store.modalFormOpen = true
@@ -80,12 +62,12 @@ async function handleDelete(item) {
 </script>
 
 <template>
-  <base-master :title="title" :store="store" :showPrintButton="true" showOrder :onAdd="handleAdd" :onRefresh="handleRefresh">
+  <base-master :title="title" :store="store" showOrder :onAdd="handleAdd" :onRefresh="handleRefresh">
     <template #loading>
       <LoaderItem />
     </template>
     <template #item="{ item }">
-      <Suspense>
+     <Suspense>
         <template #default>
           <list-comp :item="item" @edit="handleEdit" @delete="handleDelete" />
         </template>
@@ -95,14 +77,19 @@ async function handleDelete(item) {
       </Suspense>
     </template>
     <template #modal-form>
-      <modal-form v-if="store.modalFormOpen" v-model="store.modalFormOpen" :mode="store.item ? 'edit' : 'add'"
-        :title="title" :store="store" @close="store.modalFormOpen = false" @save="handleSave" />
+      <modal-form 
+        v-if="store.modalFormOpen"
+        v-model="store.modalFormOpen"
+        :mode="store.item ? 'edit' : 'add'"
+        :title="title"
+        :store="store"
+        @close="store.modalFormOpen = false"
+        @save="handleSave"
+      />
     </template>
-   <template #print>
-      <cetak-data />
-    </template>
 
+    
 
-
+   
   </base-master>
 </template>

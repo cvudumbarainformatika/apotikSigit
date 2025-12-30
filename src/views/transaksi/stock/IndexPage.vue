@@ -31,7 +31,7 @@ function handleRefresh() {
 </script>
 
 <template>
-  <base-master :title="title" :store="store" :showPrint="true" :showPrintButton="true" :showAddButton="false"
+  <base-master :title="title" :store="store" :showPrintButton="true" :showAddButton="false"
     :onRefresh="handleRefresh">
     <template #loading>
       <LoaderItem />

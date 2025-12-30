@@ -35,7 +35,7 @@
 
 
 
-    <u-view id="printArea" ref="printArea" class="w-full relative print-a4" flex1 scrollY gap="gap-0" padding="p-0">
+    <u-view id="printAreax" ref="printArea" class="w-full relative print-a4" flex1 scrollY gap="gap-0" padding="p-0">
       <u-view v-if="store.loading" flex1 class="flex items-center justify-center w-full">
         <u-load-spinner />
       </u-view>
@@ -151,7 +151,7 @@ function getTotal (item) {
 
 
 const printObj = {
-  id: '#printArea', // ref elemen yang mau diprint
+  id: '#printAreax', // ref elemen yang mau diprint
   popTitle: 'Laporan Penjualan',
   preview: false,
   extraCss: '',

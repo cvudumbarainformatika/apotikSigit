@@ -1,5 +1,5 @@
 <template>
-  <base-master :title="title" :store="store" :showPrint="true" :showOpnameButton="true" :showCabangButton="true"
+  <base-master :title="title" :store="store" :showPrintButton="true" :showOpnameButton="true" :showCabangButton="true"
     :showMonthButton="true" :showAddButton="false" :onRange="handleRange" :onCabang="handleRange"
     :onRefresh="handleRefresh" :onTriger="handleOpname" :loading="store.loading">
     <template #loading>

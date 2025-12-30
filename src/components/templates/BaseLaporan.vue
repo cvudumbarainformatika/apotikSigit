@@ -44,13 +44,13 @@
                     <u-load-spinner></u-load-spinner>
                 </slot>
             </div>
-            <u-view v-else-if="store.items.length" :items="store.items" :loadingDeletes="store.loadingDeletes">
+            <u-view v-if="store.items.length" :items="store.items" :loadingDeletes="store.loadingDeletes">
                 <!-- <template #item="{ item }"> -->
                 <slot name="item" />
                 <!-- </template> -->
             </u-view>
             <u-empty :title="store.emptyTitle" :subtitle="store.emptySubtitle"
-                v-else-if="!store.loading && !store.items.length" />
+                v-if="!store.loading && !store.items.length" />
             <!-- ⬇️ Loading indicator ketika fetchMore aktif dan ketika mode loadMore -->
             <u-load-spinner v-if="store.loadingMore && isLoadMore" />
         </u-view>

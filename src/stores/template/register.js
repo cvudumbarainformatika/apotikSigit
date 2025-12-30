@@ -82,6 +82,13 @@ export const useBebanStore = createTemplateStore('beban', {
   baseUrl: 'api/v1/master/beban',
   persist: false
 })
+export const useApotekerStore = createTemplateStore('apoteker', {
+  baseUrl: 'api/v1/master/apoteker',
+  order_by: 'nama',
+  sort: 'asc',
+  order: 'Nama',
+  persist: false
+})
 // export const useSupplierStore = createTemplateStore('supplier', {
 //   baseUrl: '/api/supplier',
 //   persist: false
