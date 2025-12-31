@@ -11,7 +11,9 @@
       <u-col class="col-span-2" gap="gap-0">
         <u-text>{{ item?.master?.nama || '-' }}</u-text>
         <u-text color="text-gray-400">{{ item?.master?.kode || '-' }}</u-text>
+        <u-text>Kandungan : {{ item?.master?.kandungan || '-' }}</u-text>
       </u-col>
+      
       <u-col align="items-end" class="col-span-2" gap="gap-0">
         <u-row>
           <u-text color="text-primary" class="italic">{{ formatJamMenit(item?.created_at) }}</u-text>

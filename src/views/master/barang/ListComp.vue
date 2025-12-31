@@ -26,6 +26,10 @@
                 <div>Isi Satuan Besar : </div>
                 <div class="font-bold">{{ item?.isi }}</div>
               </u-row>
+               <u-row flex1 class="w-full text-xs">
+                <div>Kandungan : </div>
+                <div class="font-bold">{{ item?.kandungan ?? '-' }}</div>
+              </u-row>
               <u-row flex1 class="w-full text-xs">
                 <div>Harga Rsp : </div>
                 <div class="font-bold">{{ formatRupiah(item?.harga_jual_resep) }}</div>

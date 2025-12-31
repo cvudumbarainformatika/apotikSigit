@@ -62,6 +62,7 @@
               <th class="th">#</th>
               <th class="th">Kode</th>
               <th class="th">Nama Barang</th>
+              <th class="th">Kandungan</th>
               <th class="th text-right">Jumlah Pesan</th>
               <!-- <th class="th text-right">Harga</th>
               <th class="th text-right">Diskon</th>
@@ -75,8 +76,9 @@
               <td class="td">{{ it?.kode_barang || '-' }}</td>
               <td class="td">
                 <div class="font-medium">{{ it?.master?.nama || '-' }}</div>
-                <!-- <div class="text-gray-500">Batch: {{ it?.nobatch || '-' }} • Exp: {{ it.tgl_exprd ? formatDateIndo(it.tgl_exprd) : '-' }}</div> -->
+                <!-- <div class="text-gray-500">Batch: {{ it?.kandungan || '-' }}</div> -->
               </td>
+              <td class="td">{{ it?.kandungan || '-' }}</td>
               <td class="td text-right">{{ it?.jumlah_pesan || 0 }} {{ it?.satuan_b }}</td>
               <!-- <td class="td text-right">{{ formatRupiah(it?.harga_b) || '-' }}</td> -->
               <!-- <td class="td text-right">{{ it?.discount ? formatRupiah(it?.discount) : '-' }}</td> -->

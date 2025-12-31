@@ -111,7 +111,8 @@
                   <u-text class="">{{ item?.kode }}</u-text>,
                   <u-text class="">{{ item?.satuan_k }}</u-text> |
                   <u-text class="">{{ item?.satuan_b }}</u-text>
-                  <u-text class="">Isi {{ item?.isi }}</u-text>
+                  <u-text class="">Isi {{ item?.isi }}</u-text> |
+                  <u-text class="">kandungan {{ item?.kandungan ?? '-' }}</u-text>
                 </u-row>
               </u-col>
             </template>
