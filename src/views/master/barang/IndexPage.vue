@@ -8,6 +8,7 @@ const $confirm = inject('confirm')
 
 import BaseMaster from '@/components/templates/BaseMaster.vue'
 import LoaderItem from './LoaderItem.vue'
+import { api } from '@/services/api'
 // const LoaderItem = defineAsyncComponent(() => import('./LoaderItem.vue'))
 const ListComp = defineAsyncComponent(() => import('./ListComp.vue'))
 const ModalForm = defineAsyncComponent(() => import('./ModalForm.vue'))
@@ -24,7 +25,7 @@ const title = computed(() => route.meta.title)
 
 onMounted(() => {
   // console.log('Mounted ', title.value);
-  
+  // loadMasterGagal()
   store.per_page = 100
   Promise.all([
     store.fetchAll(),
@@ -77,10 +78,51 @@ async function handleDelete(item) {
   }
   
 }
+// const masterGagal = ref([])
+// const loading = ref(false)
+// async function loadMasterGagal() {
+//   loading.value = true
+//   try {
+//     const response = await api.get('/api/v1/master/curl/all-failed')
+//     console.log('master gagal', response)
+//     if (response.status === 200) {
+//       masterGagal.value = response.data?.data
+    
+//     }
+//   } catch (err) {
+//     console.error('Gagal load:', err)
+//     err.message || 'Gagal memuat data'
+//   } finally {
+//     loading.value = false
+//   }
+// }
+
+async function handleKirimUlang() {
+  const ok = await $confirm({
+    message: 'Yakin ingin Simpan Ulang Data yang Gagal Kirim ?',
+  })
+  if (ok) {
+    // console.log('Confirmed delete')
+    try {
+      store.loading = true
+      const response = await api.post(`api/v1/master/curl/re-send-all`)
+      if (response) {
+        console.log('Kirim Ulang berhasil', response.data)
+       
+        notify({ message: response.data.message ?? 'Berhasil Simpan', type: 'success' })
+      }
+    } catch (error) {
+      console.error('Error membuat opname stok:', error)
+      notify({ message: error.message ?? 'Gagal Opname', type: 'error' })
+    } finally {
+      store.loading = false
+    }
+  }
+}
 </script>
 
 <template>
-  <base-master :title="title" :store="store" :showPrintButton="true" showOrder :onAdd="handleAdd" :onRefresh="handleRefresh">
+  <base-master :title="title" :store="store" :showReport="true" :onTrigerReport="handleKirimUlang" :showPrintButton="true" showOrder :onAdd="handleAdd" :onRefresh="handleRefresh">
     <template #loading>
       <LoaderItem />
     </template>

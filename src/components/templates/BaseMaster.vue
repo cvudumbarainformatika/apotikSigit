@@ -26,6 +26,10 @@
         <u-row>
           <u-btn-icon v-if="showPrintButton" icon="print" tooltip="Print" v-print="printObj" />
         </u-row>
+
+        <u-row>
+          <u-btn-icon v-if="showReport && masterGagal.length" icon="warning" tooltip="Simpan Ulang" @click="onTrigerReport" />
+        </u-row>
         <u-row>
           <u-select v-if="showMonthButton" label="Pilih Bulan" v-model="store.range.start_date" :options="bulans"
             @update:modelValue="onRange" />
@@ -103,11 +107,13 @@ const props = defineProps({
   showOrder: { type: Boolean, default: false },
   showOpnameButton: { type: Boolean, default: false },
   showPrintButton: { type: Boolean, default: false },
+  showReport: { type: Boolean, default: false },
   onAdd: Function, // ✅ supaya tidak error saat dipanggil
   onRefresh: Function, // ✅ hanya dipanggil kalau diberikan
   onRange: Function, // ✅ hanya dipanggil kalau diberikan
   onCabang: Function, // ✅ hanya dipanggil kalau diberikan
   onTriger: Function, // ✅ hanya dipanggil kalau diberikan
+  onTrigerReport: Function, // ✅ hanya dipanggil kalau diberikan
 })
 
 const emit = defineEmits(['close', 'save'])
@@ -164,6 +170,7 @@ const optionCabang = computed(() => {
 })
 
 onMounted(async () => {
+  await loadMasterGagal()
   await app.fetchData()
   await loadCabang()
   if (props?.onRange) {
@@ -208,7 +215,6 @@ async function loadCabang() {
         c => c.url === targetUrl
       )
 
-
     }
   } catch (err) {
     console.error('Gagal load cabang:', err)
@@ -231,6 +237,25 @@ const printObj = {
   },
   closeCallback(vue) {
     console.log('closePrint')
+  }
+}
+
+
+const masterGagal = ref([])
+async function loadMasterGagal() {
+  loading.value = true
+  try {
+    const response = await api.get('/api/v1/master/curl/all-failed')
+    console.log('master gagal', response)
+    if (response.status === 200) {
+      masterGagal.value = response.data?.data
+
+    }
+  } catch (err) {
+    console.error('Gagal load:', err)
+    err.message || 'Gagal memuat data'
+  } finally {
+    loading.value = false
   }
 }
 

@@ -60,10 +60,32 @@ async function handleDelete(item) {
   }
   
 }
+async function handleKirimUlang() {
+  const ok = await $confirm({
+    message: 'Yakin ingin Simpan Ulang Data yang Gagal Kirim ?',
+  })
+  if (ok) {
+    // console.log('Confirmed delete')
+    try {
+      store.loading = true
+      const response = await api.post(`api/v1/master/curl/re-send-all`)
+      if (response) {
+        console.log('Kirim Ulang berhasil', response.data)
+
+        notify({ message: response.data.message ?? 'Berhasil Simpan', type: 'success' })
+      }
+    } catch (error) {
+      console.error('Error membuat opname stok:', error)
+      notify({ message: error.message ?? 'Gagal Opname', type: 'error' })
+    } finally {
+      store.loading = false
+    }
+  }
+}
 </script>
 
 <template>
-  <base-master :title="title" :store="store" showOrder :onAdd="handleAdd" :onRefresh="handleRefresh">
+  <base-master :title="title" :store="store" :showReport="true" :onTrigerReport="handleKirimUlang" showOrder :onAdd="handleAdd" :onRefresh="handleRefresh">
     <template #loading>
       <LoaderItem />
     </template>
