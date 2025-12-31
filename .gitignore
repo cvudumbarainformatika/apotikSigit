@@ -23,4 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 /public/custom-logo
-/public/images/logo.svg
