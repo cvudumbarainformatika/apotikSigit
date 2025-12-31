@@ -17,6 +17,10 @@
           <u-text class="font-bold">Kode</u-text>
           <u-text>{{ store.barangSelected?.kode || '-' }}</u-text>
         </div>
+       
+        <div class="col-span-12">
+          <u-text class="font-bold">Kandungan : {{ store.barangSelected?.kandungan || '-' }}</u-text>
+        </div>
 
         <div class="col-span-12">
           <u-separator spacing="-my-2"></u-separator>
