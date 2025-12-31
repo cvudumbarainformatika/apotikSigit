@@ -7,8 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8181:80"
-    volumes:
-      - ./source/public/custom-logo:/usr/share/nginx/html/custom-logo:ro
+    # volumes:
+    #   - ./source/public/custom-logo:/usr/share/nginx/html/custom-logo:ro
     networks:
       - sa_shared
       - default
