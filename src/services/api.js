@@ -6,13 +6,13 @@ const notify = useNotificationStore().notify
 const host = window.location.hostname;
 console.log('host', host);
 
-let baseURL = 'https://apoteksetyawan1.my.id' // default production (AMAN)
+// let baseURL = 'https://apoteksetyawan1.my.id' // default production (AMAN)
 
-if (host === 'localhost') {
-  baseURL = 'http://localhost:8081'
-} else if (host.startsWith('192.168.')) {
-  baseURL = 'http://192.168.1.214:8081'
-}
+// if (host === 'localhost') {
+//   baseURL = 'http://localhost:8081'
+// } else if (host.startsWith('192.168.')) {
+//   baseURL = 'http://192.168.1.214:8081'
+// }
 
 // 🔹 Override jika ENV tersedia (env > auto detect)
 // if (import.meta.env.VITE_API_URL) {
@@ -20,7 +20,7 @@ if (host === 'localhost') {
 // }
 // Create axios instance
 const api = axios.create({
-  baseURL,
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
