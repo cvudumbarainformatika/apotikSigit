@@ -2,7 +2,7 @@
   <u-modal persistent :title="`${title}`" @close="emit('close')">
     <template #default>
       <div id="printArea" ref="printArea"
-        class="w-[58mm] max-w-full bg-white text-black mx-auto font-mono p-1 thermal-58">
+        class="w-[80mm] max-w-full bg-white text-black mx-auto font-mono p-1 thermal-80">
         <div class="text-center">
           <div class="text-sm font-semibold tracking-wide">{{ app?.form?.nama || 'NAMA TOKO' }}</div>
           <div class="text-[10px] leading-tight">{{ app?.form?.alamat || 'ALAMAT TOKO' }}</div>
