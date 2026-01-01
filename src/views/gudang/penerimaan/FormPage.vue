@@ -89,7 +89,7 @@
         <u-grid cols="2">
           <u-select label="Jenis Pajak" v-model="form.jenispajak" :options="optionJenispajaks"
             :error="isError('jenispajak')" :error-message="errorMessage('jenispajak')" @update:modelValue="(val) => {
-              form.pajak = val === 'Exclude' ? parseInt(11) : parseInt(0)
+              form.pajak = val === 'Exclude' ? Nilaipajak : parseInt(0)
             }" />
           <u-input readonly class="col-span-1" v-model="form.pajak" label="Pajak" :error="isError('pajak')"
             type="number" :error-message="errorMessage('pajak')" />
@@ -315,6 +315,19 @@ const form = ref({
   rincian: {},
 })
 
+onMounted(async () => {
+  
+  await app.fetchData()
+  
+  initForm()
+  props.store.dataorder = []
+  storeorder.per_page = 20
+  await ambilOrder()
+})
+const Nilaipajak = computed(() => {
+  
+  return app?.form?.pajak || null
+})
 function rincianAsArray(r) {
   if (!r) return []
   if (Array.isArray(r)) return r
@@ -534,7 +547,7 @@ const initializeRincian = (orderRecords) => {
 const handleKunci = async (e) => {
   e?.preventDefault?.()
   e?.stopPropagation?.()
-  console.log('kode depo', app.form)
+  // console.log('kode depo', app.form)
   const flag = (props.store.form?.flag === '1' || props.store.form?.flag === 1)
   const nopenerimaan = props.store.form?.nopenerimaan
   const rincians = rincianAsArray(props.store.form?.rincian)
@@ -891,13 +904,7 @@ const clearSelectedOrder = () => {
 }
 /* ---------- lifecycle ---------- */
 
-onMounted(async () => {
-  // console.log('🟢 Form transaksi mounted')
-  initForm()
-  props.store.dataorder = []
-  storeorder.per_page = 20
-  await ambilOrder()
-})
+
 
 onUnmounted(() => {
   // console.log('🔴 Form transaksi unmounted')
