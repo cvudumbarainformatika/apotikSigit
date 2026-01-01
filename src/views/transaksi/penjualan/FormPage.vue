@@ -227,9 +227,7 @@
                 <u-grid cols="12">
                   <u-row class="col-span-6">
                     <u-input ref="inpJumlahRef" v-model="form.jumlah_k" label="jumlah" type="number"
-                      :error="isError('jumlah_k')" :error-message="errorMessage('jumlah_k')" @keydown.enter.stop="()=> {
-                          inpDiscRef?.focus()
-                        }" />
+                      :error="isError('jumlah_k')" :error-message="errorMessage('jumlah_k')"  @keydown.enter.prevent.stop="handleEnterJumlah" />
                   </u-row>
                   <!-- <u-row class="col-span-3">
                     <u-input ref="inpDiscRef" v-model="form.diskon" label="discount Rp" type="number"
@@ -584,16 +582,16 @@ const handleAdd = async(item) => {
   const selected = props?.store?.barangSelected ?? null
   const hrIni = new Date()
   form.value.tgl_penjualan = toLocalDateString(hrIni) ?? null
-  form.value.kode_barang = item?.kode ?? selected.kode ?? null
-  form.value.satuan_k = item?.satuan_k ?? selected.satuan_k ?? null
-  form.value.satuan_b = item?.satuan_b ?? selected.satuan_b ?? null
+  form.value.kode_barang = item?.kode ?? selected?.kode ?? null
+  form.value.satuan_k = item?.satuan_k ?? selected?.satuan_k ?? null
+  form.value.satuan_b = item?.satuan_b ?? selected?.satuan_b ?? null
   form.value.isi = parseInt(item?.isi ?? 1)
   form.value.harga_jual = getHargaJual()
-  form.value.harga_beli = parseInt(item?.harga_beli ?? selected.harga_beli ?? 0)
+  form.value.harga_beli = parseInt(item?.harga_beli ?? selected?.harga_beli ?? 0)
   // form.value.nobatch = item?.nobatch ?? null
   // form.value.tgl_exprd = item?.tgl_exprd ?? null
   form.value.id_stok = item?.stok?.id ?? null
-  form.value.hpp = parseFloat(item?.harga_beli ?? selected.harga_beli ?? 0)
+  form.value.hpp = parseFloat(item?.harga_beli ?? selected?.harga_beli ?? 0)
 
  
   props.store.create(form.value)
@@ -601,7 +599,16 @@ const handleAdd = async(item) => {
   handleOk()
   
 }
+function handleEnterJumlah() {
+  if (!props.store?.barangSelected) return
 
+  handleAdd(props.store.barangSelected)
+
+  // fokus balik ke search barang (biar cepat input lagi)
+  nextTick(() => {
+    searchBarangRef.value?.focus?.()
+  })
+}
 function getHargaJual() {
   const selected = props?.store?.barangSelected ?? null
   if (form.value.kode_dokter) {
