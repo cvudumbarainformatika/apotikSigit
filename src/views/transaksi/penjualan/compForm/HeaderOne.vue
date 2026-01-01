@@ -27,16 +27,34 @@
 
       <div
         class="inline-flex rounded-lg overflow-hidden border border-light-primary bg-grady-primary w-full justify-center">
-        <u-grid cols="2" gap="gap-0">
+        <u-grid cols="3" gap="gap-0">
           <label
-          :class="['text-sm w-full font-medium text-center px-4 py-2 select-none transition-colors', jenis === 'umum' ? 'bg-grady-primary text-background ' : 'bg-secondary text-primary font-semibold shadow']">
-          Umum
+            :class="['text-sm w-full font-medium text-center px-4 py-2 select-none transition-colors', jenis === 'umum' ? 'bg-grady-primary text-background ' : 'bg-secondary text-primary font-semibold shadow']">
+            Umum
+          </label>
+          <label
+          :class="['text-sm w-full font-medium text-center px-4 py-2 select-none transition-colors', jenis === 'customer' ? 'bg-grady-primary text-background ' : 'bg-secondary text-primary font-semibold shadow']">
+          Customer
         </label>
         <label
           :class="['text-sm w-full font-medium text-center px-2 py-2 select-none transition-colors', jenis === 'resep' ? 'bg-grady-primary text-background ' : 'bg-secondary text-primary font-semibold shadow']">
           Resep
         </label>
         </u-grid>
+        
+      </div>
+    </u-row>
+    <u-row>
+
+      <div
+        class="inline-flex rounded-lg overflow-hidden border border-light-primary bg-grady-primary w-full justify-center">
+        <u-grid cols="" gap="gap-0">
+          <label
+            :class="['text-sm w-full font-medium text-center px-4 py-2 select-none transition-colors', jenis === 'premium' ? 'bg-grady-primary text-background ' : 'bg-secondary text-primary font-semibold shadow']">
+            Premium
+          </label>
+        </u-grid>
+
       </div>
     </u-row>
     

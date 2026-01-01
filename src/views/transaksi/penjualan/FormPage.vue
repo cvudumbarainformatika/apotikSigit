@@ -351,7 +351,11 @@ const loadingLock = ref(false)
 const modalNota = ref(false)
 
 const jenis = computed(() => {
-  return (form?.value?.kode_dokter !== null && form?.value?.kode_dokter !== '') ? 'resep' : 'umum'
+  if (!form.value.kode_dokter && !form.value.kode_pelanggan) return 'umum'
+  if (form.value.kode_dokter) return 'resep'
+  if (form.value.kode_pelanggan) return 'customer'
+  if (form.value.premium) return 'premium'
+  // return (form?.value?.kode_dokter !== null && form?.value?.kode_dokter !== '') ? 'resep' : 'umum'
 })
 
 
@@ -380,6 +384,7 @@ const form = ref({
   tgl_penjualan: null,
   kode_pelanggan: '',
   kode_dokter: '',
+  premium: '',
   kode_barang: '',
   jumlah_k: 1,
   satuan_k: '',
@@ -532,7 +537,12 @@ const handleOk = () => {
 }
 
 const lihatHargaBy = (item) => {
-  const harga = item?.harga_jual_umum || 0
+  let harga = 0
+  if (!form.value.kode_dokter && !form.value.kode_pelanggan) return harga = item?.harga_jual_umum || 0
+  if (form.value.kode_dokter) return harga = item?.harga_jual_resep || 0
+  if (form.value.kode_pelanggan) return harga = item?.harga_jual_cust || 0
+  if (form.value.premium) return harga = item?.harga_jual_prem || 0
+  
   return formatRupiah(harga)
 }
 const handleAdd = async(item) => {
@@ -559,7 +569,11 @@ const handleAdd = async(item) => {
 
 function getHargaJual() {
   const selected = props?.store?.barangSelected ?? null
-  return form.value.kode_dokter ? parseInt(selected?.harga_jual_resep ?? 0) : parseInt(selected?.harga_jual_umum ?? 0)
+  if (!form.value.kode_dokter && !form.value.kode_pelanggan) return parseInt(selected?.harga_jual_umum ?? 0)
+  if (form.value.kode_dokter) return parseInt(selected?.harga_jual_resep ?? 0)
+  if (form.value.kode_pelanggan) return parseInt(selected?.harga_jual_cust ?? 0)
+  if (form.value.premium) return parseInt(selected?.harga_jual_prem ?? 0)
+  // return form.value.kode_dokter ? parseInt(selected?.harga_jual_resep ?? 0) : parseInt(selected?.harga_jual_umum ?? 0)
 }
 
 const handleSelectedPelanggan = (item) => {
@@ -615,6 +629,7 @@ function handleClickOutside(event) {
 
 const clearSelectedPelanggan = () => {
   props.store.pelangganSelected = null
+  form.value.kode_pelanggan = ''
   // form.value.kode_supplier = ''
 }
 const clearSelectedDokter = () => {
