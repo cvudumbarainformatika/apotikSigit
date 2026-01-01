@@ -179,7 +179,7 @@ import { computed, defineAsyncComponent, ref } from 'vue'
 
 const props = defineProps({
   item: { type: Object, default: null },
-  store: { type: Object, required: true }
+  store: { type: Object, required: true },
 })
 
 // const store = useStockStore()

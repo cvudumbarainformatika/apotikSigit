@@ -28,7 +28,7 @@
             </div>
             <div class="flex justify-between text-[10px] opacity-70">
               <span>{{ it?.jumlah_k }} {{ it?.satuan_k }} x {{ formatRupiah(it?.harga_jual) }}</span>
-              <span >Disc: - {{ formatRupiah(it?.diskon) }}</span>
+              <!-- <span >Disc: - {{ formatRupiah(it?.diskon) }}</span> -->
             </div>
           </div>
         </div>
@@ -60,14 +60,14 @@
     <template #footer>
       <u-row flex1 class="w-full" right>
         <u-btn variant="secondary" label="Batal" @click="$emit('close')" />
-        <u-btn v-print="printObj" label="Cetak" type="button" />
+        <u-btn v-print="printObj" label="Cetak" ref="btnCetakRef" type="button" />
       </u-row>
     </template>
   </u-modal>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
@@ -90,6 +90,27 @@ const app = useAppStore()
 
 
 const printType = ref('thermal-58') // 'a4' | 'thermal-58 | 'thermal-80' | 'thermal-100'
+
+const btnCetakRef = ref(null)
+
+function handleGlobalKeydown(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault()
+    btnCetakRef.value?.$el?.click()
+  }
+
+  if (e.key === 'Escape') {
+    emit('close')
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleGlobalKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleGlobalKeydown)
+})
 
 
 const groupedItems = computed(() => {

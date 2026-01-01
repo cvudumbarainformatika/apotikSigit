@@ -16,8 +16,9 @@ const title = computed(() => route.meta.title)
 const app = useAppStore()
 const loading = ref(false)
 
-onMounted(() => {
-  console.log('Mounted ', title.value);
+onMounted(async() => {
+  await app.fetchData()
+  console.log('Mounted company', company.value?.kode_toko);
 
   store.per_page = 100
   Promise.all([    
@@ -26,11 +27,12 @@ onMounted(() => {
     // console.log('Refresh List', store.items)
   ])
 })
-
+const company = computed(() => {
+  return app?.form || null
+})
 
 const handleRange = async () => {
-  // console.log('handleRange', store.range);
-  loading.value = true
+  
   const params = {
     bulan: store.range?.start_date,
     tahun: store.range?.end_date,
@@ -39,23 +41,7 @@ const handleRange = async () => {
     per_page: store.per_page,
     depo: store.depo
   }
-  console.log('params', params);
-  store.loading = true
-  store.items = []
-  try {
-    store.fetchAll(params)
-    // const response = await api.get(`api/v1/transactions/stok/get-kartu-stok`, { params })
-    // if (response) {
-    //   store.items = response.data.data
-    //   console.log('items params', store.items)
-    // }
-  } catch (error) {
-    console.error('Error fetching Kartu Stok:', error)
-  } finally {
-    store.loading = false
-    loading.value = true
-  }
-  // console.log('items', store.items);
+  store.fetchAll(params)
 }
 
 function handleRefresh() {
@@ -78,7 +64,7 @@ function handleRefresh() {
   <base-master :title="title" :store="store" :showPrintButton="true" :showAddButton="false" :showCabangButton="true" :onCabang="handleRange"
     :onRefresh="handleRefresh">
     <template #loading>
-      <LoaderItem />
+      <!-- <LoaderItem /> -->
     </template>
     <template #item="{ item }">
       <Suspense>

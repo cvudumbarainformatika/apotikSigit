@@ -54,14 +54,14 @@ const loading = ref(false)
 onMounted(async () => {
   store.per_page = 100
   app.fetchData()
-  console.log('company', company.value)
+  // console.log('company', company.value)
   Promise.all([
     handleRange(),
     getCurrentDate()
   ])
 })
 const company = computed(() => {
-  return app?.item || null
+  return app?.form || null
 })
 // function toLocalDateString(date) {
 //   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
@@ -84,8 +84,7 @@ const getCurrentDate = () => {
   }
 }
 const handleRange = async () => {
-  // console.log('handleRange', store.range);
-  loading.value = true
+
   const params = {
     bulan: store.range?.start_date,
     tahun: store.range?.end_date,
@@ -94,23 +93,7 @@ const handleRange = async () => {
     per_page: store.per_page,
     depo: store.depo
   }
-  console.log('params', params);
-  store.loading = true
-  store.items = []
-  try {
-    store.fetchAll(params)
-    // const response = await api.get(`api/v1/transactions/stok/get-kartu-stok`, { params })
-    // if (response) {
-    //   store.items = response.data.data
-    //   console.log('items params', store.items)
-    // }
-  } catch (error) {
-    console.error('Error fetching Kartu Stok:', error)
-  } finally {
-    store.loading = false
-    loading.value = true
-  }
-  // console.log('items', store.items);
+  store.fetchAll(params)
 }
 function handleRefresh() {
   // console.log('Refresh List')

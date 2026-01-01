@@ -225,18 +225,18 @@
               </div>
               <u-row flex1 class="col-span-12 w-full -mt-4" gap="gap-2">
                 <u-grid cols="12">
-                  <u-row class="col-span-3">
+                  <u-row class="col-span-6">
                     <u-input ref="inpJumlahRef" v-model="form.jumlah_k" label="jumlah" type="number"
                       :error="isError('jumlah_k')" :error-message="errorMessage('jumlah_k')" @keydown.enter.stop="()=> {
                           inpDiscRef?.focus()
                         }" />
                   </u-row>
-                  <u-row class="col-span-3">
+                  <!-- <u-row class="col-span-3">
                     <u-input ref="inpDiscRef" v-model="form.diskon" label="discount Rp" type="number"
                       :error="isError('diskon')" :error-message="errorMessage('diskon')" @keydown.enter.stop="()=> {
                           handleAdd(store.barangSelected)
                         }" />
-                  </u-row>
+                  </u-row> -->
                   <u-row flex1 right class="col-span-6 w-full mt-2" gap="gap-2">
                     <u-btn-icon icon="add" variant="secondary" tooltip="Simpan Rincian"
                       @click="handleAdd(store.barangSelected)" />
@@ -267,10 +267,10 @@
           <u-text>Penjualan : </u-text>
           <u-text class="font-bold" size="lg" color="text-light-primary">{{ formatRupiah(totalAmount) || 0 }}</u-text>
         </u-row>
-        <u-row>
+        <!-- <u-row>
           <u-text>Total Discount : </u-text>
           <u-text class="font-bold" size="lg" color="text-light-primary">{{ formatRupiah(totalDiscount) || 0 }}</u-text>
-        </u-row>
+        </u-row> -->
         <u-row>
           <u-text>Total Pembayaran : </u-text>
           <u-text class="font-bold" size="lg" color="text-light-primary">{{ formatRupiah(totalPenjualan) || 0
@@ -298,7 +298,7 @@
 
 
         <u-row v-if="store.mode === 'edit'" class="w-full">
-          <u-input ref="inpPembayaranRef" v-model.number="formBayar.jumlah_bayar" label="Pembayaran"
+          <u-input ref="inpPembayaranRef" v-model="formBayar.jumlah_bayar" label="Pembayaran" type="number"
             :error="errorPembayaran" @keydown.enter.stop="simpanPenjualan" />
         </u-row>
         <u-row>
@@ -559,7 +559,7 @@ const groupedItems = computed(() => {
 const handleOk = () => {
   // console.log('handleOk');
   clearSelectedBarang()
-  
+  initCursor()
 }
 
 const lihatHargaBy = (item) => {

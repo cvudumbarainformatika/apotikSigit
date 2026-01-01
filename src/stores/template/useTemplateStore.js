@@ -26,7 +26,7 @@ export function createTemplateStore(storeId, config) {
       q: '',
       order_by: config.order_by || 'created_at',
       sort: config.sort || 'desc',
-
+      depo: '',
       hasMore: true,
 
       order: config.order || 'Nama',
@@ -53,6 +53,7 @@ export function createTemplateStore(storeId, config) {
             q: this.q,
             order_by: this.order_by,
             sort: this.sort,
+            depo: this.depo,
             ...extraParams
           }
           const res = await api.get(config.baseUrl + '/get-list', { params })
@@ -82,6 +83,7 @@ export function createTemplateStore(storeId, config) {
             q: this.q,
             order_by: this.order_by,
             sort: this.sort,
+            depo: this.depo
           }
 
           const res = await api.get(config.baseUrl + '/get-list', { params })
@@ -119,7 +121,7 @@ export function createTemplateStore(storeId, config) {
           console.log(`resp ${storeId} create : `, res);
           if (res.status === 200 || res.status === 201) {
             const result = res.data.data ?? res.data.user ?? null
-            console.log('result save', result);
+            // console.log('result save', result);
             if (mode === 'add') {
               this.items.unshift(result)
             }else {

@@ -12,7 +12,7 @@
       <u-row flex1 class="w-full justify-between">
         <u-row>
           <slot name="search">
-            <u-input-search v-model="store.q" @update:modelValue="store.setSearch" :debounce="500" />
+            <u-input-search v-model="store.q" @update:modelValue="setSearch" :debounce="500" />
           </slot>
         </u-row>
 
@@ -170,8 +170,8 @@ const optionCabang = computed(() => {
 })
 
 onMounted(async () => {
-  await loadMasterGagal()
   await app.fetchData()
+  await loadMasterGagal()
   await loadCabang()
   if (props?.onRange) {
     if (!props.store.range.start_date) {
@@ -181,16 +181,31 @@ onMounted(async () => {
       props.store.range.end_date = tahunSekarang.toString()
     }
   }
+  // if (!props.store.depo) {
+  //   props.store.depo = 'APS0000'
+  // }
+  // console.log('depooooo', props.store.depo)
+})
+watch(() => props.store.depo, (obj) => {
+  
   if (!props.store.depo) {
     props.store.depo = 'APS0000'
-  }
-})
+  } 
+}, {immediate: true})
+
 function onSortChange(qs) {
   // console.log('onSortChange', qs);
   props.store.setOrder(qs)
 
 }
-
+function setSearch(){
+  props.store.page = 1
+  const params = {
+    depo: props.store.depo,
+    
+  }
+  props.store.fetchAll(params)
+}
 const app = useAppStore()
 const company = computed(() => {
   return app?.form || null
@@ -246,7 +261,6 @@ async function loadMasterGagal() {
   loading.value = true
   try {
     const response = await api.get('/api/v1/master/curl/all-failed')
-    console.log('master gagal', response)
     if (response.status === 200) {
       masterGagal.value = response.data?.data
 
