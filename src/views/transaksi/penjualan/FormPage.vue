@@ -89,6 +89,21 @@
           </div>
 
         </u-row>
+
+
+       <u-row class="mt-2">
+          <label class="flex items-center gap-3 w-full px-3 py-2
+           rounded-lg border border-light-primary
+           bg-primary/5 cursor-pointer select-none">
+
+            <input type="checkbox" v-model="form.premium" :true-value="1" :false-value="''" class="h-4 w-4 rounded border-gray-300
+             text-primary focus:ring-primary" />
+
+            <span class="text-sm font-medium text-primary">
+              Pelanggan Premium
+            </span>
+          </label>
+        </u-row>
       </u-card>
       <!-- HEADER 3 -->
       <u-card class="col-span-2 h-full space-y-2">
@@ -351,10 +366,15 @@ const loadingLock = ref(false)
 const modalNota = ref(false)
 
 const jenis = computed(() => {
-  if (!form.value.kode_dokter && !form.value.kode_pelanggan) return 'umum'
+  // if (!form.value.kode_dokter && !form.value.kode_pelanggan) return 'umum'
+  // if (form.value.kode_dokter) return 'resep'
+  // if (form.value.kode_pelanggan) return 'customer'
+  // if (form.value.premium) return 'premium'
+
   if (form.value.kode_dokter) return 'resep'
-  if (form.value.kode_pelanggan) return 'customer'
   if (form.value.premium) return 'premium'
+  if (form.value.kode_pelanggan) return 'customer'
+  return 'umum'
   // return (form?.value?.kode_dokter !== null && form?.value?.kode_dokter !== '') ? 'resep' : 'umum'
 })
 
@@ -411,6 +431,12 @@ function lihatStokAll(item) {
 
 }
 
+watch(
+  () => form.value.premium,
+  (val) => {
+    console.log('premium berubah:', val)
+  }
+)
 const loadingSimpan = ref(false)
 
 const formBayar = ref({
@@ -537,13 +563,22 @@ const handleOk = () => {
 }
 
 const lihatHargaBy = (item) => {
-  let harga = 0
-  if (!form.value.kode_dokter && !form.value.kode_pelanggan) return harga = item?.harga_jual_umum || 0
-  if (form.value.kode_dokter) return harga = item?.harga_jual_resep || 0
-  if (form.value.kode_pelanggan) return harga = item?.harga_jual_cust || 0
-  if (form.value.premium) return harga = item?.harga_jual_prem || 0
+ 
+  if (form.value.kode_dokter) {
+    return formatRupiah(item?.harga_jual_resep || 0)
+  }
+
+  if (form.value.premium) {
+    return formatRupiah(item?.harga_jual_prem || 0)
+  }
+
+  if (form.value.kode_pelanggan) {
+    return formatRupiah(item?.harga_jual_cust || 0)
+  }
+
+  return formatRupiah(item?.harga_jual_umum || 0)
+
   
-  return formatRupiah(harga)
 }
 const handleAdd = async(item) => {
   const selected = props?.store?.barangSelected ?? null
@@ -569,11 +604,19 @@ const handleAdd = async(item) => {
 
 function getHargaJual() {
   const selected = props?.store?.barangSelected ?? null
-  if (!form.value.kode_dokter && !form.value.kode_pelanggan) return parseInt(selected?.harga_jual_umum ?? 0)
-  if (form.value.kode_dokter) return parseInt(selected?.harga_jual_resep ?? 0)
-  if (form.value.kode_pelanggan) return parseInt(selected?.harga_jual_cust ?? 0)
-  if (form.value.premium) return parseInt(selected?.harga_jual_prem ?? 0)
-  // return form.value.kode_dokter ? parseInt(selected?.harga_jual_resep ?? 0) : parseInt(selected?.harga_jual_umum ?? 0)
+  if (form.value.kode_dokter) {
+    return parseInt(selected?.harga_jual_resep ?? 0)
+  }
+
+  if (form.value.premium) {
+    return parseInt(selected?.harga_jual_prem ?? 0)
+  }
+
+  if (form.value.kode_pelanggan) {
+    return parseInt(selected?.harga_jual_cust ?? 0)
+  }
+
+  return parseInt(selected?.harga_jual_umum ?? 0)
 }
 
 const handleSelectedPelanggan = (item) => {
