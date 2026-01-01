@@ -9,6 +9,9 @@
                         {{ company?.alamat || 'Alamat Apotik nya' }}<br />
                         • Telp: {{ formatTeleponID(company?.telepon) }}
                     </p>
+                    <p class="text-sm text-gray-600">
+                        • SIA: {{ (company?.sipa) }}
+                    </p>
                 </div>
             </div>
             <div class="flex flex-col p-2">

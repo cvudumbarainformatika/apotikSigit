@@ -17,6 +17,9 @@
                 • Telp: {{ formatTeleponID(company?.telepon) }}
                 <!-- • Email: {{ company?.email }} -->
               </p>
+              <p class="text-sm text-gray-600">
+                • SIA: {{ (company?.sipa) }}
+              </p>
             </div>
           </div>
           <div class="text-right">
