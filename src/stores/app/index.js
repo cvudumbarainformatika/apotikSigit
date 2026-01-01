@@ -18,6 +18,7 @@ export const useAppStore = defineStore('app-store', {
         alamat: '',
         telepon: '',
         pemilik: '',
+        sipa: '',
         pajak: 11,
         header: '',
         footer: '',

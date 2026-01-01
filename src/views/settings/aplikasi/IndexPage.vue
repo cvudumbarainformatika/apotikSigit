@@ -17,6 +17,8 @@
                 :error-message="errorMessage('telepon')" />
               <u-input v-model="store.form.pemilik" label="Nama Pemilik" :error="isError('pemilik')"
                 :error-message="errorMessage('pemilik')" />
+              <u-input v-model="store.form.sipa" label="SIA" :error="isError('sipa')"
+                :error-message="errorMessage('sipa')" />
               <u-textarea v-model="store.form.alamat" label="Alamat" :error="isError('alamat')"
                 :error-message="errorMessage('alamat')" />
             </u-col>
