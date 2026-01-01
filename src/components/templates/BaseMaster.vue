@@ -119,10 +119,24 @@ const props = defineProps({
 const emit = defineEmits(['close', 'save'])
 const loading = ref(false)
 const cabangList = ref([])
-// Ref ke u-view
 const uViewRef = ref()
-
-// Scroll bottom watcher
+const app = useAppStore()
+const company = computed(() => {
+  return app?.form || null
+})
+onMounted(async () => {
+  await app.fetchData()
+  await loadMasterGagal()
+  await loadCabang()
+  if (props?.onRange) {
+    if (!props.store.range.start_date) {
+      props.store.range.start_date = bulanSekarang
+    }
+    if (!props.store.range.end_date) {
+      props.store.range.end_date = tahunSekarang.toString()
+    }
+  }
+})
 watch(
   () => uViewRef.value?.arrivedState?.bottom,
   (val) => {
@@ -169,29 +183,18 @@ const optionCabang = computed(() => {
   }))
 })
 
-onMounted(async () => {
-  await app.fetchData()
-  await loadMasterGagal()
-  await loadCabang()
-  if (props?.onRange) {
-    if (!props.store.range.start_date) {
-      props.store.range.start_date = bulanSekarang
+
+watch(
+  () => company.value?.kode_toko,
+  (kodeToko) => {
+    if (!kodeToko) return
+
+    if (!props.store.depo) {
+      props.store.depo = kodeToko
     }
-    if (!props.store.range.end_date) {
-      props.store.range.end_date = tahunSekarang.toString()
-    }
-  }
-  // if (!props.store.depo) {
-  //   props.store.depo = 'APS0000'
-  // }
-  // console.log('depooooo', props.store.depo)
-})
-watch(() => props.store.depo, (obj) => {
-  
-  if (!props.store.depo) {
-    props.store.depo = 'APS0000'
-  } 
-}, {immediate: true})
+  },
+  { immediate: true }
+)
 
 function onSortChange(qs) {
   // console.log('onSortChange', qs);
@@ -206,10 +209,7 @@ function setSearch(){
   }
   props.store.fetchAll(params)
 }
-const app = useAppStore()
-const company = computed(() => {
-  return app?.form || null
-})
+
 
 async function loadCabang() {
   loading.value = true
