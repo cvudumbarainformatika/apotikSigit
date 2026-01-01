@@ -149,35 +149,45 @@ const saldoAwal = computed(() => {
 
 // stok masuk
 const totalMasuk = computed(() => {
-  // console.log('total masuk props item', company.value.kode_toko)
-  return (props.item?.penerimaan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
-    (props.item?.retur_pembelian_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) +
-    (props.item?.mutasi_masuk ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
-    ??
-    (props.item?.mutasi_masuk ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
+  const penerimaan = (props.item?.penerimaan_rinci ?? [])
+    .reduce((s, i) => s + Number(i.jumlah_k ?? 0), 0)
+
+  const retur = (props.item?.retur_pembelian_rinci ?? [])
+    .reduce((s, i) => s + Number(i.jumlah_k ?? 0), 0)
+
+  const mutasiMasuk = (props.item?.mutasi_masuk ?? [])
+    .reduce((s, i) => s + Number(i.jumlah ?? 0), 0)
+
+  return penerimaan - retur + mutasiMasuk
 })
 
 // stok keluar
 const totalKeluar = computed(() => {
-  return (props.item?.mutasi_keluar ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
-    ??
-    (props.item?.penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) -
-    (props.item?.retur_penjualan_rinci ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0) +
-    (props.item?.mutasi_keluar ?? []).reduce((sum, it) => sum + Number(it.jumlah ?? 0), 0)
+  const penjualan = (props.item?.penjualan_rinci ?? [])
+    .reduce((s, i) => s + Number(i.jumlah_k ?? 0), 0)
+
+  const retur = (props.item?.retur_penjualan_rinci ?? [])
+    .reduce((s, i) => s + Number(i.jumlah_k ?? 0), 0)
+
+  const mutasiKeluar = (props.item?.mutasi_keluar ?? [])
+    .reduce((s, i) => s + Number(i.jumlah ?? 0), 0)
+
+  return penjualan - retur + mutasiKeluar
 })
 
 // penyesuaian (bisa + atau -)
 const totalPenyesuaian = computed(() => {
-  return (props.item?.penyesuaian ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
+  return (props.item?.penyesuaian ?? [])
+    .reduce((s, i) => s + Number(i.jumlah_k ?? 0), 0)
 })
 // stok akhir
 const stokAkhir = computed(() => {
   return saldoAwal.value + totalMasuk.value - totalKeluar.value + totalPenyesuaian.value
 })
-// stok akhir
+// stok Sekarang
 const stokSekarang = computed(() => {
-  // console.log('stok sekarang props item', props.item?.stoks)
-  return (props.item?.stok ?? []).reduce((sum, it) => sum + Number(it.jumlah_k ?? 0), 0)
+  return (props.item?.stoks ?? [])
+    .reduce((s, i) => s + Number(i.jumlah_k ?? 0), 0)
 })
 
 </script>
