@@ -88,9 +88,7 @@
         </u-row>
         <u-grid cols="2">
           <u-select label="Jenis Pajak" v-model="form.jenispajak" :options="optionJenispajaks"
-            :error="isError('jenispajak')" :error-message="errorMessage('jenispajak')" @update:modelValue="(val) => {
-              form.pajak = val === 'Exclude' ? Nilaipajak : parseInt(0)
-            }" />
+            :error="isError('jenispajak')" :error-message="errorMessage('jenispajak')" />
           <u-input readonly class="col-span-1" v-model="form.pajak" label="Pajak" :error="isError('pajak')"
             type="number" :error-message="errorMessage('pajak')" />
         </u-grid>
@@ -324,10 +322,22 @@ onMounted(async () => {
   storeorder.per_page = 20
   await ambilOrder()
 })
-const Nilaipajak = computed(() => {
+const nilaiPajak = computed(() => {
   
   return app?.form?.pajak || null
 })
+
+watch(
+  () => form.value.jenispajak,
+  (val) => {
+    if (val === 'Exclude') {
+      form.value.pajak = nilaiPajak.value
+    } else {
+      form.value.pajak = 0
+    }
+  },
+  { immediate: true }
+)
 function rincianAsArray(r) {
   if (!r) return []
   if (Array.isArray(r)) return r
