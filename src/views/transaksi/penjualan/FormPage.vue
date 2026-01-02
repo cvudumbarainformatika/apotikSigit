@@ -319,7 +319,7 @@
       class="absolute top-0 left-0 right-0 w-full h-full rounded-2xl flex items-center justify-center p-4 bg-light-primary/10"
       padding="p-0"></div>
     <!-- MODAL NOTA PENJUALAN -->
-    <modal-nota v-if="modalNota" v-model="modalNota" title="Nota Penjualan" :store="store" :form-bayar="formBayar"
+    <modal-nota ref="modalNotaRef" v-if="modalNota" v-model="modalNota" title="Nota Penjualan" :store="store" :form-bayar="formBayar"
       :form="form" @close="handleCloseModalNota" />
   </u-col>
 </template>
@@ -362,7 +362,7 @@ const inpDiscRef = ref(null)
 const inpPembayaranRef = ref(null)
 const loadingLock = ref(false)
 const modalNota = ref(false)
-
+const modalNotaRef = ref(null)
 const jenis = computed(() => {
   // if (!form.value.kode_dokter && !form.value.kode_pelanggan) return 'umum'
   // if (form.value.kode_dokter) return 'resep'
@@ -706,7 +706,9 @@ const clearSelectedBarang = () => {
 const simpanPenjualan = async (e) => {
   e.preventDefault()
   e.stopPropagation()
-
+  inpPembayaranRef.value?.$el
+    ?.querySelector('input')
+    ?.blur()
   const payload = {
     id: props.store.form?.id,
     diskon: formBayar.value.diskon ?? 0,
@@ -715,7 +717,7 @@ const simpanPenjualan = async (e) => {
     cara_bayar: formBayar.value.cara_bayar ?? null,
   }
   loadingLock.value = true
-
+  
   let resp
   try {
     // if (!flag) {
@@ -726,6 +728,7 @@ const simpanPenjualan = async (e) => {
 
     console.log('resp bayar', resp);
     modalNota.value = true
+    
   } catch (error) {
     console.log('error', error);
     modalNota.value = false
@@ -747,6 +750,12 @@ const handleCloseModalNota = () => {
   window.location.reload()
 }
 
+watch(modalNota, async (val) => {
+  if (val) {
+    await nextTick()
+    modalNotaRef.value?.focusPrint()
+  }
+})
 onMounted(() => {
   window.addEventListener('keydown', handleKeydown);
   initForm()
