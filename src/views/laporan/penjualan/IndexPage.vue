@@ -14,7 +14,7 @@
 
       <u-row flex1 class="w-full justify-between">
         <u-row>
-          <u-input-search v-model="store.params.q" @update:modelValue="" :debounce="500" />
+          <!-- <u-input-search v-model="store.params.q" @update:modelValue="" :debounce="500" /> -->
           <PerPage :fields="store.perPages" v-model="store.params.per_page" @update:modelValue="store.setPerPage" />
         </u-row>
 
@@ -111,7 +111,11 @@
 
     <u-view>
       <Pagination v-if="store?.meta" :total-items="store?.meta?.total" :per-page="store.params.per_page"
-        v-model:currentPage="store.params.page" @update:current-page="currentPage"/>
+        v-model:currentPage="store.params.page" @update:current-page="(val)=>{
+          // console.log('page', val);
+          store.params.page=val
+          store.fetchData()
+        }"/>
     </u-view>
 
 
@@ -145,14 +149,6 @@ function getTotal (item) {
 
   return subtotal
 }
-function currentPage(val){
-
-  // console.log('page', val);
-  store.params.page
-  store.fetchData()
-  
-}
-
 
 
 
