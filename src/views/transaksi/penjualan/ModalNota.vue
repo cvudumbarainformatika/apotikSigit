@@ -92,8 +92,15 @@ const app = useAppStore()
 const printType = ref('thermal-58') // 'a4' | 'thermal-58 | 'thermal-80' | 'thermal-100'
 
 const btnCetakRef = ref(null)
+function focusPrint() {
+  btnCetakRef.value?.$el?.focus()
+}
 
+defineExpose({
+  focusPrint
+})
 function handleGlobalKeydown(e) {
+  if (!props.form) return
   if (e.key === 'Enter') {
     e.preventDefault()
     btnCetakRef.value?.$el?.click()
