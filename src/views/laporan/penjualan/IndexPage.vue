@@ -111,7 +111,7 @@
 
     <u-view>
       <Pagination v-if="store?.meta" :total-items="store?.meta?.total" :per-page="store.params.per_page"
-        v-model:currentPage="store.params.page" />
+        v-model:currentPage="store.params.page" @update:current-page="currentPage"/>
     </u-view>
 
 
@@ -145,7 +145,13 @@ function getTotal (item) {
 
   return subtotal
 }
+function currentPage(val){
 
+  // console.log('page', val);
+  store.params.page
+  store.fetchData()
+  
+}
 
 
 
