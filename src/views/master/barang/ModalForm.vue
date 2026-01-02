@@ -10,17 +10,15 @@
         </u-row>
         <u-row flex1 class="w-full">
           <u-row>
-            <u-select label="Satuan Kecil" v-model="form.satuan_k" :options="optionSatuans" :error="isError('satuan_k')"
-              :error-message="errorMessage('satuan_k')" @update:modelValue="(val) => {
+            <u-select label="Satuan Kecil" v-model="form.satuan_k" :options="optionSatuanK" :error="isError('satuan_k')"
+              :error-message="errorMessage('satuan_k')" @inputval="cariSatuanK" @update:modelValue="(val) => {
                 console.log('val', val);
-
               }" />
           </u-row>
           <u-row>
-            <u-select label="Satuan Besar" v-model="form.satuan_b" :options="optionSatuans" :error="isError('satuan_b')"
-              :error-message="errorMessage('satuan_b')" @update:modelValue="(val) => {
+            <u-select label="Satuan Besar" v-model="form.satuan_b" :options="optionSatuanB" :error="isError('satuan_b')"
+              :error-message="errorMessage('satuan_b')" @inputval="cariSatuanB" @update:modelValue="(val) => {
                 console.log('val', val);
-
               }" />
           </u-row>
           <u-row class="w-36">
@@ -31,20 +29,20 @@
         <u-row flex1 class="w-full">
           <u-row>
             <u-select label="Kategori" v-model="form.kategori" :options="optionKategori" :error="isError('kategori')"
-              :error-message="errorMessage('kategori')" @update:modelValue="(val) => {
+              :error-message="errorMessage('kategori')" @inputval="cariKategori" @update:modelValue="(val) => {
                 console.log('val', val);
 
               }" />
           </u-row>
           <u-row>
-            <u-select label="Rak" v-model="form.rak" :options="optionRak" :error="isError('rak')"
+            <u-select label="Rak" v-model="form.rak" :options="optionRak" @inputval="cariRak" :error="isError('rak')"
               :error-message="errorMessage('rak')" @update:modelValue="(val) => {
                 console.log('val', val);
 
               }" />
           </u-row>
           <u-row>
-            <u-select label="Merk" v-model="form.merk" :options="optionMerk" :error="isError('merk')"
+            <u-select label="Merk" v-model="form.merk" :options="optionMerk" @inputval="cariMerk"  :error="isError('merk')"
               :error-message="errorMessage('merk')" @update:modelValue="(val) => {
                 console.log('val', val);
 
@@ -95,6 +93,8 @@
 
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+
+import { useKategoriStore, useMerkStore, useRakStore, useSatuanStore } from '@/stores/template/register'
 const props = defineProps({
   store: { type: Object, required: true },
   title: { type: String, default: 'Data' },
@@ -194,21 +194,118 @@ function init() {
 
 }
 
-import { useKategoriStore, useMerkStore, useRakStore, useSatuanStore } from '@/stores/template/register'
 const masterSatuan = useSatuanStore()
-const optionSatuans = computed(() => masterSatuan?.items?.map(item => ({ label: item?.nama, value: item?.nama })) || [])
+const valSatuanK = ref(null)
+const valSatuanB = ref(null)
 
+const optionSatuanK = ref([])
+const optionSatuanB = ref([])
+function cariSatuanK(val) {
+  valSatuanK.value = val
+
+  const match = masterSatuan.items.filter(o =>
+    o.nama?.toLowerCase().includes(val?.toLowerCase())
+  )
+
+  optionSatuanK.value = match.length
+    ? match.map(i => ({ label: i.nama, value: i.nama }))
+    : masterSatuan.items.map(i => ({ label: i.nama, value: i.nama }))
+}
+
+function cariSatuanB(val) {
+  valSatuanB.value = val
+
+  const match = masterSatuan.items.filter(o =>
+    o.nama?.toLowerCase().includes(val?.toLowerCase())
+  )
+
+  optionSatuanB.value = match.length
+    ? match.map(i => ({ label: i.nama, value: i.nama }))
+    : masterSatuan.items.map(i => ({ label: i.nama, value: i.nama }))
+}
+
+
+watch(
+  () => masterSatuan.items,
+  (items) => {
+    const mapped = items.map(i => ({ label: i.nama, value: i.nama }))
+    optionSatuanK.value = mapped
+    optionSatuanB.value = mapped
+  },
+  { immediate: true }
+)
 
 const masterMerk = useMerkStore()
-const optionMerk = computed(() => masterMerk?.items?.map(item => ({ label: item?.nama, value: item?.nama })) || [])
+const valMerk = ref(null)
+const optionMerk = ref([])
+function cariMerk(val) {
+  valMerk.value = val
+
+  const match = masterMerk.items.filter(o =>
+    o.nama?.toLowerCase().includes(val?.toLowerCase())
+  )
+
+  optionMerk.value = match.length
+    ? match.map(i => ({ label: i.nama, value: i.nama }))
+    : masterMerk.items.map(i => ({ label: i.nama, value: i.nama }))
+}
+watch(
+  () => masterMerk.items,
+  (items) => {
+    const mapped = items.map(i => ({ label: i.nama, value: i.nama }))
+    optionMerk.value = mapped
+  },
+  { immediate: true }
+)
 
 const masterKategori = useKategoriStore()
-const optionKategori = computed(() => masterKategori?.items?.map(item => ({ label: item?.nama, value: item?.nama })) || [])
+const valKategori = ref(null)
+const optionKategori = ref([])
+function cariKategori(val) {
+  valKategori.value = val
+
+  const match = masterKategori.items.filter(o =>
+    o.nama?.toLowerCase().includes(val?.toLowerCase())
+  )
+
+  optionKategori.value = match.length
+    ? match.map(i => ({ label: i.nama, value: i.nama }))
+    : masterKategori.items.map(i => ({ label: i.nama, value: i.nama }))
+}
+watch(
+  () => masterKategori.items,
+  (items) => {
+    const mapped = items.map(i => ({ label: i.nama, value: i.nama }))
+    optionKategori.value = mapped
+  },
+  { immediate: true }
+)
+
 
 const masterRak = useRakStore()
-const optionRak = computed(() => masterRak?.items?.map(item => ({ label: item?.nama, value: item?.nama })) || [])
+const valRak = ref(null)
+const optionRak = ref([])
+function cariRak(val) {
+  valRak.value = val
+
+  const match = masterRak.items.filter(o =>
+    o.nama?.toLowerCase().includes(val?.toLowerCase())
+  )
+
+  optionRak.value = match.length
+    ? match.map(i => ({ label: i.nama, value: i.nama }))
+    : masterRak.items.map(i => ({ label: i.nama, value: i.nama }))
+}
+watch(
+  () => masterRak.items,
+  (items) => {
+    const mapped = items.map(i => ({ label: i.nama, value: i.nama }))
+    optionRak.value = mapped
+  },
+  { immediate: true }
+)
 onMounted(() => {
-  console.log('Mounted Form', masterSatuan.items);
+  console.log('Mounted Form', masterRak.items);
   console.log('masterMerk', masterMerk.items);
   init()
 
