@@ -319,7 +319,7 @@ onMounted(async () => {
   
   initForm()
   props.store.dataorder = []
-  storeorder.per_page = 20
+  props.store.per_page = 20
   await ambilOrder()
 })
 const nilaiPajak = computed(() => {
@@ -474,23 +474,58 @@ function errorMessage(field) {
 }
 
 
+// const ambilOrder = async () => {
+//   await storeorder.fetchAll(params.value)
+
+//   const datasimpan = props.store.items.map(x => x.noorder)
+//   const hasil = storeorder.items.filter(
+//     item => !datasimpan.includes(item.nomor_order)
+//   )
+//   props.store.dataorder = hasil
+
+//   // 🧠 jika sudah ada form.noorder, sinkronkan langsung
+//   if (props.store.form?.noorder) {
+//     const selected = storeorder.items.find(
+//       o => o.nomor_order === props.store.form.noorder
+//     )
+//     props.store.orderSelected = selected || null
+//   }
+// }
+
+const allOrder = ref([])
+
 const ambilOrder = async () => {
-  await storeorder.fetchAll(params.value)
+  // await storeorder.fetchAll(params.value)
+  // console.log('data lama', storeorder.items)
+  try {
 
-  const datasimpan = props.store.items.map(x => x.noorder)
-  const hasil = storeorder.items.filter(
-    item => !datasimpan.includes(item.nomor_order)
-  )
-  props.store.dataorder = hasil
-
-  // 🧠 jika sudah ada form.noorder, sinkronkan langsung
-  if (props.store.form?.noorder) {
-    const selected = storeorder.items.find(
-      o => o.nomor_order === props.store.form.noorder
+    const res = await api.get(
+      '/api/v1/transactions/penerimaan/get-list-order',
+      { params: params.value }
     )
-    props.store.orderSelected = selected || null
+    allOrder.value = res.data?.data ?? []
+    const datasimpan = props.store.items.map(x => x.noorder)
+    const hasil = allOrder.value.filter(
+      item => !datasimpan.includes(item.nomor_order)
+    )
+    props.store.dataorder = hasil
+
+    // 🧠 jika sudah ada form.noorder, sinkronkan langsung
+    if (props.store.form?.noorder && !props.store.orderSelected) {
+      const selected = allOrder.value.find(
+        o => o.nomor_order === props.store.form.noorder
+      )
+      props.store.orderSelected = selected || null
+    }
+  } catch (error) {
+    console.error('Gagal ambil order:', error)
+    notify({
+      message: 'Gagal mengambil data order',
+      type: 'error'
+    })
   }
 }
+
 
 function initForm() {
   props.store.mode = 'add'
@@ -582,7 +617,7 @@ const handleKunci = async (e) => {
   let resp = null
   try {
     resp = await api.post(`api/v1/transactions/penerimaan/lock_penerimaan`, payload)
-    console.log('Data resp', resp)
+    // console.log('Data resp', resp)
     if (resp?.data?.success === true) {
       notify({ message: resp?.data?.message ?? 'Berhasil dikunci', type: 'success' })
     } else {
@@ -633,7 +668,7 @@ const handleSubmit = async (e, item) => {
   form.value.tgl_exprd = rincianItem.tgl_exprd || ''
   form.value.kode_suplier = props.store.supplierSelected?.kode || ''
   form.value.noorder = props.store.orderSelected?.nomor_order || ''
-  console.log('Submitting rincian for kode_barang:', form.value)
+  // console.log('Submitting rincian for kode_barang:', form.value)
   // ensure rincian entry exists and mark loading
   form.value.rincian[kode_barang] = {
     ...form.value.rincian[kode_barang],
@@ -801,7 +836,7 @@ watch(
     }
 
     if (newForm) {
-      const filteredOrders = storeorder.items
+      const filteredOrders = allOrder.value
         ?.filter(o => o.nomor_order === newForm?.noorder)
         ?.flatMap(o => o.order_records) || []
       const today = new Date().toISOString().split('T')[0]
@@ -854,8 +889,8 @@ watch(
     if (newForm?.noorder) {
       let order = null
 
-      if (storeorder.items && storeorder.items.length > 0) {
-        order = storeorder.items.find(o => o.nomor_order === newForm.noorder)
+      if (allOrder.value && allOrder.value.length > 0) {
+        order = allOrder.value.find(o => o.nomor_order === newForm.noorder)
       }
 
       // 🔥 Fallback: kalau gak ada di storeorder, ambil dari daftar penerimaan aktif
@@ -872,7 +907,7 @@ watch(
       }
 
       props.store.orderSelected = order || null
-    } else {
+    } else if (!props.store.orderSelected) {
       props.store.orderSelected = null
     }
   },
