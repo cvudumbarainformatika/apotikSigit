@@ -142,6 +142,7 @@
   </u-card>
 
   <u-col align="items-end" class="col-span-4">
+    {{isNaN( parseInt(store.form?.status)) }}
     <u-text class="font-bold" size="sm">Ringkasan Permintaan</u-text>
     <u-separator spacing="-my-2"></u-separator>
     <u-row>
@@ -149,7 +150,8 @@
       <u-text class="font-bold" size="sm">{{ store.form?.rinci?.length || 0 }}</u-text>
     </u-row>
     <u-row>
-      <u-badge v-if="store.form?.status" variant="danger">Terkunci</u-badge>
+      <u-badge v-if="[1, 3].includes(Number(store.form?.status))" variant="danger">Terkunci</u-badge>
+      <u-badge v-else-if="[2].includes(Number(store.form?.status))" variant="success">Meununggu ditermia</u-badge>
       <u-badge v-else :variant="store.mode === 'add' ? 'success' : 'warning'">Mode {{ store.mode === 'add' ?
         'Tambah' : 'Edit' }}</u-badge>
     </u-row>
@@ -157,8 +159,8 @@
     <u-row class="z-9">
       <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn>
       <u-btn v-if="store.mode === 'edit'" variant="secondary" :loading="loadingLock" @click="handlePrint">Print</u-btn>
-      <u-btn v-if="store.form" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
-
+      <u-btn v-if="store.form && isNaN(parseInt(store.form?.status))" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
+      <u-btn v-if="store.form && parseInt(store.form?.status) == 2" :loading="loadingLock" @click="handleTerima">Terima</u-btn>
     </u-row>
     <u-row class="z-9">
     </u-row>
@@ -182,15 +184,18 @@ import { useNotificationStore } from '@/stores/notification'
 import ModalCetak from './ModalCetak.vue'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
+import { useRoute } from 'vue-router'
 
 const notify = useNotificationStore().notify
 const ListRincian = defineAsyncComponent(() => import('./ListRincian.vue'))
 const auth = useAuthStore()
 const app = useAppStore()
-const kodetoko = computed(() => app?.form?.kode_toko || null)
+const route = useRoute()
+const kodetoko = computed(() => (route.path.split('/')[2]=='gudang'?'APS000':app?.form?.kode_toko) || null)
 const props = defineProps({
   store: { type: Object, required: true },
   title: { type: String, default: 'Data' },
+  filteredCabang: { type: Array, default: ()=>[] },
   mode: { type: String, default: 'add' }
 })
 
@@ -216,30 +221,7 @@ const form = ref({
   jumlah_k: '',
   harga_beli: '',
 })
-const filteredCabang = computed(() => {
-  const keyword = searchSupplier.value?.toLowerCase() || ''
-  if (!keyword) return cabangList.value
-  return cabangList.value.filter(c =>
-    c.namacabang?.toLowerCase().includes(keyword) ||
-    c.kodecabang?.toLowerCase().includes(keyword)
-  )
-})
-async function loadCabang() {
-  loading.value = true
-  try {
-    const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
-    if (response.status === 200) {
-      const allcabang = response.data
-      cabangList.value = allcabang.data.filter(a => a.kodecabang !== kodetoko.value)
-    
-    }
-  } catch (err) {
-    console.error('Gagal load cabang:', err)
-    err.message || 'Gagal memuat data cabang'
-  } finally {
-    loading.value = false
-  }
-}
+
 
 const error = computed(() => {
   const err = props.store.error
@@ -309,6 +291,9 @@ const handleSubmit = (e) => {
   e.preventDefault()
   e.stopPropagation()
   const supplierBackup = props.store.supplierSelected
+  form.value.dari=props.store?.dari[0]
+  // console.log('form', form.value)
+  
   props.store.create(form.value)
   .then(() => {
     clearSelectedBarang()
@@ -320,10 +305,10 @@ const handleBatal = () => {
   clearSelectedBarang()
 }
 
-const handleKunci = async (e) => {
+const handleTerima = async (e) => {
   e.preventDefault()
   e.stopPropagation()
-  const status = (props.store.form?.status === '1' || props.store.form?.status === 1)
+  const status = (Number(props.store.form?.status)==2)
   // const kode_mutasi = props.store.form?.kode_mutasi
   const id = props.store.form?.id
   const payload = {
@@ -334,12 +319,48 @@ const handleKunci = async (e) => {
 
   let resp
   try {
-    if (!status) {
-      resp = await api.post(`api/v1/transactions/mutasi/kirim`, payload)
+    if (status) {
+      resp = await api.post(`api/v1/transactions/mutasi/terima`, payload)
     } 
     // else {
     //   resp = await api.post(`api/v1/transactions/order/unlock-order`, payload)
     // }
+    notify({ message: resp?.data?.message, type: 'success' })
+    // console.log('resp', resp);
+    // return
+  } catch (error) {
+    console.log('error', error);
+    notify({ message: error?.message ?? 'Gagal Terima', type: 'error' })
+    return
+  } finally {
+    loadingLock.value = false
+  }
+  
+
+  const data = resp?.data?.data
+  props.store.form.status = data?.status
+  props.store.initModeEdit(data)
+  props.store.fetchAll()
+  initForm()
+
+}
+const handleKunci = async (e) => {
+  e.preventDefault()
+  e.stopPropagation()
+  const status = (props.store.form?.status==null)
+  // const kode_mutasi = props.store.form?.kode_mutasi
+  const id = props.store.form?.id
+  const payload = {
+    id
+  }
+
+  loadingLock.value = true
+
+  let resp
+  try {
+    if (status) {
+      resp = await api.post(`api/v1/transactions/mutasi/kirim`, payload)
+    } 
     notify({ message: resp?.data?.message, type: 'success' })
     // console.log('resp', resp);
     // return
@@ -362,7 +383,7 @@ const handleKunci = async (e) => {
 
 onMounted(async () => {
   await app.fetchData()
-  await loadCabang()
+  // await loadCabang()
   initForm()
   
 })
