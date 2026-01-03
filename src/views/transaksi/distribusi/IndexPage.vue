@@ -46,7 +46,8 @@ const kodetoko = computed(() => {
 })
 
 onMounted(async () => {
-    store.items = []
+    store.items = []    
+    store.form=null
     await app.fetchData()
     await loadCabang()
 })
@@ -54,13 +55,13 @@ onMounted(async () => {
 let depo=route.path.split('/')[2]
 let allcabang =null
 watch(
-  () => route.path,
-  (newPath, oldPath) => {
-    // aksi di sini
-    depo=route.path.split('/')[2]
+  () => route.path,  
+  (newPath) => {
+    // console.log('new Path', newPath)
+    // depo=route.path.split('/')[2]
+    depo=newPath.split('/')[2]
     gantiRoute()
     store.form=null
-    console.log('route berubah:', oldPath, '→', newPath, depo)
   }
 )
 async function gantiRoute() {

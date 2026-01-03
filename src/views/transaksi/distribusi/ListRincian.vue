@@ -24,16 +24,16 @@
       <u-row gap="gap-0">
         <u-col align="items-end" gap="gap-1">
           <u-row gap="gap-2">
-            <u-icon v-if="parseInt(item.distribusi) > 0 && isHovered" name="delete" size="18" class="mb-0 text-danger cursor-pointer"
+            <u-icon v-if="(parseInt(item.distribusi) > 0 && isHovered) && Number(store.form.status) == 1" name="delete" size="18" class="mb-0 text-danger cursor-pointer"
               @click.stop="handleDelete(item)" />
           </u-row>
           <u-row gap="gap-1">
             <div class="pl-5">Jumlah distribusi : </div>
             <div class="w-20" :class="{ 'animate-shake': parseInt(item?.jumlah) < parseInt(item?.distribusi) }">
               <u-input type="number" v-model.number="distribusiInput" label="Jml" @focus="handleFocusJumlah"
-                :error="parseInt(item?.jumlah) < distribusiInput" />
+                :error="parseInt(item?.jumlah) < distribusiInput" :disable="Number(store.form.status) != 1"/>
             </div>
-            <u-btn-icon  v-if="parseInt(item?.distribusi) === 0"
+            <u-btn-icon  v-if="parseInt(item?.distribusi) === 0 && Number(store.form.status) == 1"
               :disabled="(parseInt(item?.jumlah) < distribusiInput) || parseInt(item?.jumlah) === 0 || loadingAdd"
               :loading="loadingAdd" icon="check" variant="secondary" size="sm" @click.stop="handleAdd(item)" />
           </u-row>

@@ -44,6 +44,7 @@ const ListCabang = ref([])
 
 onMounted(async () => {
   store.items = []
+    store.form=null
   await app.fetchData()
   await loadCabang()  
 })
@@ -51,13 +52,13 @@ let depo=route.path.split('/')[2]
 let allcabang =null
 watch(
   () => route.path,
-  (newPath, oldPath) => {
-    // aksi di sini
-    depo=route.path.split('/')[2]
+  (newPath) => {
+    // console.log('new Path', newPath)
+    // depo=route.path.split('/')[2]
+    depo=newPath.split('/')[2]
     gantiRoute()
     
     store.form=null
-    console.log('route berubah:', oldPath, '→', newPath, depo)
   }
 )
 async function gantiRoute(){
@@ -89,13 +90,6 @@ async function loadCabang() {
     if (response.status === 200) {
       allcabang = response.data?.data
       await gantiRoute()
-      // console.log('cabangList', cabangList.value,targetUrl);
-      // 
-      // store.range.start_date = getYearStartDate()
-      // store.range.end_date = getYearEndDate()
-      // store.status = 'all'
-      // store.tujuan = ''
-      // await store.fetchAll()
     }
   } catch (err) {
     console.error('Gagal load cabang:', err)

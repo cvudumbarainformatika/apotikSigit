@@ -233,7 +233,7 @@ const handleKunci = async (e) => {
 
 onMounted(async () => {
   await app.fetchData()
-  await loadCabang()
+  // await loadCabang()
   initForm()
 })
 
