@@ -18,7 +18,7 @@
     </base-transaksi>
 </template>
 <script setup>
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { defineAsyncComponent } from 'vue'
 import { useMutasiStore } from '@/stores/template/register'
 import { useRoute } from 'vue-router'
@@ -32,7 +32,7 @@ const ListPage = defineAsyncComponent(() => import('./ListPage.vue'))
 
 const store = useMutasiStore()
 const route = useRoute()
-const title = computed(() => route?.meta?.title)
+const title = computed(() => route?.meta?.title+(route.path.split('/')[2]=='gudang'?' Gudang':' Depo'))
 const today = new Date().toISOString().split('T')[0]
 const loading = ref(false)
 const cabangList = ref([])
@@ -50,42 +50,57 @@ onMounted(async () => {
     await app.fetchData()
     await loadCabang()
 })
+
+let depo=route.path.split('/')[2]
+let allcabang =null
+watch(
+  () => route.path,
+  (newPath, oldPath) => {
+    // aksi di sini
+    depo=route.path.split('/')[2]
+    gantiRoute()
+    store.form=null
+    console.log('route berubah:', oldPath, '→', newPath, depo)
+  }
+)
+async function gantiRoute() {
+    const depoTar = allcabang.find( c => c.kodecabang === company.value?.kode_toko)
+    const gudang=allcabang.find(c => c.kodecabang === 'APS0000')
+    const target= depo == 'gudang' ? gudang.kodecabang : depoTar.kodecabang
+    await nextTick()
+    store.range.start_date = getYearStartDate()
+    store.range.end_date = getYearEndDate()
+    store.status = 'all'
+    store.tujuan = [target]
+    store.dari = ''
+    await store.fetchAll()
+}
 async function loadCabang() {
     loading.value = true
     try {
         const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
         if (response.status === 200) {
-            const allcabang = response.data?.data
-            const mainCabang = allcabang.find(
-                c => c.kodecabang === company.value?.kode_toko
-            )
-
-            if (!mainCabang) {
-                cabangList.value = []
-                return
-            }
-            const targetUrl = mainCabang.url
-            cabangList.value = allcabang.filter(
-                c => c.url === targetUrl
-            ).map(c => c.kodecabang)
-            // const allcabang = response.data
-            // cabangList.value = allcabang.data.filter(a => a.kodecabang === kodetoko.value).map(c => c.kodecabang)
-            
-            await nextTick()
-            store.range.start_date = getYearStartDate()
-            store.range.end_date = getYearEndDate()
-            store.status = '1'
-            store.tujuan = cabangList.value
-            store.dari = ''
-            // const payload = {
-            //     from: getYearStartDate(),
-            //     to: getYearEndDate(),
-            //     tujuan: cabangList.value,
-            //     status: '1'
+            allcabang = response.data?.data
+            await gantiRoute()
+            // const mainCabang = allcabang.find(
+            //     c => c.kodecabang === company.value?.kode_toko
+            // )
+            // if (!mainCabang) {
+            //     cabangList.value = []
+            //     return
             // }
-            // console.log('payload', payload);
-            // Promise.all([
-            await store.fetchAll()
+            // const targetUrl = mainCabang.url
+            // cabangList.value = allcabang.filter(
+            //     c => c.url === targetUrl
+            // ).map(c => c.kodecabang)
+            
+            // await nextTick()
+            // store.range.start_date = getYearStartDate()
+            // store.range.end_date = getYearEndDate()
+            // store.status = '1'
+            // store.tujuan = cabangList.value
+            // store.dari = ''
+            // await store.fetchAll()
         }
     } catch (err) {
         console.error('Gagal load cabang:', err)

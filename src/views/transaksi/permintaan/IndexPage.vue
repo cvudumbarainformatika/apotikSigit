@@ -55,17 +55,16 @@ watch(
     // aksi di sini
     depo=route.path.split('/')[2]
     gantiRoute()
+    
+    store.form=null
     console.log('route berubah:', oldPath, '→', newPath, depo)
   }
 )
-async function gantiRoute(val){
+async function gantiRoute(){
+
   const mainCabang = allcabang.find(
         c => c.kodecabang === company.value?.kode_toko
       )
-      if (!mainCabang) {
-        cabangList.value = []
-        return
-      }
       const gudang=allcabang.find(c => c.kodecabang === 'APS0000')
       const targetUrl = depo == 'gudang' ? gudang.url : mainCabang.url
       const dari = depo == 'gudang' ? 'APS0000' : company.value?.kode_toko
@@ -81,7 +80,7 @@ async function gantiRoute(val){
       store.dari = [dari]
       store.tujuan = ''
 
-      if(!val)store.fetchAll()
+      await store.fetchAll()
 }
 async function loadCabang() {
   loading.value = true
@@ -89,14 +88,14 @@ async function loadCabang() {
     const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
     if (response.status === 200) {
       allcabang = response.data?.data
-      await gantiRoute('load')
+      await gantiRoute()
       // console.log('cabangList', cabangList.value,targetUrl);
       // 
       // store.range.start_date = getYearStartDate()
       // store.range.end_date = getYearEndDate()
       // store.status = 'all'
       // store.tujuan = ''
-      await store.fetchAll()
+      // await store.fetchAll()
     }
   } catch (err) {
     console.error('Gagal load cabang:', err)

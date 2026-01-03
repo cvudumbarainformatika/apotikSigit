@@ -88,10 +88,10 @@
         </u-row>
         <u-separator spacing="-my-1"></u-separator>
         <u-row class="z-9">
-          <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn>
+          <!-- <u-btn v-if="store.mode === 'edit'" variant="secondary" @click="initForm">Form Baru</u-btn> -->
           <u-btn v-if="store.mode === 'edit'" variant="secondary" :loading="loadingLock"
             @click="handlePrint">Print</u-btn>
-          <u-btn v-if="store.form && distribusiTersimpan" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
+          <u-btn v-if="store.form && store.form.rinci.some(r => Number(r.distribusi) > 0) && store.form?.status === '1'" :loading="loadingLock" @click="handleKunci">Kirim</u-btn>
 
         </u-row>
         <u-row class="z-9">
@@ -175,22 +175,22 @@ const handlePrint = () => {
 }
 
 
-async function loadCabang() {
-  loading.value = true
-  try {
-    const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
-    if (response.status === 200) {
-      const allcabang = response.data
-      cabangList.value = allcabang.data.filter(a => a.kodecabang === kodetoko.value).map(c => c.kodecabang)
+// async function loadCabang() {
+//   loading.value = true
+//   try {
+//     const response = await api.get('/api/v1/transactions/mutasi/get-cabang')
+//     if (response.status === 200) {
+//       const allcabang = response.data
+//       cabangList.value = allcabang.data.filter(a => a.kodecabang === kodetoko.value).map(c => c.kodecabang)
 
-    }
-  } catch (err) {
-    console.error('Gagal load cabang:', err)
-    err.message || 'Gagal memuat data cabang'
-  } finally {
-    loading.value = false
-  }
-}
+//     }
+//   } catch (err) {
+//     console.error('Gagal load cabang:', err)
+//     err.message || 'Gagal memuat data cabang'
+//   } finally {
+//     loading.value = false
+//   }
+// }
 
 const handleKunci = async (e) => {
   e.preventDefault()
@@ -218,15 +218,15 @@ const handleKunci = async (e) => {
     loadingLock.value = false
   }
   if (!kodetoko.value) await app.fetchData()
-  await loadCabang()
+  // await loadCabang()
   await nextTick()
-  const params = {
-    from: getYearStartDate(),
-    to: getYearEndDate(),
-    tujuan: cabangList.value,
-    status: '1'
-  }
-  await props.store.fetchAll(params)
+  // const params = {
+  //   from: getYearStartDate(),
+  //   to: getYearEndDate(),
+  //   tujuan: cabangList.value,
+  //   status: '1'
+  // }
+  await props.store.fetchAll()
   initForm()
 
 }
