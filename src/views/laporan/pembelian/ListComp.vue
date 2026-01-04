@@ -2,7 +2,7 @@
   <u-view padding="0" flex1 class="w-full flex-wrap">
     <div class="flex w-full items-start justify-between gap-6 mb-1">
       <div class="flex items-center gap-4">
-        <img src="/images/logo.svg" alt="logo" class="w-14 h-14 object-contain" />
+        <img :src="company?.foto" alt="logo" class="w-14 h-14 object-contain" />
         <div>
           <div class="text-xl font-semibold tracking-wide">{{ company?.nama || 'Nama Apotik nya' }}</div>
           <p class="text-sm text-gray-600">

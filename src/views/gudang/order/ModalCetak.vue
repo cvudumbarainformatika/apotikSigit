@@ -6,7 +6,7 @@
       <!-- Header -->
       <div class="flex items-start justify-between gap-6">
         <div class="flex items-center gap-4">
-          <img src="/images/logo.svg" alt="logo" class="w-14 h-14 object-contain" />
+          <img :src="company?.foto" alt="logo" class="w-14 h-14 object-contain" />
           <div>
             <div class="text-xl font-semibold tracking-wide">{{ data?.cabang?.namacabang }}</div>
             <p class="text-sm text-gray-600">
