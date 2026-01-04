@@ -145,8 +145,10 @@ export const usePendapatanLainStore = createTemplateTransaksiStore('pendapatan-l
   baseUrl: '/api/v1/transactions/pendapatanlain',
   persist: false
 })
-
-
+export const useSetoranStore = createTemplateTransaksiStore('setoran', {
+  baseUrl: '/api/v1/transactions/pembayaran-setoran',
+  persist: false
+})
 
 // LAPORAN STORE
 export const useKartuStokStore = createTemplateTransaksiStore('kartu-stok', {
