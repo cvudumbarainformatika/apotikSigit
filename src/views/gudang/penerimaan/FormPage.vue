@@ -22,6 +22,10 @@
           <u-input-date label="Tanggal Faktur" type="date" v-model="form.tgl_faktur"
             :error="errorMessage('tgl_faktur')" />
         </u-row>
+        <u-row class="">
+          <u-input v-model="form.diskon_heder" label="Disc(%) Keseluruhan" :error="isError('diskon_heder')"
+            type="number" :error-message="errorMessage('diskon_heder')" />
+        </u-row>
       </u-card>
 
       <!-- HEADER 2 -->
@@ -97,13 +101,18 @@
           <u-radio class="bg-background" v-model="form.hutang" value="HUTANG" label="HUTANG" />
           <u-radio class="bg-background" v-model="form.hutang" value="CASH" label="CASH" />
         </u-grid>
-        <u-grid cols="3" class="gap-2 mt-4" role="radiogroup">
+        <u-grid v-if="form.hutang === 'HUTANG'" cols="3" class="gap-2 mt-4">
+          <div>Jatuh Tempo :</div>
+          <u-input-date class="col-span-2" type="date" v-model="form.tgl_jatuh_tempo"
+            :error="errorMessage('tgl_jatuh_tempo')" />
+        </u-grid>
+        <!-- <u-grid cols="3" class="gap-2 mt-4" role="radiogroup">
           <u-row class="">Diskon : </u-row>
           <u-row class="">
             <u-input v-model="form.diskon_heder" label="Disc(%)" :error="isError('diskon_heder')" type="number"
               :error-message="errorMessage('diskon_heder')" />
           </u-row>
-        </u-grid>
+        </u-grid> -->
       </u-card>
     </u-grid>
 
@@ -295,7 +304,7 @@ const form = ref({
   flag: null,
   hutang: '',
   diskon_heder: 0,
-
+  tgl_jatuh_tempo: '',
   // rincian (object key by kode_barang)
   kode_barang: '',
   nobatch: '',
@@ -511,7 +520,7 @@ const ambilOrder = async () => {
     props.store.dataorder = hasil
 
     // 🧠 jika sudah ada form.noorder, sinkronkan langsung
-    if (props.store.form?.noorder && !props.store.orderSelected) {
+    if (props.store.form?.noorder) {
       const selected = allOrder.value.find(
         o => o.nomor_order === props.store.form.noorder
       )
@@ -534,6 +543,7 @@ function initForm() {
   form.value = {
     tgl_penerimaan: today,
     tgl_faktur: today,
+    tgl_jatuh_tempo: today,
     noorder: '',
     nopenerimaan: '',
     nofaktur: '',
@@ -869,13 +879,14 @@ watch(
           loading: existing?.loading || false
         }
       })
-
+      
       form.value = {
         nopenerimaan: newForm?.nopenerimaan,
         noorder: newForm?.noorder,
         tgl_penerimaan: newForm?.tgl_penerimaan,
         nofaktur: newForm?.nofaktur,
         tgl_faktur: newForm?.tgl_faktur,
+        tgl_jatuh_tempo: newForm?.tgl_jatuh_tempo,
         kode_suplier: newForm?.kode_suplier,
         jenispajak: newForm?.jenispajak,
         pajak: newForm?.pajak,

@@ -12,7 +12,7 @@
       <!-- Logo di luar mask -->
       <div
         class="absolute z-10 -top-5 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full border-1 border-primary flex items-center justify-center">
-        <img src="/images/logo.svg" alt="Logo" class="w-full h-full" />
+        <img :src="logoweb" alt="Logo" class="w-full h-full" />
       </div>
       <div class="relative flex flex-col items-center justify-center w-full h-full gap-2 p-4">
         <img src="/images/box-login.svg" alt="Login" class="w-full h-full absolute top-0 left-0" />
@@ -43,7 +43,7 @@
   </div>
 </template>
 <script setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useFormError } from '@/composables/useFormError'
 import { useRouter } from 'vue-router'
@@ -77,6 +77,13 @@ async function handleSubmit(e) {
      
     })
 }
+const cariLogo = {
+  'https://apoteksetyawan1.my.id' : '/images/logo.svg',
+  'https://apoteksetyawan2.my.id': '/images/logo2.svg',
+  'https://apoteksetyawan3.my.id': '/images/logo3.svg'
+
+} 
+const logoweb = cariLogo[window.location.origin] ?? '/images/logo.svg'
 
 watch(() => store.user, (newVal) => {
   console.log('User changed:', newVal)

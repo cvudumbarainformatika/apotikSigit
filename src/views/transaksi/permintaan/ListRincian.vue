@@ -8,7 +8,7 @@
       <u-col align="items-end" class="col-span-2" gap="gap-0">
         <u-row>
           <u-text color="text-primary" class="italic">{{ formatJamMenit(item?.created_at) }}</u-text>
-          <div v-if="isHovered && !loadingHapusItem" class="ml-2">
+          <div v-if="isHovered && !loadingHapusItem&&!store.form.status" class="ml-2">
             <u-icon size="20" name="delete" class="mb-0 text-danger cursor-pointer" @click.stop="handleDelete(item)" />
           </div>
         </u-row>
