@@ -304,7 +304,7 @@ const form = ref({
   flag: null,
   hutang: '',
   diskon_heder: 0,
-  tgl_jatuh_tempo: 0,
+  tgl_jatuh_tempo: '',
   // rincian (object key by kode_barang)
   kode_barang: '',
   nobatch: '',
@@ -520,7 +520,7 @@ const ambilOrder = async () => {
     props.store.dataorder = hasil
 
     // 🧠 jika sudah ada form.noorder, sinkronkan langsung
-    if (props.store.form?.noorder && !props.store.orderSelected) {
+    if (props.store.form?.noorder) {
       const selected = allOrder.value.find(
         o => o.nomor_order === props.store.form.noorder
       )
@@ -879,7 +879,7 @@ watch(
           loading: existing?.loading || false
         }
       })
-
+      
       form.value = {
         nopenerimaan: newForm?.nopenerimaan,
         noorder: newForm?.noorder,

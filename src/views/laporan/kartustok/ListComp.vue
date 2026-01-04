@@ -156,7 +156,7 @@ const totalMasuk = computed(() => {
     .reduce((s, i) => s + Number(i.jumlah_k ?? 0), 0)
 
   const mutasiMasuk = (props.item?.mutasi_masuk ?? [])
-    .reduce((s, i) => s + Number(i.jumlah ?? 0), 0)
+    .reduce((s, i) => s + Number(i.distribusi ?? 0), 0)
 
   return penerimaan - retur + mutasiMasuk
 })
@@ -170,7 +170,7 @@ const totalKeluar = computed(() => {
     .reduce((s, i) => s + Number(i.jumlah_k ?? 0), 0)
 
   const mutasiKeluar = (props.item?.mutasi_keluar ?? [])
-    .reduce((s, i) => s + Number(i.jumlah ?? 0), 0)
+    .reduce((s, i) => s + Number(i.distribusi ?? 0), 0)
 
   return penjualan - retur + mutasiKeluar
 })

@@ -96,7 +96,11 @@
             <div class="space-y-2 text-sm">
               <div class="flex items-center justify-between text-sm">
                 <span class="font-semibold">Total Penerimaan</span>
-                <span class="font-semibold">{{ formatRupiah(totalPenerimaan) }} {{ store?.item?.satuan_k }}</span>
+                <span class="font-semibold">{{ formatRupiah(totalPenerimaan + totalSaldoAwal) }} {{ store?.item?.satuan_k }}</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <span class="font-semibold">Total Mutasi</span>
+                <span class="font-semibold">{{ formatRupiah(totalMutasiMasuk - totalMutasiKeluar) }} {{ store?.item?.satuan_k }}</span>
               </div>
               <div class="flex items-center justify-between text-sm">
                 <span class="font-semibold">Total Retur Pembelian</span>
@@ -300,7 +304,7 @@ const groupedItems = computed(() => {
       tanggal: item.tgl_terima,
       satuan: item?.satuan_k,
       hargabeli: Number(item.harga_beli ?? 0),
-      debit: Number(item.jumlah ?? 0),
+      debit: Number(item.distribusi ?? 0),
       kredit: 0,
       saldo: 0,
     })
@@ -311,11 +315,11 @@ const groupedItems = computed(() => {
     transaksiLain.push({
       jenis: 'MUTASI KELUAR',
       notrans: item.kode_mutasi,
-      tanggal: item.tgl_terima,
+      tanggal: item.tgl_distribusi,
       satuan: item?.satuan_k,
       hargabeli: Number(item.harga_beli ?? 0),
-      debit: Number(item.jumlah ?? 0),
-      kredit: 0,
+      debit: 0,
+      kredit: Number(item.distribusi ?? 0),
       saldo: 0,
     })
   })
@@ -342,7 +346,8 @@ const groupedItems = computed(() => {
 
 // PENERIMAAN //
 const totalPenerimaan = computed(() => {
-  const items = props.store?.item?.penerimaan_rinci ?? props.store?.item?.mutasi_masuk
+  
+  const items = props.store?.item?.penerimaan_rinci
   const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
@@ -356,6 +361,11 @@ const totalPenyesuaian = computed(() => {
   const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
+const totalMutasiMasuk = computed(() => {
+  const items = props.store?.item?.mutasi_masuk
+  const total = items?.reduce((sum, s) => sum + Number(s.distribusi ?? 0), 0) ?? 0
+  return total
+})
 
 // PENGELUARAN //
 const totalPenjualan = computed(() => {
@@ -363,7 +373,11 @@ const totalPenjualan = computed(() => {
   const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
   return total
 })
-
+const totalMutasiKeluar = computed(() => {
+  const items = props.store?.item?.mutasi_keluar
+  const total = items?.reduce((sum, s) => sum + Number(s.distribusi ?? 0), 0) ?? 0
+  return total
+})
 const totalReturPembelian = computed(() => {
   const items = props.store?.item?.retur_pembelian_rinci
   const total = items?.reduce((sum, s) => sum + Number(s.jumlah_k ?? 0), 0) ?? 0
@@ -377,7 +391,7 @@ const totalSaldoAwal = computed(() => {
 })
 
 const totalStokAkhir = computed(() => {
-  return (totalSaldoAwal.value + totalPenerimaan.value + totalReturPenjualan.value + totalPenyesuaian.value) - (totalPenjualan.value + totalReturPembelian.value)
+  return (totalSaldoAwal.value + totalPenerimaan.value + totalReturPenjualan.value + totalPenyesuaian.value + totalMutasiMasuk.value ) - (totalPenjualan.value + totalReturPembelian.value + totalMutasiKeluar.value)
 })
 
 
