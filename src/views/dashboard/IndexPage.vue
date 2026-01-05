@@ -31,8 +31,8 @@ const stats = computed(() => {
       trend_persentase: store.harian?.penjualan?.total_penjualan?.status === 'naik' ? '+'
         : store.harian?.penjualan?.total_penjualan?.status === 'turun' ? '-' : '',
       persentase: store.harian?.penjualan?.total_penjualan?.persentase_perubahan || 0,
-      trend: store.harian?.penjualan?.total_penjualan?.status === 'naik' ? '📉'
-        : store.harian?.penjualan?.total_penjualan?.status === 'turun' ? '📈' : '-'
+      trend: store.harian?.penjualan?.total_penjualan?.status === 'turun' ? '📉'
+        : store.harian?.penjualan?.total_penjualan?.status === 'naik' ? '📈' : '-'
     },
     {
       label: 'Trans Penjualan',
@@ -40,8 +40,8 @@ const stats = computed(() => {
       trend_persentase: store.harian?.penjualan?.jumlah_transaksi?.status === 'naik' ? '+'
         : store.harian?.penjualan?.jumlah_transaksi?.status === 'turun' ? '-' : '',
       persentase: store.harian?.penjualan?.jumlah_transaksi?.persentase_perubahan || 0,
-      trend: store.harian?.penjualan?.jumlah_transaksi?.status === 'naik' ? '📉'
-        : store.harian?.penjualan?.jumlah_transaksi?.status === 'turun' ? '📈' : '-'
+      trend: store.harian?.penjualan?.jumlah_transaksi?.status === 'turun' ? '📉'
+        : store.harian?.penjualan?.jumlah_transaksi?.status === 'naik' ? '📈' : '-'
     },
     {
       label: 'Total Pembelian',
@@ -49,8 +49,8 @@ const stats = computed(() => {
       trend_persentase: store.harian?.pembelian?.total_penerimaan?.status === 'naik' ? '+'
         : store.harian?.pembelian?.total_penerimaan?.status === 'turun' ? '-' : '',
       persentase: store.harian?.pembelian?.total_penerimaan?.persentase_perubahan || 0,
-      trend: store.harian?.pembelian?.total_penerimaan?.status === 'naik' ? '📉'
-        : store.harian?.pembelian?.total_penerimaan?.status === 'turun' ? '📈' : '-'
+      trend: store.harian?.pembelian?.total_penerimaan?.status === 'turun' ? '📉'
+        : store.harian?.pembelian?.total_penerimaan?.status === 'naik' ? '📈' : '-'
     },
     {
       label: 'Trans Pembelian',
@@ -58,8 +58,8 @@ const stats = computed(() => {
       trend_persentase: store.harian?.pembelian?.jumlah_transaksi?.status === 'naik' ? '+'
         : store.harian?.pembelian?.jumlah_transaksi?.status === 'turun' ? '-' : '',
       persentase: store.harian?.pembelian?.jumlah_transaksi?.persentase_perubahan || 0,
-      trend: store.harian?.pembelian?.jumlah_transaksi?.status === 'naik' ? '📉'
-        : store.harian?.pembelian?.jumlah_transaksi?.status === 'turun' ? '📈' : '-'
+      trend: store.harian?.pembelian?.jumlah_transaksi?.status === 'turun' ? '📉'
+        : store.harian?.pembelian?.jumlah_transaksi?.status === 'naik' ? '📈' : '-'
     },
   ]
 })
