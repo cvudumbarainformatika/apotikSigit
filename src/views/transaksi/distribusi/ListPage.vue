@@ -25,10 +25,11 @@
           </u-row>
 
           <u-col align="items-end" gap="gap-0" class="" padding="p-0">
-            <u-icon :name="item?.flag ? 'lock' : 'lock-open'" size="18" class="mb-1"
-              :class="!item?.flag ? 'text-success' : 'text-danger'" />
+            <u-icon :name="Number(item?.status)==1 ?  'lock-open':'lock' " size="18" class="mb-1"
+              :class="Number(item?.status)==1 ? 'text-danger':'text-success'" />
             <u-text color="text-gray-500" style="font-size: 10px !important;">{{ useWaktuLaluReactive(item?.created_at)
               }}</u-text>
+              <u-text >{{getStatusText(item?.status)}} </u-text>
           </u-col>
         </u-row>
       </u-view>
@@ -46,6 +47,26 @@ const props = defineProps({
 const handleEdit = (item) => {
   props.store.maxRight = false
   props.store.initModeEdit(item)
+}
+function getStatusText(val){
+  switch (val) {
+    case '1':
+      return 'Dikirim';
+      break;
+    case '2':
+      return 'Terdistribusi';
+      break;
+    case '3':
+      return 'Diterima';
+      break;
+    case null:
+      return 'Draft';
+      break;
+  
+    default:
+      return '-';
+      break;
+  }
 }
 
 </script>

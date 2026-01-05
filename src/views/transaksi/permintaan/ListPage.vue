@@ -10,12 +10,12 @@
             <u-row flex1>
               <u-col gap="gap-0" class="w-full">
                 <u-row flex1>
-
                   <u-text class="font-bold" color="text-gray-500">{{ item?.kode_mutasi }}</u-text>
                 </u-row>
                 <u-row>
                   <u-icon size="14" name="shopping-cart"></u-icon>
                   <u-text class="" color="text-gray-500">{{ item?.rinci?.length }} items</u-text>
+                  <u-text class="" color="text-gray-500">Tujan ke {{ item?.tujuan?.namacabang }}</u-text>
                 </u-row>
                 
               </u-col>
@@ -25,6 +25,7 @@
           <u-col align="items-end" gap="gap-0" class="" padding="p-0">
             <u-icon :name="[1, 3].includes(Number(item?.status)) ? 'lock' : 'lock-open'" size="18" class="mb-1" :class="[1, 3].includes(Number(item?.status))? 'text-success' : 'text-danger'" />
             <u-text color="text-gray-500" style="font-size: 10px !important;">{{ useWaktuLaluReactive(item?.created_at) }}</u-text>
+            <u-text >{{getStatusText(item?.status)}} </u-text>
           </u-col>
         </u-row>
       </u-view>
@@ -43,5 +44,24 @@ const handleEdit = (item) => {
   props.store.maxRight = false
   props.store.initModeEdit(item)
 }
-
+function getStatusText(val){
+  switch (val) {
+    case '1':
+      return 'Dikirim';
+      break;
+    case '2':
+      return 'Terdistribusi';
+      break;
+    case '3':
+      return 'Diterima';
+      break;
+    case null:
+      return 'Draft';
+      break;
+  
+    default:
+      return '-';
+      break;
+  }
+}
 </script>
