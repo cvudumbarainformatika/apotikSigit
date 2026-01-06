@@ -21,7 +21,7 @@ export function createTemplateStore(storeId, config) {
       emptySubtitle:`Silahkan tambahkan data terlebih dahulu / Lakukan Pencarian Data dengan Kata Kunci yang Sesuai`,
 
       page: 1,
-      per_page: 10,
+      per_page: 1000,
       total: 0,
       q: '',
       order_by: config.order_by || 'created_at',
