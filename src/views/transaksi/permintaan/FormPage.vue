@@ -142,7 +142,6 @@
   </u-card>
 
   <u-col align="items-end" class="col-span-4">
-    {{isNaN( parseInt(store.form?.status)) }}
     <u-text class="font-bold" size="sm">Ringkasan Permintaan</u-text>
     <u-separator spacing="-my-2"></u-separator>
     <u-row>
