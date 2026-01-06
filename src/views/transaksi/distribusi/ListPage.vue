@@ -25,8 +25,8 @@
           </u-row>
 
           <u-col align="items-end" gap="gap-0" class="" padding="p-0">
-            <u-icon :name="Number(item?.status)==1 ?  'lock-open':'lock' " size="18" class="mb-1"
-              :class="Number(item?.status)==1 ? 'text-danger':'text-success'" />
+            <u-icon :name="getIcon(item?.status)" size="18" class="mb-1"
+              :class="getColor(item?.status)" />
             <u-text color="text-gray-500" style="font-size: 10px !important;">{{ useWaktuLaluReactive(item?.created_at)
               }}</u-text>
               <u-text >{{getStatusText(item?.status)}} </u-text>
@@ -65,6 +65,48 @@ function getStatusText(val){
   
     default:
       return '-';
+      break;
+  }
+}
+function getIcon(val){
+  const value=Number(val)
+  switch (value) {
+    case 1:
+      return 'send';
+      break;
+    case 2:
+      return 'lock-open';      
+      break;
+    case 3:
+      return 'lock';
+      break;
+    case null:
+      return 'mail-open';
+      break;
+  
+    default:
+      return 'mail-open';
+      break;
+  }
+}
+function getColor(val){
+  const value=Number(val)
+  switch (value) {
+    case 1:
+      return 'text-orange-500';
+      break;
+    case 2:
+      return 'text-danger';
+      break;
+    case 3:
+      return 'text-success';
+      break;
+    case null:
+      return 'text-lime-700';
+      break;
+  
+    default:
+      return 'text-lime-700';
       break;
   }
 }
