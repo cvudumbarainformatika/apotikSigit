@@ -156,8 +156,6 @@
                 <div class="">Nama Distributor</div>
                 <div class="">: {{ data?.supplier?.nama || '-' }}</div>
                 <div class="">Alamat</div>
-                <div class="">: Apoteker Penanggung Jawab</div>
-                <div class="">Nomor SIPA</div>
                 <div class="">: {{ data?.supplier?.alamat || '-' }}</div>
               </div>
               <div class="w-full">Jenis obat mengandung prekursor farmasi yang dipesan adalah :</div>
@@ -211,7 +209,7 @@
                   <div class="">Alamat Apotek</div>
                   <div class="">: {{ company?.alamat || 'Belum di setting' }}</div>
                   <div class="">Nomor SIA</div>
-                  <div class="">: {{ company?.nomor_sia || 'Belum di setting' }}</div>
+                  <div class="">: {{ company?.sipa || 'Belum di setting' }}</div>
                 </div>
               </div>
             </div>
@@ -254,8 +252,6 @@
                 <div class="">Nama Distributor</div>
                 <div class="">: {{ data?.supplier?.nama || '-' }}</div>
                 <div class="">Alamat</div>
-                <div class="">: Apoteker Penanggung Jawab</div>
-                <div class="">Nomor SIPA</div>
                 <div class="">: {{ data?.supplier?.alamat || '-' }}</div>
               </div>
               <div class="w-ful">Jenis obat-obatan tertentu yang dipesan adalah :</div>
@@ -309,7 +305,7 @@
                   <div class="">Alamat Apotek</div>
                   <div class="">: {{ company?.alamat || 'Belum di setting' }}</div>
                   <div class="">Nomor SIA</div>
-                  <div class="">: {{ company?.nomor_sia || 'Belum di setting' }}</div>
+                  <div class="">: {{ company?.sipa || 'Belum di setting' }}</div>
                 </div>
               </div>
             </div>
