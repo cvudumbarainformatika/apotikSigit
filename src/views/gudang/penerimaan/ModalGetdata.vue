@@ -4,7 +4,7 @@
             <u-row flex1 class="w-full justify-between">
                 <u-row padding="p-3" class="w-full">
                     <slot name="search">
-                        <u-input-search v-model="props.store.q" @update:modelValue="props.store.setSearch"
+                        <u-input-search v-model="props.store.q" @update:model-value="props.store.setOrderpenerimaan"
                             :debounce="300" />
                     </slot>
                 </u-row>
@@ -80,6 +80,6 @@ const handlePilih = (item) => {
     props.store.supplierSelected = item?.supplier
     console.log('Pilih item: ', props.store.orderSelected.order_records);
     emit('close', item)
-    
+    props.store.q = ''
 }
 </script>

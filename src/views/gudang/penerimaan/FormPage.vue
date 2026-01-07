@@ -371,7 +371,9 @@ const optionJenispajaks = computed(() => [
 const params = computed(() => ({
   from: getYearStartDate(),
   to: getYearEndDate(),
-  flag: '1'
+  flag: '1',
+  page: '1',
+  per_page: '200',
 }))
 
 // listItems used in template: prefer local form.rincian when present, otherwise build from orderSelected.order_records
@@ -540,6 +542,7 @@ function initForm() {
   props.store.mode = 'add'
   props.store.init()
   const today = new Date().toISOString().split('T')[0]
+  props.store.q = ''
   form.value = {
     tgl_penerimaan: today,
     tgl_faktur: today,
