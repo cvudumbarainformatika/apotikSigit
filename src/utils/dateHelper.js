@@ -187,3 +187,12 @@ export function formatJamMenit(dateInput = new Date(), timeZone = 'Asia/Jakarta'
     .format(new Date(dateInput))
     .replace('.', ':'); // ubah titik jadi :
 }
+
+export function formatDateIndofull(dateInput) {
+  const date = new Date(dateInput)
+  return date.toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}

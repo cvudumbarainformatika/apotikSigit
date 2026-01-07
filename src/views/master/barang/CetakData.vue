@@ -99,5 +99,5 @@ const app = useAppStore()
 const company = computed(() => {
     return app?.form || null
 })
-
+console.log('company', company?.value)
 </script>
