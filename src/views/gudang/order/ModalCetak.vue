@@ -9,7 +9,7 @@
         <u-btn size="sm" :variant="activeView === 'view3' ? 'primary' : 'secondary'" label="Obat Tertentu"
           @click="changeView('view3')" />
       </div>
-      <div v-show="activeView === 'view1'" id="printArea" ref="printArea" class="max-w-full bg-white text-black mx-auto p-4 print-a4">
+      <div v-show="activeView === 'view1'" id="printArea1"  class="max-w-full bg-white text-black mx-auto p-4 print-a4">
       <!-- Header -->
         <div class="flex items-start justify-between gap-6">
           <div class="flex items-center gap-4">
