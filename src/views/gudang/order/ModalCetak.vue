@@ -1,5 +1,5 @@
 <template>
-  <u-modal persistent :title="`${title}`" size="xl" @close="emit('close')">
+  <u-modal persistent :title="`${title}`" size="xl" @close="emit('close')" :model-value="modelValue">
     <template #default>
       <div class="flex gap-2 mb-4">
         <u-btn size="sm" :variant="activeView === 'view1' ? 'primary' : 'secondary'" label="Reguler"
@@ -97,7 +97,7 @@
 
         <!-- Totals & Notes -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div class="rounded-xl p-4 bg-gray-50">
+          <div class="rounded-xl p-4">
             <!-- <div class="text-gray-500 text-xs uppercase">Catatan</div> -->
             <!-- <p class="mt-1 whitespace-pre-wrap leading-relaxed">{{ 'doc.notes' || '—' }}</p> -->
             <!-- <div class="mt-4 flex items-center gap-3">
@@ -105,7 +105,7 @@
               <div class="px-2 py-1 rounded-lg border text-xs">{{ 'doc.refundMethod '|| 'Saldo / Kas' }}</div>
             </div> -->
           </div>
-          <div class="rounded-xl p-4 bg-gray-50">
+          <div class="rounded-xl p-4">
             <div class="space-y-2 text-sm">
               <div class="flex items-center justify-between">
                 <span>Total Item Order</span>
@@ -120,6 +120,16 @@
                 <span class="font-medium">{{ 'formatIDR(doc.restockingFee)' }}</span>
               </div> -->
               <div class="border-t my-2"></div>
+              <div class="kanan">
+                <div class="mt-0 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
+                  <div class="mt-10 text-center">Probolinggo, {{ today }} </div>
+                  <div class="flex justify-center ">
+                    <div ref="qrRefReguler"></div>
+                  </div>
+                  <div class="text-center">{{ data?.apoteker?.nama || '-' }}</div>
+                  <div class="text-center">{{ data?.apoteker?.sipa || '-' }}</div>
+                </div>
+              </div>
               <!-- <div class="flex items-center justify-between text-base">
                 <span class="font-semibold">Total Pengembalian</span>
                 <span class="font-semibold">Rp . {{ formatRupiah(totals) }}</span>
@@ -215,8 +225,12 @@
             </div>
             <div class="kanan">
               <div class="mt-0 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
-                <div class="mt-9 text-center">Probolinggo, {{ today }} </div>
-                <div class="mt-9 text-center">{{ data?.apoteker?.nama || '-' }}</div>
+                <div class="mt-10 text-center">Probolinggo, {{ today }} </div>
+                <div class="flex justify-center ">
+                  <div ref="qrRefPrekursor"></div>
+                </div>
+                <div class="text-center">{{ data?.apoteker?.nama || '-' }}</div>
+                <div class="text-center">{{ data?.apoteker?.sipa || '-' }}</div>
               </div>
             </div>
           </div>
@@ -311,8 +325,12 @@
             </div>
             <div class="kanan">
               <div class="mt-0 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
-                <div class="mt-9 text-center">Probolinggo, {{ today }} </div>
-                <div class="mt-9 text-center">{{ data?.apoteker?.nama || '-' }}</div>
+                <div class="mt-10 text-center">Probolinggo, {{ today }} </div>
+                <div class="flex justify-center ">
+                  <div ref="qrRefObatlain"></div>
+                </div>
+                <div class="text-center">{{ data?.apoteker?.nama || '-' }}</div>
+                <div class="text-center">{{ data?.apoteker?.sipa || '-' }}</div>
               </div>
             </div>
           </div>
@@ -342,8 +360,13 @@ import { formatDateIndo, formatDateIndofull, formatTimeOnly } from '@/utils/date
 import { formatRupiah, formatTeleponID } from '@/utils/numberHelper'
 
 import { useAppStore } from '@/stores/app'
+import QRCode from 'qrcode'
 
 const props = defineProps({
+  modelValue: {
+    type: Boolean,
+    default: false
+  },
   store: { type: Object, required: true },
   title: { type: String, default: 'Data' },
 })
@@ -360,6 +383,53 @@ const company = computed(() => {
 const data = computed(() => {
   return props.store.form
 })
+const qrRefReguler = ref(null)
+const qrRefPrekursor = ref(null)
+const qrRefObatlain = ref(null)
+
+const renderQR = async (el, text) => {
+  await nextTick()
+  if (!el || !text) return
+
+  el.innerHTML = ''
+
+  try {
+    const svg = await QRCode.toString(text, {
+      type: 'svg',
+      width: 90,
+      margin: 1
+    })
+    el.innerHTML = svg
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+
+watch(
+  [() => props.modelValue, activeView],
+  async ([open, view]) => {
+    if (!open) return
+
+    await nextTick()
+    const sipa = data?.value?.apoteker?.sipa
+    if (!sipa) return
+
+    if (view === 'view1') {
+      renderQR(qrRefReguler.value, sipa)
+    }
+
+    if (view === 'view2') {
+      renderQR(qrRefPrekursor.value, sipa)
+    }
+
+    if (view === 'view3') {
+      renderQR(qrRefObatlain.value, sipa)
+    }
+  },
+  { immediate: true }
+)
+
 const totalSubtotal = computed(() => {
   const items = data?.value?.rincian || []
   return items.reduce((a, b) => a + Number(b?.subtotal), 0)
