@@ -146,6 +146,7 @@
         class="w-full bg-white text-black mx-auto p-4 print-a4">
         <div class="">
           <div class="w-full mt-3 text-center">SURAT PESANAN OBAT MENGANDUNG PREKUSOR FARMASI</div>
+          <div class="w-full text-center text-sm">Nomor SP : {{ data?.nomor_order || '-' }}</div>
           <div class="flex items-start gap-6">
             <div class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
               <div class="w-full"> Yang bertanda tangan di bawah ini :</div>
@@ -246,6 +247,7 @@
         class="w-full bg-white text-black mx-auto p-4 print-a4">
         <div class="">
           <div class="w-full mt-3 text-center">SURAT PESANAN OBAT-OBATAN TERTENTU</div>
+          <div class="w-full text-center text-sm">Nomor SP : {{ data?.nomor_order || '-' }}</div>
           <div class="flex items-start gap-6">
             <div class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
               <div class="w-ful"> Yang bertanda tangan di bawah ini :</div>
