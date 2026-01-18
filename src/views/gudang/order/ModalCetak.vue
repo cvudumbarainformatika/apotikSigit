@@ -120,7 +120,7 @@
               <div class="border-t my-2"></div>
               <div class="kanan">
                 <div class="mt-0 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
-                  <div class="mt-10 text-center">Probolinggo, {{ today }} </div>
+                  <div class="mt-10 text-center">Probolinggo, {{ formatDateIndofull(data?.tgl_order) }} </div>
                   <div class="flex justify-center ">
                     <div ref="qrRefReguler"></div>
                   </div>
@@ -145,12 +145,12 @@
       <div v-show="activeView === 'view2'" id="printArea2"
         class="w-full bg-white text-black mx-auto p-4 print-a4">
         <div class="">
-          <div class="w-full mt-3 text-center">SURAT PESANAN OBAT MENGANDUNG PREKUSOR FARMASI</div>
+          <div class="w-full mt-3 text-center">SURAT PESANAN OBAT MENGANDUNG PREKURSOR FARMASI</div>
           <div class="w-full text-center text-sm">Nomor SP : {{ data?.nomor_order || '-' }}</div>
           <div class="flex items-start gap-6">
             <div class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
               <div class="w-full"> Yang bertanda tangan di bawah ini :</div>
-              <div class="mt-0 grid grid-cols-2 gap-x-2 gap-y-0 text-sm">
+              <div class="mt-0 grid [grid-template-columns:120px_1fr] gap-x-2 gap-y-0 text-sm">
                 <div class="">Nama</div>
                 <div class="">: {{ data?.apoteker?.nama || '-' }}</div>
                 <div class="">Jabatan</div>
@@ -161,7 +161,7 @@
                 <div class="font-medium">{{ data?.supplier?.nama || '-' }}</div> -->
               </div>
               <div class="w-full">Mengajukan pesanan obat mengandung prekursor farmasi kepada :</div>
-              <div class="mt-0 grid grid-cols-2 gap-x-2 gap-y-0 text-sm">
+              <div class="mt-0 grid [grid-template-columns:120px_1fr] gap-x-2 gap-y-0 text-sm">
                 <div class="">Nama Distributor</div>
                 <div class="">: {{ data?.supplier?.nama || '-' }}</div>
                 <div class="">Alamat</div>
@@ -212,7 +212,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div class="kiri">
               <div class="mt-0 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
-                <div class="mt-0 grid grid-cols-2 gap-x-2 gap-y-0 text-sm">
+                <div class="mt-0 grid [grid-template-columns:120px_1fr] gap-x-2 gap-y-0 text-sm">
                   <div class="">Nama Apotek</div>
                   <div class="">: {{ company?.nama || 'Belum di setting' }}</div>
                   <div class="">Alamat Apotek</div>
@@ -224,7 +224,7 @@
             </div>
             <div class="kanan">
               <div class="mt-0 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
-                <div class="mt-10 text-center">Probolinggo, {{ today }} </div>
+                <div class="mt-10 text-center">Probolinggo, {{ formatDateIndofull(data?.tgl_order) }} </div>
                 <div class="flex justify-center ">
                   <div ref="qrRefPrekursor"></div>
                 </div>
@@ -251,7 +251,7 @@
           <div class="flex items-start gap-6">
             <div class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
               <div class="w-ful"> Yang bertanda tangan di bawah ini :</div>
-              <div class="mt-0 grid grid-cols-2 gap-x-2 gap-y-0 text-sm">
+              <div class="mt-0 grid [grid-template-columns:120px_1fr] gap-x-2 gap-y-0 text-sm">
                 <div class="">Nama</div>
                 <div class="">: {{ data?.apoteker?.nama || '-' }}</div>
                 <div class="">Jabatan</div>
@@ -262,7 +262,7 @@
                 <div class="font-medium">{{ data?.supplier?.nama || '-' }}</div> -->
               </div>
               <div class="w-ful">Mengajukan pesanan obat-obatan tertentu kepada :</div>
-              <div class="mt-0 grid grid-cols-2 gap-x-2 gap-y-0 text-sm">
+              <div class="mt-0 grid [grid-template-columns:120px_1fr] gap-x-2 gap-y-0 text-sm">
                 <div class="">Nama Distributor</div>
                 <div class="">: {{ data?.supplier?.nama || '-' }}</div>
                 <div class="">Alamat</div>
@@ -313,7 +313,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div class="kiri">
               <div class="mt-0 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
-                <div class="mt-0 grid grid-cols-2 gap-x-2 gap-y-0 text-sm">
+                <div class="mt-0 grid [grid-template-columns:120px_1fr] gap-x-2 gap-y-0 text-sm">
                   <div class="">Nama Apotek</div>
                   <div class="">: {{ company?.nama || 'Belum di setting' }}</div>
                   <div class="">Alamat Apotek</div>
@@ -325,7 +325,7 @@
             </div>
             <div class="kanan">
               <div class="mt-0 grid grid-cols-1 gap-x-6 gap-y-1 text-sm">
-                <div class="mt-10 text-center">Probolinggo, {{ today }} </div>
+                <div class="mt-10 text-center">Probolinggo, {{ formatDateIndofull(data?.tgl_order) }} </div>
                 <div class="flex justify-center ">
                   <div ref="qrRefObatlain"></div>
                 </div>

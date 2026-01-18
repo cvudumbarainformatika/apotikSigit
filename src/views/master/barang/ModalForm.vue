@@ -62,17 +62,37 @@
         <div flex1 class="w-full row justify-center items-center mt-1 mb-1">
           <div class="text-center text-xs text-gray-500">---- Harga Jual ----</div>
         </div>
-        <u-row flex1 class="w-full">
-          <u-input type="number" v-model="form.harga_jual_resep" label="Harga jual Resep"
-            :error="isError('harga_jual_resep')" :error-message="errorMessage('harga_jual_resep')" />
-          <u-input type="number" v-model="form.harga_jual_umum" label="Harga Jual Umum"
-            :error="isError('harga_jual_umum')" :error-message="errorMessage('harga_jual_umum')" />
+        <u-row flex1 class="w-full grid grid-cols-2 gap-4">
+          <u-row class="items-center gap-1">
+            <u-input type="number" v-model="form.harga_jual_resep" label="Harga jual Resep"
+              :error="isError('harga_jual_resep')" :error-message="errorMessage('harga_jual_resep')" />
+            <div class="text-xs text-primary whitespace-nowrap">
+              {{ persen(form.harga_jual_resep) }}%
+            </div>
+          </u-row>
+          <u-row class="items-center gap-1">
+            <u-input type="number" v-model="form.harga_jual_umum" label="Harga Jual Umum"
+              :error="isError('harga_jual_umum')" :error-message="errorMessage('harga_jual_umum')" />
+            <div class="text-xs text-primary whitespace-nowrap">
+              {{ persen(form.harga_jual_umum) }}%
+            </div>
+          </u-row>
         </u-row>
-        <u-row flex1 class="w-full">
-          <u-input type="number" v-model="form.harga_jual_cust" label="Harga jual Customer"
-            :error="isError('harga_jual_cust')" :error-message="errorMessage('harga_jual_cust')" />
-          <u-input type="number" v-model="form.harga_jual_prem" label="Harga Jual Premium"
-            :error="isError('harga_jual_prem')" :error-message="errorMessage('harga_jual_prem')" />
+        <u-row flex1 class="w-full grid grid-cols-2 gap-4">
+        <u-row class="items-center gap-1">
+           <u-input type="number" v-model="form.harga_jual_cust" label="Harga jual Customer"
+              :error="isError('harga_jual_cust')" :error-message="errorMessage('harga_jual_cust')" />
+            <div class="text-xs text-primary whitespace-nowrap">
+              {{ persen(form.harga_jual_cust) }}%
+            </div>
+          </u-row>
+          <u-row class="items-center gap-1">
+            <u-input type="number" v-model="form.harga_jual_prem" label="Harga Jual Premium"
+              :error="isError('harga_jual_prem')" :error-message="errorMessage('harga_jual_prem')" />
+            <div class="text-xs text-primary whitespace-nowrap">
+              {{ persen(form.harga_jual_prem) }}%
+            </div>
+          </u-row>
         </u-row>
         <!-- <u-row flex1 class="w-full">
           <u-row>
@@ -311,5 +331,12 @@ onMounted(() => {
 
   // ini tambahan
 })
+const persen = (hargaJual) => {
+  const beli = Number(form.value.harga_beli)
+  const jual = Number(hargaJual)
 
+  if (!beli || !jual) return 0
+
+  return ((jual - beli) / beli * 100).toFixed(0)
+}
 </script>
