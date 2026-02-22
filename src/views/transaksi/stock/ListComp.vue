@@ -242,7 +242,7 @@ const openModalTambah = () => {
   form.value.satuan_k = props.item?.satuan_k
   form.value.id_stok = props.item?.id
   form.value.kode_barang = props.item?.kode_barang
-  form.value.kode_depo = company.value?.kode_toko
+  form.value.kode_depo = props.item?.kode_depo
   clearSelectedBarang()
 }
 
@@ -254,7 +254,7 @@ const openModalMinus = () => {
   form.value.satuan_k = props.item?.satuan_k
   form.value.id_stok = props.item?.id
   form.value.kode_barang = props.item?.kode_barang
-  form.value.kode_depo = company.value?.kode_toko
+  form.value.kode_depo = props.item?.kode_depo
   clearSelectedBarang()
 }
 
