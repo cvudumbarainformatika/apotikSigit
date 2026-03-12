@@ -54,8 +54,21 @@
           </u-row>
         </u-view>
 
-        <u-view flex1 scrollY class="w-full" padding="p-0">
-          <slot name="kanan"></slot>
+        <u-view ref="uViewRef" flex1 scrollY class="w-full" padding="p-0">
+          <div v-if="store.loading" class="w-full">
+            <slot name="loading">
+              <u-load-spinner></u-load-spinner>
+            </slot>
+          </div>
+          <template v-else-if="store.items.length">
+            <!-- <template #item="{ item }"> -->
+            <slot name="kanan" :items="store.items"></slot>
+            <!-- </template> -->
+          </template>
+          <u-empty :title="store.emptyTitle" :subtitle="store.emptySubtitle"
+            v-else-if="!store.loading && !store.items.length" />
+          <!-- ⬇️ Loading indicator ketika fetchMore aktif dan ketika mode loadMore -->
+          <u-load-spinner v-if="store.loadingMore && isLoadMore" />
         </u-view>
         <!-- </u-page> -->
 
@@ -65,6 +78,8 @@
 </template>
 
 <script setup>
+import { ref, watch } from 'vue'
+
 const props = defineProps({
   store: { type: Object, required: true },
   title: { type: String, default: 'Title' },
@@ -75,6 +90,18 @@ const props = defineProps({
   // onAdd: { type: Function, default: () => {} }, // ✅ supaya tidak error saat dipanggil
   // onRefresh: Function // ✅ hanya dipanggil kalau diberikan
 })
+
+const uViewRef = ref()
+watch(
+  () => uViewRef.value?.arrivedState?.bottom,
+  (val) => {
+    // console.log('on bottom', val);
+    if (val && !props.store.loadingMore && props.store?.page < props.store?.meta?.last_page) {
+      props.store?.fetchMore()
+
+    }
+  }
+)
 
 function handleAdd(e) {
   e.preventDefault()
