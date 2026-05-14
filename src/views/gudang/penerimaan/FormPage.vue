@@ -61,7 +61,7 @@
                 </div>
               </u-row>
               <div class="text-right">
-                <u-btn label="Order" @click="modalOpendata = true" />
+                <u-btn label="Order" @click="OpendataOrder" :loading="loadingOpen" />
               </div>
             </u-grid>
           </div>
@@ -289,6 +289,7 @@ const modalOpendata = ref(false)
 const isSubmitting = ref(false)
 const skipWatch = ref(false)
 const loadingLock = ref(false)
+const loadingOpen = ref(false)
 const modalCetak = ref(false)
 const loadingHapusItem = ref(true)
 const app = useAppStore()
@@ -321,7 +322,11 @@ const form = ref({
 
   rincian: {},
 })
+const OpendataOrder = async () => {
+  await ambilOrder()
+  modalOpendata.value = true
 
+}
 onMounted(async () => {
   
   await app.fetchData()
@@ -373,7 +378,7 @@ const params = computed(() => ({
   to: getYearEndDate(),
   flag: '1',
   page: '1',
-  per_page: '200',
+  per_page: 999999,
 }))
 
 // listItems used in template: prefer local form.rincian when present, otherwise build from orderSelected.order_records
@@ -508,6 +513,7 @@ const allOrder = ref([])
 const ambilOrder = async () => {
   // await storeorder.fetchAll(params.value)
   // console.log('data lama', storeorder.items)
+  loadingOpen.value = true
   try {
 
     const res = await api.get(
@@ -528,6 +534,7 @@ const ambilOrder = async () => {
       )
       props.store.orderSelected = selected || null
     }
+    loadingOpen.value = false
   } catch (error) {
     console.error('Gagal ambil order:', error)
     notify({
@@ -665,7 +672,6 @@ const handleSubmit = async (e, item) => {
 
   const kode_barang = item.kode_barang
   const rincianItem = form.value.rincian[kode_barang] || {}
-  console.log('Handling submit for kode_barang:', item)
   // sync beberapa field ke form utama (mirip logic sebelumnya)
   form.value.kode_barang = kode_barang
   form.value.nobatch = rincianItem.nobatch || ''
@@ -680,8 +686,7 @@ const handleSubmit = async (e, item) => {
   form.value.diskon_rupiah = parseFloat(rincianItem.diskon_rupiah)
   form.value.tgl_exprd = rincianItem.tgl_exprd || ''
   form.value.kode_suplier = props.store.supplierSelected?.kode || ''
-  form.value.noorder = props.store.orderSelected?.nomor_order || ''
-  // console.log('Submitting rincian for kode_barang:', form.value)
+  form.value.noorder = props.store.orderSelected?.nomor_order
   // ensure rincian entry exists and mark loading
   form.value.rincian[kode_barang] = {
     ...form.value.rincian[kode_barang],
@@ -703,6 +708,7 @@ const handleSubmit = async (e, item) => {
   }
 
   const rincian = form.value.rincian[kode_barang]
+  console.log('Rincian sebelum submit:', rincian)
   if (!rincian) {
     isSubmitting.value = false
     return
@@ -716,11 +722,11 @@ const handleSubmit = async (e, item) => {
       notify({ message: 'Penerimaan Lebih Besar Dari Jumlah Pesanan', type: 'error' })
       form.value.rincian[kode_barang].loading = false
       return
-    } else {
+    } 
       // panggil proses buat/save ke store (sesuaikan create signature store)
       await props.store.create(form.value)
-      ambilOrder()
-    }
+      await ambilOrder()
+    
     form.value.rincian[kode_barang].loading = false
   } catch (err) {
     console.error('Error saat menyimpan:', err)
@@ -847,7 +853,6 @@ watch(
         props.store.clearFieldError(key)
       }
     }
-
     if (newForm) {
       const filteredOrders = allOrder.value
         ?.filter(o => o.nomor_order === newForm?.noorder)
