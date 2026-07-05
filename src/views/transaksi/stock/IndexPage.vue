@@ -23,7 +23,7 @@ onMounted(async() => {
   store.per_page = 100
   Promise.all([    
     handleRange(),
-    store.fetchAll(),
+    // store.fetchAll(),
     // console.log('Refresh List', store.items)
   ])
 })
@@ -39,8 +39,10 @@ const handleRange = async () => {
     q: store.q,
     page: store.page,
     per_page: store.per_page,
-    depo: store.depo
+    depo: store.depo,
+    tampil: 'semua'
   }
+  store.loading = false
   store.fetchAll(params)
 }
 
@@ -51,9 +53,11 @@ function handleRefresh() {
     q: store.q,
     page: store.page,
     per_page: store.per_page,
-    depo: store.depo
+    depo: store.depo,
+    tampil: 'semua'
   }
   // console.log('Refresh List')
+  store.loading = false
   store.fetchAll(params)
   // console.log('Refr', store.items)
 }

@@ -5,7 +5,7 @@
         <u-row flex1 class="w-full pt-1">
           <u-row flex1 class="w-full">
             <div class="font-bold">{{ item?.nama }}</div>
-            <div class="italic text-light-primary/60 text-xs">Stok Saat ini: {{ stokSekarang }} {{ item?.satuan_k }}
+            <div class="italic text-light-primary/60 font-bold text-xs">Stok Saat ini: {{ stokSekarang }} {{ item?.satuan_k }}
             </div>
           </u-row>
           <u-row class="">
@@ -21,14 +21,14 @@
                 <u-row class="col-span-1">
                   <div>Saldo Awal </div>
                 </u-row>
-                <u-row class="col-span-1 text-xs">
+                <u-row class="col-span-2 text-xs">
                   <div class="font-bold">: {{ saldoAwal }} {{ item?.satuan_k }} </div>
                 </u-row>
 
                 <u-row class="col-span-1">
                   <div>Stok Masuk </div>
                 </u-row>
-                <u-row class="col-span-1 text-xs">
+                <u-row class="col-span-2 text-xs">
                   <div class="font-bold">: {{ totalMasuk }} {{ item?.satuan_k }}</div>
                 </u-row>
 
@@ -36,23 +36,23 @@
                 <u-row class="col-span-1">
                   <div>Stok Keluar </div>
                 </u-row>
-                <u-row class="col-span-1 text-xs">
+                <u-row class="col-span-2 text-xs">
                   <div class="font-bold">: {{ totalKeluar }} {{ item?.satuan_k }}</div>
                 </u-row>
 
                 <u-row class="col-span-1">
                   <div>Penyesuaian </div>
                 </u-row>
-                <u-row class="col-span-1 text-xs">
+                <u-row class="col-span-2 text-xs">
                   <div class="font-bold">: {{ totalPenyesuaian }} {{ item?.satuan_k }}</div>
                 </u-row>
 
-                <u-row class="col-span-1">
+                <!-- <u-row class="col-span-1">
                   <div>Stok Akhir </div>
                 </u-row>
                 <u-row class="col-span-1 text-xs">
                   <div class="font-bold">: {{ stokAkhir }} {{ item?.satuan_k }}</div>
-                </u-row>
+                </u-row> -->
               </u-grid>
             </div>
           </u-row>
